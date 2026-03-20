@@ -24,6 +24,8 @@ export interface FlowNode {
   description?: string;
   sections?: NodeSection[];
   icon?: string | ComponentType<{ size?: number; color?: string }>;
+  collapsed?: boolean;
+  collapsible?: boolean;
   style?: {
     color?: string;
     variant?: 'filled' | 'outlined' | 'ghost';
@@ -46,6 +48,11 @@ export interface FlowEdge {
 
 export type CanvasBackground = 'dots' | 'isometric' | 'plain';
 
+export interface CustomNodeProps {
+  node: FlowNode;
+  editable: boolean;
+}
+
 export interface FlowCanvasProps {
   diagram: FlowDiagram;
   mode?: 'view' | 'edit';
@@ -55,6 +62,8 @@ export interface FlowCanvasProps {
   background?: CanvasBackground;
   minimap?: boolean | { width?: number; height?: number; position?: 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left' };
   theme?: 'light' | 'dark';
+  onNodeClick?: (nodeId: string, node: FlowNode) => void;
+  nodeRenderers?: Record<string, ComponentType<CustomNodeProps>>;
 }
 
 export interface LayoutNode {

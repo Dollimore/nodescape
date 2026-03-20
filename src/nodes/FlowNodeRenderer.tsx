@@ -1,5 +1,6 @@
-import React from 'react';
-import type { FlowNode } from '../types';
+import React, { useRef } from 'react';
+import type { ComponentType } from 'react';
+import type { FlowNode, CustomNodeProps } from '../types';
 import { DefaultNode } from './DefaultNode';
 import { DecisionNode } from './DecisionNode';
 import { StartEndNode } from './StartEndNode';
@@ -10,26 +11,45 @@ interface FlowNodeRendererProps {
   position: { x: number; y: number };
   onDragStart?: (nodeId: string, e: React.MouseEvent) => void;
   isDragging?: boolean;
+  onClick?: () => void;
+  customRenderers?: Record<string, ComponentType<CustomNodeProps>>;
 }
 
 export const FlowNodeRenderer = React.forwardRef<HTMLDivElement, FlowNodeRendererProps>(
-  function FlowNodeRenderer({ node, editable, position, onDragStart, isDragging }, ref) {
+  function FlowNodeRenderer({ node, editable, position, onDragStart, isDragging, onClick, customRenderers }, ref) {
+    const startPos = useRef<{ x: number; y: number } | null>(null);
+
     const style: React.CSSProperties = {
       position: 'absolute',
       transform: `translate(${position.x}px, ${position.y}px)`,
       transition: isDragging ? undefined : 'transform 0.3s ease',
+      cursor: onClick && !editable ? 'pointer' : undefined,
     };
 
     const handleMouseDown = (e: React.MouseEvent) => {
+      startPos.current = { x: e.clientX, y: e.clientY };
       if (editable && onDragStart) {
         onDragStart(node.id, e);
       }
     };
 
-    const NodeComponent = getNodeComponent(node.type);
+    const handleMouseUp = (e: React.MouseEvent) => {
+      if (startPos.current && onClick) {
+        const dx = Math.abs(e.clientX - startPos.current.x);
+        const dy = Math.abs(e.clientY - startPos.current.y);
+        // Only fire click if mouse didn't move (not a drag)
+        if (dx < 5 && dy < 5) {
+          onClick();
+        }
+      }
+      startPos.current = null;
+    };
+
+    const NodeComponent =
+      (node.type && customRenderers?.[node.type]) || getNodeComponent(node.type);
 
     return (
-      <div ref={ref} style={style} onMouseDown={handleMouseDown} data-node-draggable={editable || undefined}>
+      <div ref={ref} style={style} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} data-node-draggable={editable || undefined}>
         <NodeComponent node={node} editable={editable} />
       </div>
     );
