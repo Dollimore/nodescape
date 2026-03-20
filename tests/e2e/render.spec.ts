@@ -73,6 +73,8 @@ test.describe('FlowCanvas rendering', () => {
 
   test('decision node branches create horizontal spread', async ({ page }) => {
     await page.goto('/');
+    // Wait for fitView to settle
+    await page.waitForTimeout(200);
     const grantBox = await page.locator('[data-testid="node-grant"]').boundingBox();
     const denyBox = await page.locator('[data-testid="node-deny"]').boundingBox();
     expect(grantBox).not.toBeNull();

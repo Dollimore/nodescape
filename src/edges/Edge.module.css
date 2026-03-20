@@ -33,30 +33,35 @@
 
 .edgeLabel {
   font-family: system-ui, -apple-system, sans-serif;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
-  padding: 2px 10px;
-  border-radius: 10px;
+  padding: 4px 12px;
+  border-radius: 12px;
   pointer-events: none;
   user-select: none;
+  white-space: nowrap;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .edgeLabelDefault {
-  background: #f1f5f9;
+  background: #fff;
   color: #475569;
 }
 
 .edgeLabelSuccess {
-  background: #f0fdf4;
-  color: #15803d;
+  background: #fff;
+  color: #16a34a;
+  border-color: #bbf7d0;
 }
 
 .edgeLabelFailure {
-  background: #fef2f2;
+  background: #fff;
   color: #dc2626;
+  border-color: #fecaca;
 }
 
 .edgeLabelDashed {
-  background: #f1f5f9;
+  background: #fff;
   color: #475569;
 }
