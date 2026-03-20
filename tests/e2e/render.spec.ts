@@ -46,4 +46,19 @@ test.describe('FlowCanvas rendering', () => {
     await expect(node).toContainText('Redirect');
     await expect(node).toContainText('Send to /dashboard.');
   });
+
+  test('renders edges as SVG paths', async ({ page }) => {
+    await page.goto('/');
+    const svg = page.locator('[data-testid="edge-layer"]');
+    await expect(svg).toBeVisible();
+    // 6 edges in sample diagram
+    const paths = svg.locator('g[data-testid^="edge-"]');
+    await expect(paths).toHaveCount(6);
+  });
+
+  test('renders edge labels', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('[data-testid="edge-label-e3"]')).toContainText('Yes');
+    await expect(page.locator('[data-testid="edge-label-e4"]')).toContainText('No');
+  });
 });
