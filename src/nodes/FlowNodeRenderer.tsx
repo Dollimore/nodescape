@@ -11,26 +11,28 @@ interface FlowNodeRendererProps {
   onDragStart?: (nodeId: string, e: React.MouseEvent) => void;
 }
 
-export function FlowNodeRenderer({ node, editable, position, onDragStart }: FlowNodeRendererProps) {
-  const style: React.CSSProperties = {
-    position: 'absolute',
-    transform: `translate(${position.x}px, ${position.y}px)`,
-  };
+export const FlowNodeRenderer = React.forwardRef<HTMLDivElement, FlowNodeRendererProps>(
+  function FlowNodeRenderer({ node, editable, position, onDragStart }, ref) {
+    const style: React.CSSProperties = {
+      position: 'absolute',
+      transform: `translate(${position.x}px, ${position.y}px)`,
+    };
 
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if (editable && onDragStart) {
-      onDragStart(node.id, e);
-    }
-  };
+    const handleMouseDown = (e: React.MouseEvent) => {
+      if (editable && onDragStart) {
+        onDragStart(node.id, e);
+      }
+    };
 
-  const NodeComponent = getNodeComponent(node.type);
+    const NodeComponent = getNodeComponent(node.type);
 
-  return (
-    <div style={style} onMouseDown={handleMouseDown}>
-      <NodeComponent node={node} editable={editable} />
-    </div>
-  );
-}
+    return (
+      <div ref={ref} style={style} onMouseDown={handleMouseDown} data-node-draggable={editable || undefined}>
+        <NodeComponent node={node} editable={editable} />
+      </div>
+    );
+  }
+);
 
 function getNodeComponent(type?: FlowNode['type']) {
   switch (type) {

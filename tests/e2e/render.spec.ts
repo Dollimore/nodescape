@@ -61,4 +61,23 @@ test.describe('FlowCanvas rendering', () => {
     await expect(page.locator('[data-testid="edge-label-e3"]')).toContainText('Yes');
     await expect(page.locator('[data-testid="edge-label-e4"]')).toContainText('No');
   });
+
+  test('nodes are positioned by auto-layout (not stacked)', async ({ page }) => {
+    await page.goto('/');
+    const startBox = await page.locator('[data-testid="node-start"]').boundingBox();
+    const inputBox = await page.locator('[data-testid="node-input"]').boundingBox();
+    expect(startBox).not.toBeNull();
+    expect(inputBox).not.toBeNull();
+    expect(startBox!.y).toBeLessThan(inputBox!.y);
+  });
+
+  test('decision node branches create horizontal spread', async ({ page }) => {
+    await page.goto('/');
+    const grantBox = await page.locator('[data-testid="node-grant"]').boundingBox();
+    const denyBox = await page.locator('[data-testid="node-deny"]').boundingBox();
+    expect(grantBox).not.toBeNull();
+    expect(denyBox).not.toBeNull();
+    expect(Math.abs(grantBox!.y - denyBox!.y)).toBeLessThan(50);
+    expect(Math.abs(grantBox!.x - denyBox!.x)).toBeGreaterThan(50);
+  });
 });
