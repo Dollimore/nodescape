@@ -5,6 +5,7 @@ import { EdgeRenderer } from './edges/EdgeRenderer';
 import { useAutoLayout } from './layout/useAutoLayout';
 import { CanvasView } from './canvas/CanvasView';
 import { useDragNode } from './hooks/useDragNode';
+import styles from './FlowCanvas.module.css';
 
 export function FlowCanvas({ diagram, mode = 'view', className, onDiagramChange }: FlowCanvasProps) {
   const editable = mode === 'edit';
@@ -44,6 +45,7 @@ export function FlowCanvas({ diagram, mode = 'view', className, onDiagramChange 
   }, [layout]);
 
   return (
+    <div className={styles.root}>
     <CanvasView
       className={className}
       onDragMove={editable ? onDragMove : undefined}
@@ -66,5 +68,6 @@ export function FlowCanvas({ diagram, mode = 'view', className, onDiagramChange 
         />
       ))}
     </CanvasView>
+    </div>
   );
 }
