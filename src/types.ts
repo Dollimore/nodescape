@@ -41,12 +41,15 @@ export interface FlowEdge {
   routing?: EdgeRouting;
 }
 
+export type CanvasBackground = 'dots' | 'isometric' | 'plain';
+
 export interface FlowCanvasProps {
   diagram: FlowDiagram;
   mode?: 'view' | 'edit';
   onDiagramChange?: (diagram: FlowDiagram) => void;
   className?: string;
   fitView?: boolean;
+  background?: CanvasBackground;
 }
 
 export interface LayoutNode {

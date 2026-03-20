@@ -186,7 +186,7 @@ function computeDynamicEdges(
   });
 }
 
-export function FlowCanvas({ diagram, mode = 'view', className, onDiagramChange }: FlowCanvasProps) {
+export function FlowCanvas({ diagram, mode = 'view', className, onDiagramChange, background }: FlowCanvasProps) {
   const editable = mode === 'edit';
   const nodeRefs = useRef(new Map<string, HTMLElement | null>());
 
@@ -246,6 +246,7 @@ export function FlowCanvas({ diagram, mode = 'view', className, onDiagramChange 
       fitView={true}
       contentWidth={layout?.width}
       contentHeight={layout?.height}
+      background={background}
     >
       {layout && (
         <EdgeRenderer

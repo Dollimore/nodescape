@@ -2,6 +2,8 @@ import React, { useRef, useEffect } from 'react';
 import { usePanZoom } from '../hooks/usePanZoom';
 import styles from './CanvasView.module.css';
 
+import type { CanvasBackground } from '../types';
+
 interface CanvasViewProps {
   children: React.ReactNode;
   className?: string;
@@ -10,6 +12,7 @@ interface CanvasViewProps {
   fitView?: boolean;
   contentWidth?: number;
   contentHeight?: number;
+  background?: CanvasBackground;
 }
 
 export function CanvasView({
@@ -20,6 +23,7 @@ export function CanvasView({
   fitView,
   contentWidth,
   contentHeight,
+  background = 'dots',
 }: CanvasViewProps) {
   const { transform, onMouseDown, onMouseMove, onMouseUp, onWheel, setFitView } = usePanZoom();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -50,7 +54,7 @@ export function CanvasView({
     <div
       ref={containerRef}
       data-testid="flow-canvas"
-      className={`${styles.canvas} ${className || ''}`}
+      className={`${styles.canvas} ${background === 'isometric' ? styles.isometricDots : background === 'plain' ? styles.plain : styles.dotGrid} ${className || ''}`}
       onMouseDown={onMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
