@@ -73,7 +73,7 @@ export function computeLayout(
       id: edge.id,
       source: edge.source,
       target: edge.target,
-      points: dagreEdge.points || [],
+      points: dagreEdge?.points || [],
     };
   });
 
