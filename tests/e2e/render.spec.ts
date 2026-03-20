@@ -80,4 +80,31 @@ test.describe('FlowCanvas rendering', () => {
     expect(Math.abs(grantBox!.y - denyBox!.y)).toBeLessThan(50);
     expect(Math.abs(grantBox!.x - denyBox!.x)).toBeGreaterThan(50);
   });
+
+  test('full diagram renders with all node types, edges, and labels', async ({ page }) => {
+    await page.goto('/');
+
+    // All 7 nodes visible
+    const nodes = page.locator('[data-testid^="node-"]');
+    await expect(nodes).toHaveCount(7);
+
+    // All 6 edges rendered
+    const edges = page.locator('g[data-testid^="edge-"]');
+    await expect(edges).toHaveCount(6);
+
+    // Edge labels present
+    await expect(page.locator('[data-testid="edge-label-e3"]')).toContainText('Yes');
+    await expect(page.locator('[data-testid="edge-label-e4"]')).toContainText('No');
+
+    // Node types rendered correctly
+    await expect(page.locator('[data-testid="start-indicator"]')).toBeVisible();
+    await expect(page.locator('[data-testid="decision-badge"]')).toBeVisible();
+    const endIndicators = page.locator('[data-testid="end-indicator"]');
+    await expect(endIndicators).toHaveCount(2);
+
+    // Sections rendered
+    const grantNode = page.locator('[data-testid="node-grant"]');
+    await expect(grantNode).toContainText('Session');
+    await expect(grantNode).toContainText('Redirect');
+  });
 });
