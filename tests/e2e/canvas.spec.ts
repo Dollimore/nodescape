@@ -34,4 +34,16 @@ test.describe('Canvas interaction', () => {
     const afterBox = await startNode.boundingBox();
     expect(afterBox!.width).toBeLessThan(beforeBox!.width);
   });
+
+  test('fitView makes all nodes visible on load', async ({ page }) => {
+    await page.goto('/');
+    for (const id of ['start', 'input', 'validate', 'grant', 'deny', 'end-success', 'end-fail']) {
+      const node = page.locator(`[data-testid="node-${id}"]`);
+      await expect(node).toBeVisible();
+      const box = await node.boundingBox();
+      expect(box).not.toBeNull();
+      expect(box!.x).toBeGreaterThanOrEqual(-10);
+      expect(box!.y).toBeGreaterThanOrEqual(-10);
+    }
+  });
 });

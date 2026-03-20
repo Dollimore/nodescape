@@ -44,7 +44,14 @@ export function FlowCanvas({ diagram, mode = 'view', className, onDiagramChange 
   }, [layout]);
 
   return (
-    <CanvasView className={className} onDragMove={editable ? onDragMove : undefined} onDragEnd={editable ? onDragEnd : undefined}>
+    <CanvasView
+      className={className}
+      onDragMove={editable ? onDragMove : undefined}
+      onDragEnd={editable ? onDragEnd : undefined}
+      fitView={true}
+      contentWidth={layout?.width}
+      contentHeight={layout?.height}
+    >
       {layout && (
         <EdgeRenderer edges={diagram.edges} layoutEdges={layout.edges} />
       )}
