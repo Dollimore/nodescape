@@ -1,5 +1,6 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import { usePanZoom } from '../hooks/usePanZoom';
+import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import styles from './CanvasView.module.css';
 
 import type { CanvasBackground } from '../types';
@@ -31,11 +32,11 @@ export function CanvasView({
   contentHeight,
   background = 'dots',
 }: CanvasViewProps) {
-  const { transform, onMouseDown, onMouseMove, onMouseUp, onWheel, setFitView } = usePanZoom();
+  const { transform, onMouseDown, onMouseMove, onMouseUp, onWheel, setFitView, zoomIn, zoomOut, resetZoom } = usePanZoom();
   const containerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (!fitView || !contentWidth || !contentHeight || !containerRef.current) return;
+  const applyFitView = useCallback(() => {
+    if (!contentWidth || !contentHeight || !containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
     const padding = 40;
     const scaleX = (rect.width - padding * 2) / contentWidth;
@@ -44,7 +45,19 @@ export function CanvasView({
     const x = (rect.width - contentWidth * scale) / 2;
     const y = (rect.height - contentHeight * scale) / 2;
     setFitView({ x, y, scale });
-  }, [fitView, contentWidth, contentHeight, setFitView]);
+  }, [contentWidth, contentHeight, setFitView]);
+
+  useEffect(() => {
+    if (!fitView) return;
+    applyFitView();
+  }, [fitView, applyFitView]);
+
+  useKeyboardShortcuts(containerRef, {
+    onFitView: applyFitView,
+    onZoomIn: zoomIn,
+    onZoomOut: zoomOut,
+    onResetZoom: resetZoom,
+  });
 
   const handleMouseMove = (e: React.MouseEvent) => {
     onMouseMove(e);

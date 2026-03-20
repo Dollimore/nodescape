@@ -67,6 +67,27 @@ export function usePanZoom(fitViewTransform?: PanZoomState) {
     setTransform(newTransform);
   }, []);
 
+  const zoomIn = useCallback(() => {
+    setTransform((prev) => ({
+      ...prev,
+      scale: Math.min(MAX_SCALE, prev.scale * 1.2),
+    }));
+  }, []);
+
+  const zoomOut = useCallback(() => {
+    setTransform((prev) => ({
+      ...prev,
+      scale: Math.max(MIN_SCALE, prev.scale / 1.2),
+    }));
+  }, []);
+
+  const resetZoom = useCallback(() => {
+    setTransform((prev) => ({
+      ...prev,
+      scale: 1,
+    }));
+  }, []);
+
   return {
     transform,
     onMouseDown,
@@ -74,5 +95,8 @@ export function usePanZoom(fitViewTransform?: PanZoomState) {
     onMouseUp,
     onWheel,
     setFitView,
+    zoomIn,
+    zoomOut,
+    resetZoom,
   };
 }
