@@ -186,7 +186,7 @@ function computeDynamicEdges(
   });
 }
 
-export function FlowCanvas({ diagram, mode = 'view', className, onDiagramChange, background }: FlowCanvasProps) {
+export function FlowCanvas({ diagram, mode = 'view', className, onDiagramChange, background, minimap }: FlowCanvasProps) {
   const editable = mode === 'edit';
   const nodeRefs = useRef(new Map<string, HTMLElement | null>());
 
@@ -247,6 +247,11 @@ export function FlowCanvas({ diagram, mode = 'view', className, onDiagramChange,
       contentWidth={layout?.width}
       contentHeight={layout?.height}
       background={background}
+      minimapEnabled={!!minimap}
+      minimapConfig={typeof minimap === 'object' ? minimap : undefined}
+      layoutNodes={layout?.nodes}
+      layoutWidth={layout?.width}
+      layoutHeight={layout?.height}
     >
       {layout && (
         <EdgeRenderer

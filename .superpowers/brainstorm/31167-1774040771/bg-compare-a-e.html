@@ -1,0 +1,99 @@
+<h2>A vs E — Side by Side</h2>
+<p class="subtitle">Both shown with a mini diagram so you can see how they feel in context</p>
+
+<div class="split">
+
+  <!-- Option A: Dot Grid -->
+  <div class="option" data-choice="a" onclick="toggleSelect(this)" style="cursor: pointer; flex: 1;">
+    <div class="letter">A</div>
+    <div class="content"><h3>Dot Grid</h3></div>
+    <div style="margin-top: 12px; border-radius: 10px; overflow: hidden; border: 1px solid #e0e0e0; height: 420px;
+      background-color: #fafafa;
+      background-image: radial-gradient(circle, #d0d0d0 1px, transparent 1px);
+      background-size: 20px 20px;
+      position: relative;
+    ">
+      <!-- Mini diagram -->
+      <div style="position: absolute; top: 40px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center;">
+        <!-- Start node -->
+        <div style="background: #fff; border: 1.5px solid #e0e0e0; border-radius: 10px; padding: 10px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); font-family: system-ui; display: flex; align-items: center; gap: 8px;">
+          <div style="width: 28px; height: 28px; background: #f0fdf4; border-radius: 8px; display: flex; align-items: center; justify-content: center;"><div style="width: 8px; height: 8px; background: #22c55e; border-radius: 50%;"></div></div>
+          <span style="font-size: 13px; font-weight: 600; color: #1a1a1a;">Start process</span>
+        </div>
+
+        <div style="width: 1.5px; height: 40px; background: #d0d0d0;"></div>
+
+        <!-- Process node -->
+        <div style="background: #fff; border: 1.5px solid #e0e0e0; border-radius: 10px; padding: 12px 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); font-family: system-ui; max-width: 220px;">
+          <div style="font-size: 13px; font-weight: 600; color: #1a1a1a; margin-bottom: 3px;">Process data</div>
+          <div style="font-size: 12px; color: #888; line-height: 1.5;">Transform and validate input.</div>
+        </div>
+
+        <div style="width: 1.5px; height: 40px; background: #d0d0d0;"></div>
+
+        <!-- Decision node -->
+        <div style="background: #fff; border: 1.5px solid #e0e0e0; border-radius: 10px; padding: 12px 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); font-family: system-ui; display: flex; align-items: center; gap: 6px;">
+          <div style="width: 18px; height: 18px; background: #fef3c7; border-radius: 4px; display: flex; align-items: center; justify-content: center;"><div style="width: 8px; height: 8px; background: #f59e0b; transform: rotate(45deg);"></div></div>
+          <span style="font-size: 13px; font-weight: 600; color: #1a1a1a;">Valid?</span>
+        </div>
+
+        <div style="width: 1.5px; height: 40px; background: #d0d0d0;"></div>
+
+        <!-- End node -->
+        <div style="background: #fff; border: 1.5px solid #e0e0e0; border-radius: 10px; padding: 10px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); font-family: system-ui; display: flex; align-items: center; gap: 8px;">
+          <div style="width: 28px; height: 28px; background: #fef2f2; border-radius: 8px; display: flex; align-items: center; justify-content: center;"><div style="width: 8px; height: 8px; background: #ef4444; border-radius: 50%;"></div></div>
+          <span style="font-size: 13px; font-weight: 600; color: #1a1a1a;">Complete</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Option E: Isometric Dots -->
+  <div class="option" data-choice="e" onclick="toggleSelect(this)" style="cursor: pointer; flex: 1;">
+    <div class="letter">E</div>
+    <div class="content"><h3>Isometric Dots</h3></div>
+    <div style="margin-top: 12px; border-radius: 10px; overflow: hidden; border: 1px solid #e0e0e0; height: 420px;
+      background-color: #f8f9fa;
+      background-image:
+        radial-gradient(circle, #c8c8c8 1px, transparent 1px),
+        radial-gradient(circle, #c8c8c8 1px, transparent 1px);
+      background-size: 28px 28px;
+      background-position: 0 0, 14px 14px;
+      position: relative;
+    ">
+      <!-- Mini diagram -->
+      <div style="position: absolute; top: 40px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center;">
+        <!-- Start node -->
+        <div style="background: #fff; border: 1.5px solid #e0e0e0; border-radius: 10px; padding: 10px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); font-family: system-ui; display: flex; align-items: center; gap: 8px;">
+          <div style="width: 28px; height: 28px; background: #f0fdf4; border-radius: 8px; display: flex; align-items: center; justify-content: center;"><div style="width: 8px; height: 8px; background: #22c55e; border-radius: 50%;"></div></div>
+          <span style="font-size: 13px; font-weight: 600; color: #1a1a1a;">Start process</span>
+        </div>
+
+        <div style="width: 1.5px; height: 40px; background: #d0d0d0;"></div>
+
+        <!-- Process node -->
+        <div style="background: #fff; border: 1.5px solid #e0e0e0; border-radius: 10px; padding: 12px 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); font-family: system-ui; max-width: 220px;">
+          <div style="font-size: 13px; font-weight: 600; color: #1a1a1a; margin-bottom: 3px;">Process data</div>
+          <div style="font-size: 12px; color: #888; line-height: 1.5;">Transform and validate input.</div>
+        </div>
+
+        <div style="width: 1.5px; height: 40px; background: #d0d0d0;"></div>
+
+        <!-- Decision node -->
+        <div style="background: #fff; border: 1.5px solid #e0e0e0; border-radius: 10px; padding: 12px 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); font-family: system-ui; display: flex; align-items: center; gap: 6px;">
+          <div style="width: 18px; height: 18px; background: #fef3c7; border-radius: 4px; display: flex; align-items: center; justify-content: center;"><div style="width: 8px; height: 8px; background: #f59e0b; transform: rotate(45deg);"></div></div>
+          <span style="font-size: 13px; font-weight: 600; color: #1a1a1a;">Valid?</span>
+        </div>
+
+        <div style="width: 1.5px; height: 40px; background: #d0d0d0;"></div>
+
+        <!-- End node -->
+        <div style="background: #fff; border: 1.5px solid #e0e0e0; border-radius: 10px; padding: 10px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); font-family: system-ui; display: flex; align-items: center; gap: 8px;">
+          <div style="width: 28px; height: 28px; background: #fef2f2; border-radius: 8px; display: flex; align-items: center; justify-content: center;"><div style="width: 8px; height: 8px; background: #ef4444; border-radius: 50%;"></div></div>
+          <span style="font-size: 13px; font-weight: 600; color: #1a1a1a;">Complete</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

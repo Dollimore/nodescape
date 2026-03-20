@@ -2,6 +2,7 @@ import React from 'react';
 import type { FlowNode } from '../types';
 import defaultStyles from './DefaultNode.module.css';
 import styles from './DecisionNode.module.css';
+import { NodeIcon } from './NodeIcon';
 
 interface DecisionNodeProps {
   node: FlowNode;
@@ -20,9 +21,15 @@ export function DecisionNode({ node, editable }: DecisionNodeProps) {
       <div className={defaultStyles.handle + ' ' + defaultStyles.handleLeft} />
       <div className={defaultStyles.handle + ' ' + defaultStyles.handleRight} />
       <div className={styles.header}>
-        <div className={styles.badge} data-testid="decision-badge">
-          <div className={styles.diamond} />
-        </div>
+        {node.icon ? (
+          <span style={{ flexShrink: 0 }}>
+            <NodeIcon icon={node.icon} size={16} color={node.style?.color || '#666'} />
+          </span>
+        ) : (
+          <div className={styles.badge} data-testid="decision-badge">
+            <div className={styles.diamond} />
+          </div>
+        )}
         <div className={defaultStyles.label}>{node.label}</div>
       </div>
       {node.description && <div className={defaultStyles.description}>{node.description}</div>}

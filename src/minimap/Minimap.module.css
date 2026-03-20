@@ -1,0 +1,28 @@
+.minimap {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.node {
+  fill: #d0d0d0;
+  stroke: none;
+  rx: 2;
+  ry: 2;
+}
+
+.viewport {
+  fill: rgba(59, 130, 246, 0.1);
+  stroke: #3b82f6;
+  stroke-width: 1.5;
+  rx: 2;
+  ry: 2;
+}

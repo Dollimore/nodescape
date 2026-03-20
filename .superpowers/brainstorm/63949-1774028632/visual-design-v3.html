@@ -1,0 +1,151 @@
+<h2>Node Designs — Round 3</h2>
+<p class="subtitle">Clean, minimal, content-focused. Inspired by DoubleLoop & TypeForm.</p>
+
+<div style="background: #f5f5f5; border-radius: 16px; padding: 40px; max-width: 800px; margin: 0 auto;">
+
+  <!-- Simulated canvas area -->
+  <div style="background: #fff; border-radius: 12px; padding: 40px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); position: relative; font-family: 'Inter', system-ui, -apple-system, sans-serif;">
+
+    <!-- Flow diagram simulation -->
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
+
+      <!-- Start Node -->
+      <div style="position: relative;">
+        <div style="background: #fff; border: 1.5px solid #e0e0e0; border-radius: 10px; padding: 10px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 8px; min-width: 160px;">
+          <div style="width: 28px; height: 28px; background: #f0fdf4; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <div style="width: 8px; height: 8px; background: #22c55e; border-radius: 50%;"></div>
+          </div>
+          <div>
+            <div style="font-weight: 600; font-size: 13px; color: #1a1a1a;">User visits page</div>
+          </div>
+        </div>
+        <!-- Bottom handle -->
+        <div style="position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); width: 8px; height: 8px; background: #fff; border: 1.5px solid #d0d0d0; border-radius: 50%;"></div>
+      </div>
+
+      <!-- Edge -->
+      <div style="width: 1.5px; height: 24px; background: #d0d0d0;"></div>
+
+      <!-- Process Node - Simple -->
+      <div style="position: relative;">
+        <!-- Top handle -->
+        <div style="position: absolute; top: -5px; left: 50%; transform: translateX(-50%); width: 8px; height: 8px; background: #fff; border: 1.5px solid #d0d0d0; border-radius: 50%;"></div>
+        <div style="background: #fff; border: 1.5px solid #e0e0e0; border-radius: 10px; padding: 14px 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); max-width: 280px;">
+          <div style="font-weight: 600; font-size: 13px; color: #1a1a1a; margin-bottom: 3px;">Load user profile</div>
+          <div style="font-size: 12px; color: #888; line-height: 1.5;">Fetch account data and preferences from the database.</div>
+        </div>
+        <!-- Bottom handle -->
+        <div style="position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); width: 8px; height: 8px; background: #fff; border: 1.5px solid #d0d0d0; border-radius: 50%;"></div>
+      </div>
+
+      <!-- Edge -->
+      <div style="width: 1.5px; height: 24px; background: #d0d0d0;"></div>
+
+      <!-- Decision Node -->
+      <div style="position: relative;">
+        <!-- Top handle -->
+        <div style="position: absolute; top: -5px; left: 50%; transform: translateX(-50%); width: 8px; height: 8px; background: #fff; border: 1.5px solid #d0d0d0; border-radius: 50%;"></div>
+        <div style="background: #fff; border: 1.5px solid #e0e0e0; border-radius: 10px; padding: 14px 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); max-width: 280px;">
+          <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 3px;">
+            <div style="width: 18px; height: 18px; background: #fef3c7; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <span style="font-size: 10px;">◆</span>
+            </div>
+            <div style="font-weight: 600; font-size: 13px; color: #1a1a1a;">Has valid subscription?</div>
+          </div>
+          <div style="font-size: 12px; color: #888; line-height: 1.5;">Check if the user's plan is active and not expired.</div>
+        </div>
+        <!-- Left handle -->
+        <div style="position: absolute; top: 50%; left: -5px; transform: translateY(-50%); width: 8px; height: 8px; background: #fff; border: 1.5px solid #d0d0d0; border-radius: 50%;"></div>
+        <!-- Right handle -->
+        <div style="position: absolute; top: 50%; right: -5px; transform: translateY(-50%); width: 8px; height: 8px; background: #fff; border: 1.5px solid #d0d0d0; border-radius: 50%;"></div>
+      </div>
+
+      <!-- Branching paths -->
+      <div style="display: flex; gap: 60px; align-items: flex-start; margin-top: 12px;">
+
+        <!-- Yes branch -->
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <div style="width: 1.5px; height: 16px; background: #d0d0d0;"></div>
+          </div>
+          <div style="background: #f0fdf4; color: #15803d; font-size: 11px; font-weight: 600; padding: 2px 10px; border-radius: 10px;">Yes</div>
+          <div style="width: 1.5px; height: 16px; background: #d0d0d0;"></div>
+
+          <!-- Rich content node -->
+          <div style="position: relative;">
+            <div style="position: absolute; top: -5px; left: 50%; transform: translateX(-50%); width: 8px; height: 8px; background: #fff; border: 1.5px solid #d0d0d0; border-radius: 50%;"></div>
+            <div style="background: #fff; border: 1.5px solid #e0e0e0; border-radius: 10px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04); max-width: 260px;">
+              <div style="padding: 14px 16px;">
+                <div style="font-weight: 600; font-size: 13px; color: #1a1a1a; margin-bottom: 3px;">Grant full access</div>
+                <div style="font-size: 12px; color: #888; line-height: 1.5;">Enable all premium features for the user.</div>
+              </div>
+              <div style="padding: 10px 16px; background: #fafafa; border-top: 1px solid #f0f0f0;">
+                <div style="font-weight: 600; font-size: 10.5px; color: #666; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 2px;">Includes</div>
+                <div style="font-size: 12px; color: #888; line-height: 1.5;">Dashboard, analytics, API access, priority support.</div>
+              </div>
+              <div style="padding: 10px 16px; background: #fafafa; border-top: 1px solid #f0f0f0;">
+                <div style="font-weight: 600; font-size: 10.5px; color: #666; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 2px;">Rate Limits</div>
+                <div style="font-size: 12px; color: #888; line-height: 1.5;">10,000 requests/day, 100 concurrent connections.</div>
+              </div>
+            </div>
+            <div style="position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); width: 8px; height: 8px; background: #fff; border: 1.5px solid #d0d0d0; border-radius: 50%;"></div>
+          </div>
+        </div>
+
+        <!-- No branch -->
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <div style="width: 1.5px; height: 16px; background: #d0d0d0;"></div>
+          </div>
+          <div style="background: #fef2f2; color: #dc2626; font-size: 11px; font-weight: 600; padding: 2px 10px; border-radius: 10px;">No</div>
+          <div style="width: 1.5px; height: 16px; background: #d0d0d0;"></div>
+
+          <!-- Simple node -->
+          <div style="position: relative;">
+            <div style="position: absolute; top: -5px; left: 50%; transform: translateX(-50%); width: 8px; height: 8px; background: #fff; border: 1.5px solid #d0d0d0; border-radius: 50%;"></div>
+            <div style="background: #fff; border: 1.5px solid #e0e0e0; border-radius: 10px; padding: 14px 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); max-width: 260px;">
+              <div style="font-weight: 600; font-size: 13px; color: #1a1a1a; margin-bottom: 3px;">Show upgrade prompt</div>
+              <div style="font-size: 12px; color: #888; line-height: 1.5;">Redirect to pricing page with current plan comparison.</div>
+            </div>
+            <div style="position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); width: 8px; height: 8px; background: #fff; border: 1.5px solid #d0d0d0; border-radius: 50%;"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Design notes below the canvas -->
+  <div style="margin-top: 24px; display: flex; gap: 16px; flex-wrap: wrap;">
+    <div style="flex: 1; min-width: 220px; background: #fff; border-radius: 10px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+      <div style="font-weight: 600; font-size: 13px; color: #1a1a1a; margin-bottom: 8px; font-family: system-ui, sans-serif;">Default Style</div>
+      <ul style="margin: 0; padding-left: 16px; font-size: 12px; color: #666; line-height: 1.8; font-family: system-ui, sans-serif;">
+        <li>White cards, light gray borders</li>
+        <li>Minimal shadows — barely there</li>
+        <li>Small circular connection handles</li>
+        <li>Neutral colors throughout</li>
+        <li>No color unless user opts in via <code>style.color</code></li>
+      </ul>
+    </div>
+    <div style="flex: 1; min-width: 220px; background: #fff; border-radius: 10px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+      <div style="font-weight: 600; font-size: 13px; color: #1a1a1a; margin-bottom: 8px; font-family: system-ui, sans-serif;">Node Differentiation</div>
+      <ul style="margin: 0; padding-left: 16px; font-size: 12px; color: #666; line-height: 1.8; font-family: system-ui, sans-serif;">
+        <li>All nodes are rounded rectangles</li>
+        <li>Decision: small icon badge, side handles</li>
+        <li>Start: subtle green dot indicator</li>
+        <li>Sections: stacked in a light gray band</li>
+        <li>Type indicated by content, not shape</li>
+      </ul>
+    </div>
+    <div style="flex: 1; min-width: 220px; background: #fff; border-radius: 10px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+      <div style="font-weight: 600; font-size: 13px; color: #1a1a1a; margin-bottom: 8px; font-family: system-ui, sans-serif;">Customization</div>
+      <ul style="margin: 0; padding-left: 16px; font-size: 12px; color: #666; line-height: 1.8; font-family: system-ui, sans-serif;">
+        <li>Colors are opt-in, not default</li>
+        <li><code>style.color</code> tints border + icon</li>
+        <li><code>style.variant</code> for filled/outlined/ghost</li>
+        <li>Theme prop for light/dark</li>
+        <li>CSS custom properties for full override</li>
+      </ul>
+    </div>
+  </div>
+</div>

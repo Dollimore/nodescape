@@ -14,28 +14,31 @@ test.describe('FlowCanvas rendering', () => {
     await expect(node).toContainText('User provides email and password.');
   });
 
-  test('renders decision node with diamond badge', async ({ page }) => {
+  test('renders decision node with icon when icon is set', async ({ page }) => {
     await page.goto('/');
     const node = page.locator('[data-testid="node-validate"]');
     await expect(node).toBeVisible();
     await expect(node).toContainText('Valid credentials?');
-    await expect(node.locator('[data-testid="decision-badge"]')).toBeVisible();
+    // icon replaces diamond badge when present
+    await expect(node.locator('svg')).toBeVisible();
   });
 
-  test('renders start node with green indicator', async ({ page }) => {
+  test('renders start node with icon when icon is set', async ({ page }) => {
     await page.goto('/');
     const node = page.locator('[data-testid="node-start"]');
     await expect(node).toBeVisible();
     await expect(node).toContainText('User visits login page');
-    await expect(node.locator('[data-testid="start-indicator"]')).toBeVisible();
+    // icon replaces indicator dot when present
+    await expect(node.locator('svg')).toBeVisible();
   });
 
-  test('renders end node with red indicator', async ({ page }) => {
+  test('renders end node with icon when icon is set', async ({ page }) => {
     await page.goto('/');
     const node = page.locator('[data-testid="node-end-success"]');
     await expect(node).toBeVisible();
     await expect(node).toContainText('Dashboard');
-    await expect(node.locator('[data-testid="end-indicator"]')).toBeVisible();
+    // icon replaces indicator dot when present
+    await expect(node.locator('svg')).toBeVisible();
   });
 
   test('renders node sections', async ({ page }) => {
@@ -99,11 +102,11 @@ test.describe('FlowCanvas rendering', () => {
     await expect(page.locator('[data-testid="edge-label-e3"]')).toContainText('Yes');
     await expect(page.locator('[data-testid="edge-label-e4"]')).toContainText('No');
 
-    // Node types rendered correctly
-    await expect(page.locator('[data-testid="start-indicator"]')).toBeVisible();
-    await expect(page.locator('[data-testid="decision-badge"]')).toBeVisible();
-    const endIndicators = page.locator('[data-testid="end-indicator"]');
-    await expect(endIndicators).toHaveCount(2);
+    // Node types rendered correctly — icons are shown when present
+    await expect(page.locator('[data-testid="node-start"] svg')).toBeVisible();
+    await expect(page.locator('[data-testid="node-validate"] svg')).toBeVisible();
+    await expect(page.locator('[data-testid="node-end-success"] svg')).toBeVisible();
+    await expect(page.locator('[data-testid="node-end-fail"] svg')).toBeVisible();
 
     // Sections rendered
     const grantNode = page.locator('[data-testid="node-grant"]');

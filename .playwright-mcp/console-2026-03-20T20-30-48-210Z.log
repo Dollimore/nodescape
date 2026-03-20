@@ -1,0 +1,16 @@
+[   95197ms] TypeError: Cannot read properties of undefined (reading 'start')
+    at http://localhost:5173/@fs/Users/mickydollimore/Desktop/Coding/MVPs%20Micky/Drawing%20MVP/src/FlowCanvas.tsx?t=1774038743383:89:38
+    at Array.map (<anonymous>)
+    at computeDynamicEdges (http://localhost:5173/@fs/Users/mickydollimore/Desktop/Coding/MVPs%20Micky/Drawing%20MVP/src/FlowCanvas.tsx?t=1774038743383:75:15)
+    at http://localhost:5173/@fs/Users/mickydollimore/Desktop/Coding/MVPs%20Micky/Drawing%20MVP/src/FlowCanvas.tsx?t=1774038743383:141:10
+    at updateMemo (http://localhost:5173/@fs/Users/mickydollimore/Desktop/Coding/MVPs%20Micky/Drawing%20MVP/node_modules/.vite/deps/react-dom_client.js?v=c98124ae:4948:16)
+    at Object.useMemo (http://localhost:5173/@fs/Users/mickydollimore/Desktop/Coding/MVPs%20Micky/Drawing%20MVP/node_modules/.vite/deps/react-dom_client.js?v=c98124ae:13276:13)
+    at exports.useMemo (http://localhost:5173/@fs/Users/mickydollimore/Desktop/Coding/MVPs%20Micky/Drawing%20MVP/node_modules/.vite/deps/react.js?v=c98124ae:736:31)
+    at FlowCanvas (http://localhost:5173/@fs/Users/mickydollimore/Desktop/Coding/MVPs%20Micky/Drawing%20MVP/src/FlowCanvas.tsx?t=1774038743383:139:23)
+    at Object.react_stack_bottom_frame (http://localhost:5173/@fs/Users/mickydollimore/Desktop/Coding/MVPs%20Micky/Drawing%20MVP/node_modules/.vite/deps/react-dom_client.js?v=c98124ae:12868:12)
+    at renderWithHooks (http://localhost:5173/@fs/Users/mickydollimore/Desktop/Coding/MVPs%20Micky/Drawing%20MVP/node_modules/.vite/deps/react-dom_client.js?v=c98124ae:4213:19)
+[   95197ms] [WARNING] %s
+
+%s
+ An error occurred in the <FlowCanvas> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://localhost:5173/@vite/client:509

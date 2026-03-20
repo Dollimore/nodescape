@@ -1,0 +1,83 @@
+<h2>Three Architectural Approaches</h2>
+<p class="subtitle">How should we build the rendering and layout engine?</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Canvas-First (HTML5 Canvas / WebGL)</h3>
+      <p>Render everything on a <code>&lt;canvas&gt;</code> element. Custom rendering for nodes, edges, text. Like how Excalidraw works under the hood.</p>
+      <div class="pros-cons">
+        <div class="pros">
+          <h4>Pros</h4>
+          <ul>
+            <li>Unlimited freeform drawing — no DOM constraints</li>
+            <li>Great performance with thousands of nodes</li>
+            <li>Full control over visual rendering</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <h4>Cons</h4>
+          <ul>
+            <li>Text rendering is hard — no native HTML text flow, wrapping, or rich formatting</li>
+            <li>Accessibility is poor — screen readers can't see canvas content</li>
+            <li>Huge implementation effort — must build text layout, hit detection, scrolling from scratch</li>
+            <li><strong>Bad fit for text-heavy diagrams</strong></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>DOM-First with SVG Edges (Recommended)</h3>
+      <p>Nodes are React components positioned via CSS transforms on an infinite pannable/zoomable canvas. Edges are SVG paths rendered in an overlay. Auto-layout powered by <strong>dagre</strong> or <strong>ELK</strong>.</p>
+      <div class="pros-cons">
+        <div class="pros">
+          <h4>Pros</h4>
+          <ul>
+            <li><strong>Native HTML text</strong> — rich formatting, wrapping, and flexible content for free</li>
+            <li>React component model — nodes are just components, easy to customize</li>
+            <li>Accessible out of the box — standard DOM elements</li>
+            <li>Moderate implementation effort — leveraging browser layout engine</li>
+            <li>SVG edges give smooth curves and arrowheads</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <h4>Cons</h4>
+          <ul>
+            <li>Performance ceiling around 500-1000 nodes (fine for decision charts)</li>
+            <li>Less freeform than pure canvas — but edit mode drag-and-drop covers this</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Hybrid (DOM Nodes + Canvas Background)</h3>
+      <p>React DOM nodes for content, but a canvas layer underneath for decorative elements, grid, and potentially edges. Combines approaches A and B.</p>
+      <div class="pros-cons">
+        <div class="pros">
+          <h4>Pros</h4>
+          <ul>
+            <li>Best of both worlds in theory</li>
+            <li>Canvas for visual flair, DOM for content</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <h4>Cons</h4>
+          <ul>
+            <li>Synchronizing two rendering layers adds complexity</li>
+            <li>More code to maintain for marginal benefit over pure DOM+SVG</li>
+            <li>Overkill for decision charts that don't need decorative canvas elements</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

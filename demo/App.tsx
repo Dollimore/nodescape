@@ -6,26 +6,28 @@ const sampleDiagram: FlowDiagram = {
   title: 'User Authentication Flow',
   layout: { direction: 'TB', routing: 'orthogonal', cornerRadius: 16 },
   nodes: [
-    { id: 'start', type: 'start', label: 'User visits login page' },
-    { id: 'input', label: 'Enter credentials', description: 'User provides email and password.' },
+    { id: 'start', type: 'start', label: 'User visits login page', icon: 'log-in' },
+    { id: 'input', label: 'Enter credentials', description: 'User provides email and password.', icon: 'key-round' },
     {
       id: 'validate',
       type: 'decision',
       label: 'Valid credentials?',
       description: 'Check against stored hash.',
+      icon: 'shield-check',
     },
     {
       id: 'grant',
       label: 'Grant access',
       description: 'Create session and redirect to dashboard.',
+      icon: 'check-circle',
       sections: [
         { heading: 'Session', content: 'JWT token with 24h expiry.' },
         { heading: 'Redirect', content: 'Send to /dashboard.' },
       ],
     },
-    { id: 'deny', label: 'Show error', description: 'Display invalid credentials message.' },
-    { id: 'end-success', type: 'end', label: 'Dashboard' },
-    { id: 'end-fail', type: 'end', label: 'Login page (retry)' },
+    { id: 'deny', label: 'Show error', description: 'Display invalid credentials message.', icon: 'x-circle' },
+    { id: 'end-success', type: 'end', label: 'Dashboard', icon: 'layout-dashboard' },
+    { id: 'end-fail', type: 'end', label: 'Login page (retry)', icon: 'rotate-ccw' },
   ],
   edges: [
     { id: 'e1', source: 'start', target: 'input' },
@@ -40,7 +42,7 @@ const sampleDiagram: FlowDiagram = {
 export function App() {
   return (
     <div style={{ width: '100%', height: '100vh' }}>
-      <FlowCanvas diagram={sampleDiagram} mode="edit" onDiagramChange={console.log} background="isometric" />
+      <FlowCanvas diagram={sampleDiagram} mode="edit" onDiagramChange={console.log} background="isometric" minimap />
     </div>
   );
 }

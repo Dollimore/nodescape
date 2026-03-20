@@ -1,6 +1,7 @@
 import React from 'react';
 import type { FlowNode } from '../types';
 import styles from './DefaultNode.module.css';
+import { NodeIcon } from './NodeIcon';
 
 interface DefaultNodeProps {
   node: FlowNode;
@@ -32,7 +33,16 @@ export function DefaultNode({ node, editable }: DefaultNodeProps) {
     >
       <div className={styles.handle + ' ' + styles.handleTop} />
       <div className={styles.handle + ' ' + styles.handleBottom} />
-      <div className={styles.label}>{node.label}</div>
+      {node.icon ? (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '3px' }}>
+          <span style={{ flexShrink: 0 }}>
+            <NodeIcon icon={node.icon} size={16} color={node.style?.color || '#666'} />
+          </span>
+          <div className={styles.label} style={{ marginBottom: 0 }}>{node.label}</div>
+        </div>
+      ) : (
+        <div className={styles.label}>{node.label}</div>
+      )}
       {node.description && <div className={styles.description}>{node.description}</div>}
       {node.sections && node.sections.length > 0 && (
         <div className={styles.sections}>

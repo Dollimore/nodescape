@@ -1,3 +1,5 @@
+import type { ComponentType } from 'react';
+
 export type EdgeRouting = 'curved' | 'orthogonal' | 'straight';
 
 export interface FlowDiagram {
@@ -21,6 +23,7 @@ export interface FlowNode {
   label: string;
   description?: string;
   sections?: NodeSection[];
+  icon?: string | ComponentType<{ size?: number; color?: string }>;
   style?: {
     color?: string;
     variant?: 'filled' | 'outlined' | 'ghost';
@@ -50,6 +53,7 @@ export interface FlowCanvasProps {
   className?: string;
   fitView?: boolean;
   background?: CanvasBackground;
+  minimap?: boolean | { width?: number; height?: number; position?: 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left' };
 }
 
 export interface LayoutNode {
