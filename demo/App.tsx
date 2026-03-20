@@ -7,12 +7,12 @@ const sampleDiagram: FlowDiagram = {
   layout: { direction: 'TB', routing: 'orthogonal', cornerRadius: 16 },
   nodes: [
     { id: 'start', type: 'start', label: 'User visits login page', icon: 'log-in' },
-    { id: 'input', label: 'Enter credentials', description: 'User provides email and password.', icon: 'key-round' },
+    { id: 'input', label: 'Enter credentials', description: 'User provides **email** and `password`.', icon: 'key-round' },
     {
       id: 'validate',
       type: 'decision',
       label: 'Valid credentials?',
-      description: 'Check against stored hash.',
+      description: 'Check against *stored hash*.',
       icon: 'shield-check',
     },
     {
@@ -21,8 +21,8 @@ const sampleDiagram: FlowDiagram = {
       description: 'Create session and redirect to dashboard.',
       icon: 'check-circle',
       sections: [
-        { heading: 'Session', content: 'JWT token with 24h expiry.' },
-        { heading: 'Redirect', content: 'Send to /dashboard.' },
+        { heading: 'Session', content: 'JWT token with **24h** expiry.' },
+        { heading: 'Redirect', content: 'Send to `/dashboard`.' },
       ],
     },
     { id: 'deny', label: 'Show error', description: 'Display invalid credentials message.', icon: 'x-circle' },

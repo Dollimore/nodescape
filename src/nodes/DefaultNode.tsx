@@ -2,6 +2,7 @@ import React from 'react';
 import type { FlowNode } from '../types';
 import styles from './DefaultNode.module.css';
 import { NodeIcon } from './NodeIcon';
+import { SimpleMarkdown } from './SimpleMarkdown';
 
 interface DefaultNodeProps {
   node: FlowNode;
@@ -43,7 +44,7 @@ export function DefaultNode({ node, editable }: DefaultNodeProps) {
       ) : (
         <div className={styles.label}>{node.label}</div>
       )}
-      {node.description && <div className={styles.description}>{node.description}</div>}
+      {node.description && <SimpleMarkdown text={node.description} className={styles.description} />}
       {node.sections && node.sections.length > 0 && (
         <div className={styles.sections}>
           {node.sections.map((section, i) => (
@@ -51,7 +52,7 @@ export function DefaultNode({ node, editable }: DefaultNodeProps) {
               {section.heading && (
                 <div className={styles.sectionHeading}>{section.heading}</div>
               )}
-              <div className={styles.sectionContent}>{section.content}</div>
+              <SimpleMarkdown text={section.content} className={styles.sectionContent} />
             </div>
           ))}
         </div>
