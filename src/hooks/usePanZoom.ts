@@ -46,11 +46,14 @@ export function usePanZoom(fitViewTransform?: PanZoomState) {
   const onWheel = useCallback((e: WheelEvent) => {
     e.preventDefault();
     const delta = -e.deltaY * ZOOM_SENSITIVITY;
+    // Capture rect before entering state updater (synthetic event gets nullified)
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const clientX = e.clientX;
+    const clientY = e.clientY;
     setTransform((prev) => {
       const newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, prev.scale + delta * prev.scale));
-      const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-      const mouseX = e.clientX - rect.left;
-      const mouseY = e.clientY - rect.top;
+      const mouseX = clientX - rect.left;
+      const mouseY = clientY - rect.top;
       const scaleChange = newScale / prev.scale;
       return {
         x: mouseX - (mouseX - prev.x) * scaleChange,
