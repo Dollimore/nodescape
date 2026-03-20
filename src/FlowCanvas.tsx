@@ -3,6 +3,7 @@ import type { FlowCanvasProps } from './types';
 import { FlowNodeRenderer } from './nodes/FlowNodeRenderer';
 import { EdgeRenderer } from './edges/EdgeRenderer';
 import { useAutoLayout } from './layout/useAutoLayout';
+import { CanvasView } from './canvas/CanvasView';
 
 export function FlowCanvas({ diagram, mode = 'view', className }: FlowCanvasProps) {
   const editable = mode === 'edit';
@@ -19,11 +20,7 @@ export function FlowCanvas({ diagram, mode = 'view', className }: FlowCanvasProp
   );
 
   return (
-    <div
-      data-testid="flow-canvas"
-      className={className}
-      style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden', background: '#f5f5f5' }}
-    >
+    <CanvasView className={className}>
       {layout && (
         <EdgeRenderer edges={diagram.edges} layoutEdges={layout.edges} />
       )}
@@ -36,6 +33,6 @@ export function FlowCanvas({ diagram, mode = 'view', className }: FlowCanvasProp
           ref={(el) => setNodeRef(node.id, el)}
         />
       ))}
-    </div>
+    </CanvasView>
   );
 }
