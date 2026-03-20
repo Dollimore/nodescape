@@ -67,6 +67,7 @@ test.describe('FlowCanvas rendering', () => {
 
   test('nodes are positioned by auto-layout (not stacked)', async ({ page }) => {
     await page.goto('/');
+    await page.waitForTimeout(200);
     const startBox = await page.locator('[data-testid="node-start"]').boundingBox();
     const inputBox = await page.locator('[data-testid="node-input"]').boundingBox();
     expect(startBox).not.toBeNull();
