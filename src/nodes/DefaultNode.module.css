@@ -1,0 +1,95 @@
+.node {
+  background: #fff;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 14px 18px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  font-family: system-ui, -apple-system, sans-serif;
+  min-width: 160px;
+  max-width: 320px;
+  position: absolute;
+  user-select: none;
+}
+
+.node[data-editable="true"]:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  cursor: grab;
+}
+
+.node[data-editable="true"]:active {
+  cursor: grabbing;
+}
+
+.label {
+  font-weight: 600;
+  font-size: 13px;
+  color: #1a1a1a;
+  margin-bottom: 3px;
+}
+
+.description {
+  font-size: 12px;
+  color: #888;
+  line-height: 1.5;
+}
+
+.sections {
+  margin-top: 10px;
+}
+
+.section {
+  padding: 10px 0;
+  border-top: 1px solid #f0f0f0;
+}
+
+.section:first-child {
+  padding-top: 10px;
+}
+
+.sectionHeading {
+  font-weight: 600;
+  font-size: 10.5px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 2px;
+}
+
+.sectionContent {
+  font-size: 12px;
+  color: #888;
+  line-height: 1.5;
+}
+
+.handle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #fff;
+  border: 1.5px solid #d0d0d0;
+  border-radius: 50%;
+}
+
+.handleTop {
+  top: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.handleBottom {
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.handleLeft {
+  top: 50%;
+  left: -5px;
+  transform: translateY(-50%);
+}
+
+.handleRight {
+  top: 50%;
+  right: -5px;
+  transform: translateY(-50%);
+}

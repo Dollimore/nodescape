@@ -1,0 +1,37 @@
+.indicator {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.indicatorStart {
+  background: #f0fdf4;
+}
+
+.indicatorEnd {
+  background: #fef2f2;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.dotStart {
+  background: #22c55e;
+}
+
+.dotEnd {
+  background: #ef4444;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
