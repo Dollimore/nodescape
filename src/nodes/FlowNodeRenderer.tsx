@@ -9,13 +9,15 @@ interface FlowNodeRendererProps {
   editable: boolean;
   position: { x: number; y: number };
   onDragStart?: (nodeId: string, e: React.MouseEvent) => void;
+  isDragging?: boolean;
 }
 
 export const FlowNodeRenderer = React.forwardRef<HTMLDivElement, FlowNodeRendererProps>(
-  function FlowNodeRenderer({ node, editable, position, onDragStart }, ref) {
+  function FlowNodeRenderer({ node, editable, position, onDragStart, isDragging }, ref) {
     const style: React.CSSProperties = {
       position: 'absolute',
       transform: `translate(${position.x}px, ${position.y}px)`,
+      transition: isDragging ? undefined : 'transform 0.3s ease',
     };
 
     const handleMouseDown = (e: React.MouseEvent) => {

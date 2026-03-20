@@ -186,7 +186,7 @@ function computeDynamicEdges(
   });
 }
 
-export function FlowCanvas({ diagram, mode = 'view', className, onDiagramChange, background, minimap }: FlowCanvasProps) {
+export function FlowCanvas({ diagram, mode = 'view', className, onDiagramChange, background, minimap, theme }: FlowCanvasProps) {
   const editable = mode === 'edit';
   const nodeRefs = useRef(new Map<string, HTMLElement | null>());
 
@@ -213,7 +213,7 @@ export function FlowCanvas({ diagram, mode = 'view', className, onDiagramChange,
     [diagram, onDiagramChange]
   );
 
-  const { positions, updatePositions, onDragStart, onDragMove, onDragEnd } = useDragNode(
+  const { positions, updatePositions, onDragStart, onDragMove, onDragEnd, isDragging } = useDragNode(
     layoutPositions,
     1,
     handlePositionChange
@@ -238,7 +238,7 @@ export function FlowCanvas({ diagram, mode = 'view', className, onDiagramChange,
   }, [diagram.edges, positions, layout?.nodes, layoutPositions, diagram.layout?.direction, diagram.layout?.routing]);
 
   return (
-    <div className={styles.root}>
+    <div className={`${styles.root} ${theme === 'dark' ? styles.dark : ''}`}>
     <CanvasView
       className={className}
       onDragMove={editable ? onDragMove : undefined}
@@ -268,6 +268,7 @@ export function FlowCanvas({ diagram, mode = 'view', className, onDiagramChange,
           editable={editable}
           position={positions[node.id] || { x: 0, y: 0 }}
           onDragStart={editable ? onDragStart : undefined}
+          isDragging={isDragging}
           ref={(el) => setNodeRef(node.id, el)}
         />
       ))}

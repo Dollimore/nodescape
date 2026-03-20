@@ -19,6 +19,7 @@ export function useDragNode(
   onPositionChange?: (positions: NodePositions) => void
 ) {
   const [positions, setPositions] = useState<NodePositions>(initialPositions);
+  const [isDragging, setIsDragging] = useState(false);
   const dragState = useRef<DragState | null>(null);
 
   const updatePositions = useCallback((newPositions: NodePositions) => {
@@ -39,6 +40,7 @@ export function useDragNode(
         originX: pos.x,
         originY: pos.y,
       };
+      setIsDragging(true);
     },
     [positions]
   );
@@ -63,6 +65,7 @@ export function useDragNode(
   const onDragEnd = useCallback(() => {
     if (dragState.current) {
       dragState.current = null;
+      setIsDragging(false);
       setPositions((current) => {
         if (onPositionChange) {
           onPositionChange(current);
@@ -78,5 +81,6 @@ export function useDragNode(
     onDragStart,
     onDragMove,
     onDragEnd,
+    isDragging,
   };
 }

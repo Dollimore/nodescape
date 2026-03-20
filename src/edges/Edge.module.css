@@ -12,6 +12,7 @@
   fill: none;
   stroke: #d0d0d0;
   stroke-width: 1.5;
+  transition: d 0.3s ease;
 }
 
 .edgePathSuccess {
@@ -42,6 +43,7 @@
   white-space: nowrap;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
   border: 1px solid rgba(0, 0, 0, 0.06);
+  transition: left 0.3s ease, top 0.3s ease;
 }
 
 .edgeLabelDefault {
