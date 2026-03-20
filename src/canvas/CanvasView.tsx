@@ -73,7 +73,10 @@ export function CanvasView({
           transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})`,
         }}
       >
-        {children}
+        {/* Offset children back to the origin point within the oversized background */}
+        <div style={{ position: 'absolute', top: 10000, left: 10000 }}>
+          {children}
+        </div>
       </div>
     </div>
   );
