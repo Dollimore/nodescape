@@ -1,9 +1,13 @@
+export type EdgeRouting = 'curved' | 'orthogonal' | 'straight';
+
 export interface FlowDiagram {
   title?: string;
   layout?: {
     direction?: 'TB' | 'LR' | 'BT' | 'RL';
     nodeSpacing?: number;
     rankSpacing?: number;
+    routing?: EdgeRouting;
+    cornerRadius?: number;
   };
   nodes: FlowNode[];
   edges: FlowEdge[];
@@ -34,6 +38,7 @@ export interface FlowEdge {
   target: string;
   label?: string;
   type?: 'default' | 'success' | 'failure' | 'dashed';
+  routing?: EdgeRouting;
 }
 
 export interface FlowCanvasProps {

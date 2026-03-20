@@ -4,7 +4,7 @@ import type { FlowDiagram } from '../src';
 
 const sampleDiagram: FlowDiagram = {
   title: 'User Authentication Flow',
-  layout: { direction: 'TB' },
+  layout: { direction: 'TB', routing: 'orthogonal', cornerRadius: 16 },
   nodes: [
     { id: 'start', type: 'start', label: 'User visits login page' },
     { id: 'input', label: 'Enter credentials', description: 'User provides email and password.' },

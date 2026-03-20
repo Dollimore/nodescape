@@ -157,7 +157,12 @@ export function FlowCanvas({ diagram, mode = 'view', className, onDiagramChange 
       contentHeight={layout?.height}
     >
       {layout && (
-        <EdgeRenderer edges={diagram.edges} layoutEdges={dynamicEdges} />
+        <EdgeRenderer
+          edges={diagram.edges}
+          layoutEdges={dynamicEdges}
+          defaultRouting={diagram.layout?.routing || 'curved'}
+          cornerRadius={diagram.layout?.cornerRadius}
+        />
       )}
       {diagram.nodes.map((node) => (
         <FlowNodeRenderer

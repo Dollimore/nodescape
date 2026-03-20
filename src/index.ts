@@ -5,4 +5,5 @@ export type {
   FlowEdge,
   FlowCanvasProps,
   NodeSection,
+  EdgeRouting,
 } from './types';
