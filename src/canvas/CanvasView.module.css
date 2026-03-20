@@ -7,25 +7,18 @@
   cursor: grab;
 }
 
-.dotGrid {
-  background-image: radial-gradient(circle, #d0d0d0 1px, transparent 1px);
-  background-size: 20px 20px;
-}
-
-.isometricDots {
-  background-image:
-    radial-gradient(circle, #c8c8c8 1px, transparent 1px),
-    radial-gradient(circle, #c8c8c8 1px, transparent 1px);
-  background-size: 28px 28px;
-  background-position: 0 0, 14px 14px;
-}
-
-.plain {
-  background-image: none;
-}
-
 .canvas:active {
   cursor: grabbing;
+}
+
+.canvasBackground {
+  transform-origin: 0 0;
+  position: absolute;
+  top: -5000px;
+  left: -5000px;
+  width: 10000px;
+  height: 10000px;
+  pointer-events: none;
 }
 
 .canvasInner {
@@ -35,4 +28,24 @@
   left: 0;
   width: 100%;
   height: 100%;
+}
+
+.dotGrid {
+  background-color: #fafafa;
+  background-image: radial-gradient(circle, #d0d0d0 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.isometricDots {
+  background-color: #fafafa;
+  background-image:
+    radial-gradient(circle, #c8c8c8 1px, transparent 1px),
+    radial-gradient(circle, #c8c8c8 1px, transparent 1px);
+  background-size: 28px 28px;
+  background-position: 0 0, 14px 14px;
+}
+
+.plain {
+  background-color: transparent;
+  background-image: none;
 }

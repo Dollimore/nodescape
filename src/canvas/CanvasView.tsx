@@ -15,6 +15,12 @@ interface CanvasViewProps {
   background?: CanvasBackground;
 }
 
+const bgClassMap: Record<CanvasBackground, string> = {
+  dots: styles.dotGrid,
+  isometric: styles.isometricDots,
+  plain: styles.plain,
+};
+
 export function CanvasView({
   children,
   className,
@@ -34,7 +40,7 @@ export function CanvasView({
     const padding = 40;
     const scaleX = (rect.width - padding * 2) / contentWidth;
     const scaleY = (rect.height - padding * 2) / contentHeight;
-    const scale = Math.min(scaleX, scaleY, 1); // Don't zoom past 1x
+    const scale = Math.min(scaleX, scaleY, 1);
     const x = (rect.width - contentWidth * scale) / 2;
     const y = (rect.height - contentHeight * scale) / 2;
     setFitView({ x, y, scale });
@@ -50,22 +56,28 @@ export function CanvasView({
     if (onDragEnd) onDragEnd();
   };
 
+  const transformStyle = `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})`;
+
   return (
     <div
       ref={containerRef}
       data-testid="flow-canvas"
-      className={`${styles.canvas} ${background === 'isometric' ? styles.isometricDots : background === 'plain' ? styles.plain : styles.dotGrid} ${className || ''}`}
+      className={`${styles.canvas} ${className || ''}`}
       onMouseDown={onMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
       onWheel={onWheel}
     >
+      {/* Background layer — large area that transforms with zoom/pan so dots scale */}
+      <div
+        className={`${styles.canvasBackground} ${bgClassMap[background]}`}
+        style={{ transform: transformStyle }}
+      />
+      {/* Content layer — nodes and edges */}
       <div
         className={styles.canvasInner}
-        style={{
-          transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})`,
-        }}
+        style={{ transform: transformStyle }}
       >
         {children}
       </div>
