@@ -52,89 +52,65 @@ export function buildStraightPath(points: Point[]): string {
   return `M ${start.x} ${start.y} L ${end.x} ${end.y}`;
 }
 
-/** Minimum distance a line must travel straight out of a handle before bending */
-const MIN_STUB = 30;
-
-/** Right-angle path with rounded corners */
+/**
+ * Draw an orthogonal path through a series of waypoints with rounded corners.
+ * Each consecutive pair of waypoints defines a horizontal or vertical segment.
+ * Corners between segments are rounded with the given radius.
+ */
 export function buildOrthogonalPath(points: Point[], radius: number = 12): string {
   if (points.length < 2) return '';
-
-  const start = points[0];
-  const end = points[points.length - 1];
-
-  const dx = end.x - start.x;
-  const dy = end.y - start.y;
-
-  // Determine if this is primarily vertical or horizontal
-  const isVertical = Math.abs(dy) >= Math.abs(dx);
-
-  if (Math.abs(dx) < 1 && isVertical) {
-    return `M ${start.x} ${start.y} L ${end.x} ${end.y}`;
+  if (points.length === 2) {
+    return `M ${points[0].x} ${points[0].y} L ${points[1].x} ${points[1].y}`;
   }
 
-  if (Math.abs(dy) < 1 && !isVertical) {
-    return `M ${start.x} ${start.y} L ${end.x} ${end.y}`;
+  let d = `M ${points[0].x} ${points[0].y}`;
+
+  for (let i = 1; i < points.length - 1; i++) {
+    const prev = points[i - 1];
+    const curr = points[i];
+    const next = points[i + 1];
+
+    // Direction vectors for incoming and outgoing segments
+    const inDx = curr.x - prev.x;
+    const inDy = curr.y - prev.y;
+    const outDx = next.x - curr.x;
+    const outDy = next.y - curr.y;
+
+    // Length of incoming and outgoing segments
+    const inLen = Math.sqrt(inDx * inDx + inDy * inDy);
+    const outLen = Math.sqrt(outDx * outDx + outDy * outDy);
+
+    // Clamp radius to half the shortest segment
+    const r = Math.min(radius, inLen / 2, outLen / 2);
+
+    if (r < 1 || inLen < 1 || outLen < 1) {
+      // Too small for rounding, just line to the point
+      d += ` L ${curr.x} ${curr.y}`;
+      continue;
+    }
+
+    // Point where we start the curve (r pixels before the corner)
+    const beforeX = curr.x - (inDx / inLen) * r;
+    const beforeY = curr.y - (inDy / inLen) * r;
+
+    // Point where we end the curve (r pixels after the corner)
+    const afterX = curr.x + (outDx / outLen) * r;
+    const afterY = curr.y + (outDy / outLen) * r;
+
+    d += ` L ${beforeX} ${beforeY}`;
+    d += ` Q ${curr.x} ${curr.y}, ${afterX} ${afterY}`;
   }
 
-  if (isVertical) {
-    const dirX = dx > 0 ? 1 : -1;
-    const dirY = dy > 0 ? 1 : -1;
+  const last = points[points.length - 1];
+  d += ` L ${last.x} ${last.y}`;
 
-    // Enforce minimum stub: bend point must be at least MIN_STUB from both start and end
-    const halfDy = Math.abs(dy) / 2;
-    const stubDist = Math.max(MIN_STUB, halfDy);
-    const midY = start.y + Math.min(stubDist, Math.abs(dy) - MIN_STUB) * dirY;
-
-    const r = Math.min(radius, Math.abs(dx) / 2, Math.abs(midY - start.y), Math.abs(end.y - midY));
-
-    return [
-      `M ${start.x} ${start.y}`,
-      `L ${start.x} ${midY - r * dirY}`,
-      `Q ${start.x} ${midY}, ${start.x + r * dirX} ${midY}`,
-      `L ${end.x - r * dirX} ${midY}`,
-      `Q ${end.x} ${midY}, ${end.x} ${midY + r * dirY}`,
-      `L ${end.x} ${end.y}`,
-    ].join(' ');
-  } else {
-    const dirX = dx > 0 ? 1 : -1;
-    const dirY = dy > 0 ? 1 : -1;
-
-    const halfDx = Math.abs(dx) / 2;
-    const stubDist = Math.max(MIN_STUB, halfDx);
-    const midX = start.x + Math.min(stubDist, Math.abs(dx) - MIN_STUB) * dirX;
-
-    const r = Math.min(radius, Math.abs(dy) / 2, Math.abs(midX - start.x), Math.abs(end.x - midX));
-
-    return [
-      `M ${start.x} ${start.y}`,
-      `L ${midX - r * dirX} ${start.y}`,
-      `Q ${midX} ${start.y}, ${midX} ${start.y + r * dirY}`,
-      `L ${midX} ${end.y - r * dirY}`,
-      `Q ${midX} ${end.y}, ${midX + r * dirX} ${end.y}`,
-      `L ${end.x} ${end.y}`,
-    ].join(' ');
-  }
+  return d;
 }
 
 export function getMidpoint(points: Point[]): Point {
   if (points.length === 0) return { x: 0, y: 0 };
   const mid = Math.floor(points.length / 2);
   return points[mid];
-}
-
-/** Get the midpoint along an orthogonal path (the middle of the horizontal/vertical segment) */
-export function getOrthogonalMidpoint(start: Point, end: Point): Point {
-  const dx = end.x - start.x;
-  const dy = end.y - start.y;
-  const isVertical = Math.abs(dy) >= Math.abs(dx);
-
-  if (isVertical) {
-    const midY = start.y + dy / 2;
-    return { x: (start.x + end.x) / 2, y: midY };
-  } else {
-    const midX = start.x + dx / 2;
-    return { x: midX, y: (start.y + end.y) / 2 };
-  }
 }
 
 export function getArrowheadPoints(

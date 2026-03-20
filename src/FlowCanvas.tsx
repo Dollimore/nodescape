@@ -53,14 +53,29 @@ function computeHandleSides(
   }
 }
 
-/** Compute edge points dynamically from current node positions + sizes.
- *  Handle sides are determined from the initial layout positions and stay fixed. */
+/** Minimum distance a line extends straight out from a handle before bending */
+const STUB_LENGTH = 30;
+
+/** Get the stub direction vector for a handle side */
+function getStubDirection(side: 'top' | 'bottom' | 'left' | 'right'): { dx: number; dy: number } {
+  switch (side) {
+    case 'top': return { dx: 0, dy: -1 };
+    case 'bottom': return { dx: 0, dy: 1 };
+    case 'left': return { dx: -1, dy: 0 };
+    case 'right': return { dx: 1, dy: 0 };
+  }
+}
+
+/** Compute edge waypoints dynamically from current node positions + sizes.
+ *  For orthogonal routing, generates proper waypoints with stubs and right-angle segments.
+ *  Handle sides are locked from the initial layout to prevent jumping. */
 function computeDynamicEdges(
   edges: FlowDiagram['edges'],
   positions: { [id: string]: { x: number; y: number } },
   layoutNodes: LayoutNode[],
   initialPositions: { [id: string]: { x: number; y: number } },
-  direction: string
+  direction: string,
+  routing: string
 ): LayoutEdge[] {
   const nodeSizes = new Map(layoutNodes.map((n) => [n.id, { width: n.width, height: n.height }]));
 
@@ -74,7 +89,6 @@ function computeDynamicEdges(
       return { id: edge.id, source: edge.source, target: edge.target, points: [] };
     }
 
-    // Use initial layout positions to lock handle sides (prevents jumping)
     const initSource = initialPositions[edge.source] || sourcePos;
     const initTarget = initialPositions[edge.target] || targetPos;
     const { sourceSide, targetSide } = computeHandleSides(
@@ -84,6 +98,82 @@ function computeDynamicEdges(
     const start = getHandlePosition(sourcePos, sourceSize, sourceSide);
     const end = getHandlePosition(targetPos, targetSize, targetSide);
 
+    const edgeRouting = edge.routing || routing;
+
+    if (edgeRouting === 'orthogonal') {
+      // Generate orthogonal waypoints: start -> stubOut -> bend(s) -> stubIn -> end
+      const srcDir = getStubDirection(sourceSide);
+      const tgtDir = getStubDirection(targetSide);
+
+      // Stub points: extend straight out from handle
+      const stubOut = { x: start.x + srcDir.dx * STUB_LENGTH, y: start.y + srcDir.dy * STUB_LENGTH };
+      const stubIn = { x: end.x + tgtDir.dx * STUB_LENGTH, y: end.y + tgtDir.dy * STUB_LENGTH };
+
+      // Determine if source and target exit/enter on same axis
+      const srcIsVertical = sourceSide === 'top' || sourceSide === 'bottom';
+      const tgtIsVertical = targetSide === 'top' || targetSide === 'bottom';
+
+      let points: { x: number; y: number }[];
+
+      if (srcIsVertical && tgtIsVertical) {
+        // Both vertical (e.g., bottom->top in TB layout)
+        // Path: start -> stubOut -> (stubOut.x, midY) -> (stubIn.x, midY) -> stubIn -> end
+        const midY = (stubOut.y + stubIn.y) / 2;
+        if (Math.abs(start.x - end.x) < 1) {
+          // Aligned — straight line
+          points = [start, end];
+        } else {
+          points = [
+            start,
+            stubOut,
+            { x: stubOut.x, y: midY },
+            { x: stubIn.x, y: midY },
+            stubIn,
+            end,
+          ];
+        }
+      } else if (!srcIsVertical && !tgtIsVertical) {
+        // Both horizontal (e.g., right->left in LR layout)
+        const midX = (stubOut.x + stubIn.x) / 2;
+        if (Math.abs(start.y - end.y) < 1) {
+          points = [start, end];
+        } else {
+          points = [
+            start,
+            stubOut,
+            { x: midX, y: stubOut.y },
+            { x: midX, y: stubIn.y },
+            stubIn,
+            end,
+          ];
+        }
+      } else {
+        // Mixed: one vertical, one horizontal — single bend
+        if (srcIsVertical) {
+          // Go vertical from source, then horizontal to target
+          points = [
+            start,
+            stubOut,
+            { x: stubOut.x, y: stubIn.y },
+            stubIn,
+            end,
+          ];
+        } else {
+          // Go horizontal from source, then vertical to target
+          points = [
+            start,
+            stubOut,
+            { x: stubIn.x, y: stubOut.y },
+            stubIn,
+            end,
+          ];
+        }
+      }
+
+      return { id: edge.id, source: edge.source, target: edge.target, points };
+    }
+
+    // For curved/straight: just start, midpoint, end
     const midX = (start.x + end.x) / 2;
     const midY = (start.y + end.y) / 2;
 
@@ -142,9 +232,10 @@ export function FlowCanvas({ diagram, mode = 'view', className, onDiagramChange 
       positions,
       layout.nodes,
       layoutPositions,
-      diagram.layout?.direction || 'TB'
+      diagram.layout?.direction || 'TB',
+      diagram.layout?.routing || 'curved'
     );
-  }, [diagram.edges, positions, layout?.nodes, layoutPositions, diagram.layout?.direction]);
+  }, [diagram.edges, positions, layout?.nodes, layoutPositions, diagram.layout?.direction, diagram.layout?.routing]);
 
   return (
     <div className={styles.root}>

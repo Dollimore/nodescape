@@ -1,7 +1,7 @@
 import React from 'react';
 import type { FlowEdge, EdgeRouting } from '../types';
 import type { LayoutEdge } from '../types';
-import { buildPath, getMidpoint, getOrthogonalMidpoint, getArrowheadPoints } from './pathUtils';
+import { buildPath, getMidpoint, getArrowheadPoints } from './pathUtils';
 import styles from './Edge.module.css';
 
 interface EdgeRendererProps {
@@ -24,13 +24,8 @@ export function EdgeRenderer({ edges, layoutEdges, defaultRouting = 'curved', co
           const routing = edge.routing || defaultRouting;
           const pathD = buildPath(layout.points, routing, cornerRadius);
 
-          // For arrowhead direction, use the last segment
-          const start = layout.points[0];
           const end = layout.points[layout.points.length - 1];
-          // For orthogonal, the arrow comes from the direction of the last segment
-          const arrowPrev = routing === 'orthogonal'
-            ? { x: end.x, y: end.y - (end.y > start.y ? 1 : -1) }
-            : layout.points[layout.points.length - 2] || start;
+          const arrowPrev = layout.points[layout.points.length - 2] || layout.points[0];
           const arrowPoints = getArrowheadPoints(end, arrowPrev);
 
           const pathClass = [
@@ -53,14 +48,8 @@ export function EdgeRenderer({ edges, layoutEdges, defaultRouting = 'curved', co
         const layout = layoutMap.get(edge.id);
         if (!layout || layout.points.length < 2) return null;
 
-        const routing = edge.routing || defaultRouting;
-        const start = layout.points[0];
-        const end = layout.points[layout.points.length - 1];
-
         // Position label at the visual midpoint of the path
-        const midpoint = routing === 'orthogonal'
-          ? getOrthogonalMidpoint(start, end)
-          : getMidpoint(layout.points);
+        const midpoint = getMidpoint(layout.points);
 
         const labelClass = [
           styles.edgeLabel,
