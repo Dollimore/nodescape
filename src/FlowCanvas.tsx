@@ -7,11 +7,60 @@ import { CanvasView } from './canvas/CanvasView';
 import { useDragNode } from './hooks/useDragNode';
 import styles from './FlowCanvas.module.css';
 
-/** Compute edge points dynamically from current node positions + sizes */
+/** Get the fixed handle position for a node edge connection */
+function getHandlePosition(
+  pos: { x: number; y: number },
+  size: { width: number; height: number },
+  side: 'top' | 'bottom' | 'left' | 'right'
+): { x: number; y: number } {
+  const cx = pos.x + size.width / 2;
+  const cy = pos.y + size.height / 2;
+  switch (side) {
+    case 'top': return { x: cx, y: pos.y };
+    case 'bottom': return { x: cx, y: pos.y + size.height };
+    case 'left': return { x: pos.x, y: cy };
+    case 'right': return { x: pos.x + size.width, y: cy };
+  }
+}
+
+/** Determine which handle sides to use based on initial layout positions (locked once) */
+function computeHandleSides(
+  sourcePos: { x: number; y: number },
+  sourceSize: { width: number; height: number },
+  targetPos: { x: number; y: number },
+  targetSize: { width: number; height: number },
+  direction: string
+): { sourceSide: 'top' | 'bottom' | 'left' | 'right'; targetSide: 'top' | 'bottom' | 'left' | 'right' } {
+  // For TB/BT layouts, default to bottom->top
+  // For LR/RL layouts, default to right->left
+  if (direction === 'LR' || direction === 'RL') {
+    const sourceCX = sourcePos.x + sourceSize.width / 2;
+    const targetCX = targetPos.x + targetSize.width / 2;
+    if (targetCX >= sourceCX) {
+      return { sourceSide: 'right', targetSide: 'left' };
+    } else {
+      return { sourceSide: 'left', targetSide: 'right' };
+    }
+  }
+
+  // TB (default) / BT
+  const sourceCY = sourcePos.y + sourceSize.height / 2;
+  const targetCY = targetPos.y + targetSize.height / 2;
+  if (targetCY >= sourceCY) {
+    return { sourceSide: 'bottom', targetSide: 'top' };
+  } else {
+    return { sourceSide: 'top', targetSide: 'bottom' };
+  }
+}
+
+/** Compute edge points dynamically from current node positions + sizes.
+ *  Handle sides are determined from the initial layout positions and stay fixed. */
 function computeDynamicEdges(
   edges: FlowDiagram['edges'],
   positions: { [id: string]: { x: number; y: number } },
-  layoutNodes: LayoutNode[]
+  layoutNodes: LayoutNode[],
+  initialPositions: { [id: string]: { x: number; y: number } },
+  direction: string
 ): LayoutEdge[] {
   const nodeSizes = new Map(layoutNodes.map((n) => [n.id, { width: n.width, height: n.height }]));
 
@@ -25,59 +74,24 @@ function computeDynamicEdges(
       return { id: edge.id, source: edge.source, target: edge.target, points: [] };
     }
 
-    const sourceCenterX = sourcePos.x + sourceSize.width / 2;
-    const sourceCenterY = sourcePos.y + sourceSize.height / 2;
-    const targetCenterX = targetPos.x + targetSize.width / 2;
-    const targetCenterY = targetPos.y + targetSize.height / 2;
+    // Use initial layout positions to lock handle sides (prevents jumping)
+    const initSource = initialPositions[edge.source] || sourcePos;
+    const initTarget = initialPositions[edge.target] || targetPos;
+    const { sourceSide, targetSide } = computeHandleSides(
+      initSource, sourceSize, initTarget, targetSize, direction
+    );
 
-    // Determine exit/entry points based on relative positions
-    const dx = targetCenterX - sourceCenterX;
-    const dy = targetCenterY - sourceCenterY;
+    const start = getHandlePosition(sourcePos, sourceSize, sourceSide);
+    const end = getHandlePosition(targetPos, targetSize, targetSide);
 
-    let startX: number, startY: number, endX: number, endY: number;
-
-    if (Math.abs(dy) > Math.abs(dx)) {
-      // Vertical connection
-      if (dy > 0) {
-        // Target is below source
-        startX = sourceCenterX;
-        startY = sourcePos.y + sourceSize.height;
-        endX = targetCenterX;
-        endY = targetPos.y;
-      } else {
-        // Target is above source
-        startX = sourceCenterX;
-        startY = sourcePos.y;
-        endX = targetCenterX;
-        endY = targetPos.y + targetSize.height;
-      }
-    } else {
-      // Horizontal connection
-      if (dx > 0) {
-        startX = sourcePos.x + sourceSize.width;
-        startY = sourceCenterY;
-        endX = targetPos.x;
-        endY = targetCenterY;
-      } else {
-        startX = sourcePos.x;
-        startY = sourceCenterY;
-        endX = targetPos.x + targetSize.width;
-        endY = targetCenterY;
-      }
-    }
-
-    const midX = (startX + endX) / 2;
-    const midY = (startY + endY) / 2;
+    const midX = (start.x + end.x) / 2;
+    const midY = (start.y + end.y) / 2;
 
     return {
       id: edge.id,
       source: edge.source,
       target: edge.target,
-      points: [
-        { x: startX, y: startY },
-        { x: midX, y: midY },
-        { x: endX, y: endY },
-      ],
+      points: [start, { x: midX, y: midY }, end],
     };
   });
 }
@@ -120,10 +134,17 @@ export function FlowCanvas({ diagram, mode = 'view', className, onDiagramChange 
   }, [layout]);
 
   // Recompute edges dynamically whenever positions change
+  // Handle sides are locked based on initial layout positions to prevent jumping
   const dynamicEdges = useMemo(() => {
     if (!layout) return [];
-    return computeDynamicEdges(diagram.edges, positions, layout.nodes);
-  }, [diagram.edges, positions, layout?.nodes]);
+    return computeDynamicEdges(
+      diagram.edges,
+      positions,
+      layout.nodes,
+      layoutPositions,
+      diagram.layout?.direction || 'TB'
+    );
+  }, [diagram.edges, positions, layout?.nodes, layoutPositions, diagram.layout?.direction]);
 
   return (
     <div className={styles.root}>

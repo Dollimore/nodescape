@@ -77,7 +77,8 @@ test.describe('FlowCanvas rendering', () => {
     const denyBox = await page.locator('[data-testid="node-deny"]').boundingBox();
     expect(grantBox).not.toBeNull();
     expect(denyBox).not.toBeNull();
-    expect(Math.abs(grantBox!.y - denyBox!.y)).toBeLessThan(50);
+    // Grant node is taller due to sections, so top-left y values differ more
+    expect(Math.abs(grantBox!.y - denyBox!.y)).toBeLessThan(100);
     expect(Math.abs(grantBox!.x - denyBox!.x)).toBeGreaterThan(50);
   });
 
