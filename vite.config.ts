@@ -2,8 +2,9 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { resolve } from 'path';
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   plugins: [react()],
+  root: command === 'serve' ? 'demo' : undefined,
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
@@ -23,4 +24,4 @@ export default defineConfig({
     },
     cssCodeSplit: false,
   },
-});
+}));
