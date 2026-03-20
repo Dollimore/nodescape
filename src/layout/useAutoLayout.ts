@@ -32,8 +32,8 @@ export function computeLayout(
   g.setDefaultEdgeLabel(() => ({}));
 
   const direction = diagram.layout?.direction || 'TB';
-  const nodeSpacing = diagram.layout?.nodeSpacing ?? 60;
-  const rankSpacing = diagram.layout?.rankSpacing ?? 80;
+  const nodeSpacing = diagram.layout?.nodeSpacing ?? 80;
+  const rankSpacing = diagram.layout?.rankSpacing ?? 100;
 
   g.setGraph({
     rankdir: direction,

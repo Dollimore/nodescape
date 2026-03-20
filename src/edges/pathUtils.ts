@@ -52,6 +52,9 @@ export function buildStraightPath(points: Point[]): string {
   return `M ${start.x} ${start.y} L ${end.x} ${end.y}`;
 }
 
+/** Minimum distance a line must travel straight out of a handle before bending */
+const MIN_STUB = 30;
+
 /** Right-angle path with rounded corners */
 export function buildOrthogonalPath(points: Point[], radius: number = 12): string {
   if (points.length < 2) return '';
@@ -66,53 +69,48 @@ export function buildOrthogonalPath(points: Point[], radius: number = 12): strin
   const isVertical = Math.abs(dy) >= Math.abs(dx);
 
   if (Math.abs(dx) < 1 && isVertical) {
-    // Perfectly aligned vertically — just a straight line
     return `M ${start.x} ${start.y} L ${end.x} ${end.y}`;
   }
 
   if (Math.abs(dy) < 1 && !isVertical) {
-    // Perfectly aligned horizontally — just a straight line
     return `M ${start.x} ${start.y} L ${end.x} ${end.y}`;
   }
 
-  const r = Math.min(radius, Math.abs(dx) / 2, Math.abs(dy) / 2);
-
   if (isVertical) {
-    // Go down, bend horizontal, go down again
-    const midY = start.y + dy / 2;
     const dirX = dx > 0 ? 1 : -1;
     const dirY = dy > 0 ? 1 : -1;
 
+    // Enforce minimum stub: bend point must be at least MIN_STUB from both start and end
+    const halfDy = Math.abs(dy) / 2;
+    const stubDist = Math.max(MIN_STUB, halfDy);
+    const midY = start.y + Math.min(stubDist, Math.abs(dy) - MIN_STUB) * dirY;
+
+    const r = Math.min(radius, Math.abs(dx) / 2, Math.abs(midY - start.y), Math.abs(end.y - midY));
+
     return [
       `M ${start.x} ${start.y}`,
-      // Vertical segment to first bend
       `L ${start.x} ${midY - r * dirY}`,
-      // Rounded corner: turn horizontal
       `Q ${start.x} ${midY}, ${start.x + r * dirX} ${midY}`,
-      // Horizontal segment
       `L ${end.x - r * dirX} ${midY}`,
-      // Rounded corner: turn vertical
       `Q ${end.x} ${midY}, ${end.x} ${midY + r * dirY}`,
-      // Vertical segment to end
       `L ${end.x} ${end.y}`,
     ].join(' ');
   } else {
-    // Go right, bend vertical, go right again
-    const midX = start.x + dx / 2;
     const dirX = dx > 0 ? 1 : -1;
     const dirY = dy > 0 ? 1 : -1;
 
+    const halfDx = Math.abs(dx) / 2;
+    const stubDist = Math.max(MIN_STUB, halfDx);
+    const midX = start.x + Math.min(stubDist, Math.abs(dx) - MIN_STUB) * dirX;
+
+    const r = Math.min(radius, Math.abs(dy) / 2, Math.abs(midX - start.x), Math.abs(end.x - midX));
+
     return [
       `M ${start.x} ${start.y}`,
-      // Horizontal segment to first bend
       `L ${midX - r * dirX} ${start.y}`,
-      // Rounded corner: turn vertical
       `Q ${midX} ${start.y}, ${midX} ${start.y + r * dirY}`,
-      // Vertical segment
       `L ${midX} ${end.y - r * dirY}`,
-      // Rounded corner: turn horizontal
       `Q ${midX} ${end.y}, ${midX + r * dirX} ${end.y}`,
-      // Horizontal segment to end
       `L ${end.x} ${end.y}`,
     ].join(' ');
   }
