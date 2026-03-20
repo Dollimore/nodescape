@@ -34,7 +34,7 @@ interface FlowDiagram {
 
 interface FlowNode {
   id: string;
-  type?: 'default' | 'decision' | 'start' | 'end' | 'group';
+  type?: 'default' | 'decision' | 'start' | 'end';
   label: string;
   description?: string;
   sections?: NodeSection[];
@@ -86,7 +86,7 @@ import { FlowCanvas } from 'drawing-mvp';
 | `diagram` | `FlowDiagram` | required | The JSON schema |
 | `mode` | `'view' \| 'edit'` | `'view'` | Readonly or editable |
 | `onDiagramChange` | `(diagram: FlowDiagram) => void` | — | Called when user modifies diagram in edit mode. Emits full JSON with computed positions. |
-| `theme` | `'light' \| 'dark'` | `'light'` | Color scheme |
+| `theme` | `'light'` | `'light'` | Color scheme (dark theme deferred) |
 | `className` | `string` | — | CSS class on root container |
 | `fitView` | `boolean` | `true` | Auto-zoom to fit all content |
 
@@ -156,6 +156,7 @@ Inspired by DoubleLoop and TypeForm flow builders.
 - `style.variant`: `outlined` (default), `filled` (color background), `ghost` (no border)
 - `theme` prop switches light/dark
 - CSS custom properties exposed for full override by consuming apps
+- Dark theme deferred to a future iteration — MVP ships with light theme only
 
 ## Canvas & Interaction
 
