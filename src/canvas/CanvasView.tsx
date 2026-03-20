@@ -56,8 +56,6 @@ export function CanvasView({
     if (onDragEnd) onDragEnd();
   };
 
-  const transformStyle = `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})`;
-
   return (
     <div
       ref={containerRef}
@@ -69,15 +67,11 @@ export function CanvasView({
       onMouseLeave={handleMouseUp}
       onWheel={onWheel}
     >
-      {/* Background layer — large area that transforms with zoom/pan so dots scale */}
       <div
-        className={`${styles.canvasBackground} ${bgClassMap[background]}`}
-        style={{ transform: transformStyle }}
-      />
-      {/* Content layer — nodes and edges */}
-      <div
-        className={styles.canvasInner}
-        style={{ transform: transformStyle }}
+        className={`${styles.canvasInner} ${bgClassMap[background]}`}
+        style={{
+          transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})`,
+        }}
       >
         {children}
       </div>
