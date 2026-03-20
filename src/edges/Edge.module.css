@@ -10,17 +10,17 @@
 
 .edgePath {
   fill: none;
-  stroke: #d0d0d0;
+  stroke: var(--fc-edge);
   stroke-width: 1.5;
   transition: d 0.3s ease;
 }
 
 .edgePathSuccess {
-  stroke: #d0d0d0;
+  stroke: var(--fc-edge);
 }
 
 .edgePathFailure {
-  stroke: #d0d0d0;
+  stroke: var(--fc-edge);
 }
 
 .edgePathDashed {
@@ -28,7 +28,7 @@
 }
 
 .arrowhead {
-  fill: #d0d0d0;
+  fill: var(--fc-edge);
   stroke: none;
 }
 
@@ -42,28 +42,28 @@
   user-select: none;
   white-space: nowrap;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--fc-edge-label-border);
   transition: left 0.3s ease, top 0.3s ease;
 }
 
 .edgeLabelDefault {
-  background: #fff;
-  color: #475569;
+  background: var(--fc-edge-label-bg);
+  color: var(--fc-edge-label-color);
 }
 
 .edgeLabelSuccess {
-  background: #fff;
+  background: var(--fc-edge-label-bg);
   color: #16a34a;
   border-color: #bbf7d0;
 }
 
 .edgeLabelFailure {
-  background: #fff;
+  background: var(--fc-edge-label-bg);
   color: #dc2626;
   border-color: #fecaca;
 }
 
 .edgeLabelDashed {
-  background: #fff;
-  color: #475569;
+  background: var(--fc-edge-label-bg);
+  color: var(--fc-edge-label-color);
 }

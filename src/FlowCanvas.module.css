@@ -2,6 +2,42 @@
   width: 100%;
   height: 100%;
   font-family: system-ui, -apple-system, sans-serif;
+  /* Light theme (default) */
+  --fc-bg: #fafafa;
+  --fc-node-bg: #fff;
+  --fc-node-border: #e0e0e0;
+  --fc-node-shadow: rgba(0, 0, 0, 0.04);
+  --fc-node-label: #1a1a1a;
+  --fc-node-desc: #888;
+  --fc-node-section-bg: transparent;
+  --fc-node-section-border: #f0f0f0;
+  --fc-node-section-heading: #666;
+  --fc-edge: #d0d0d0;
+  --fc-handle-bg: #fff;
+  --fc-handle-border: #d0d0d0;
+  --fc-dot: #d0d0d0;
+  --fc-edge-label-bg: #fff;
+  --fc-edge-label-color: #475569;
+  --fc-edge-label-border: rgba(0, 0, 0, 0.06);
+}
+
+.dark {
+  --fc-bg: #1a1a2e;
+  --fc-node-bg: #16213e;
+  --fc-node-border: #2a2a4a;
+  --fc-node-shadow: rgba(0, 0, 0, 0.3);
+  --fc-node-label: #e2e8f0;
+  --fc-node-desc: #94a3b8;
+  --fc-node-section-bg: rgba(255, 255, 255, 0.03);
+  --fc-node-section-border: #2a2a4a;
+  --fc-node-section-heading: #94a3b8;
+  --fc-edge: #3a3a5a;
+  --fc-handle-bg: #16213e;
+  --fc-handle-border: #3a3a5a;
+  --fc-dot: #2a2a4a;
+  --fc-edge-label-bg: #16213e;
+  --fc-edge-label-color: #94a3b8;
+  --fc-edge-label-border: #2a2a4a;
 }
 
 .root * {

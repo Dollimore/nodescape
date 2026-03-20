@@ -42,7 +42,7 @@ const sampleDiagram: FlowDiagram = {
 export function App() {
   return (
     <div style={{ width: '100%', height: '100vh' }}>
-      <FlowCanvas diagram={sampleDiagram} mode="edit" onDiagramChange={console.log} background="isometric" minimap />
+      <FlowCanvas diagram={sampleDiagram} mode="edit" onDiagramChange={console.log} background="isometric" minimap theme="dark" />
     </div>
   );
 }

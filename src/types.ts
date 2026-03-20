@@ -54,6 +54,7 @@ export interface FlowCanvasProps {
   fitView?: boolean;
   background?: CanvasBackground;
   minimap?: boolean | { width?: number; height?: number; position?: 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left' };
+  theme?: 'light' | 'dark';
 }
 
 export interface LayoutNode {
