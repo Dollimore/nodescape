@@ -1,5 +1,4 @@
 import type { ComponentType } from 'react';
-import type { SidebarNodeTemplate } from './sidebar/DragDropSidebar';
 
 export type EdgeRouting = 'curved' | 'orthogonal' | 'straight';
 
@@ -65,6 +64,13 @@ export interface ContextMenuItem {
   label: string;
   action: (nodeId: string, node: FlowNode) => void;
   icon?: string;
+}
+
+export interface SidebarNodeTemplate {
+  type: string;
+  label: string;
+  icon?: string;
+  description?: string;
 }
 
 export interface FlowCanvasProps {

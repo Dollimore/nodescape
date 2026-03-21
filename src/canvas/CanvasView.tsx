@@ -21,6 +21,8 @@ interface CanvasViewProps {
   layoutWidth?: number;
   layoutHeight?: number;
   contentRef?: React.RefObject<HTMLDivElement | null>;
+  onDrop?: (e: React.DragEvent) => void;
+  onDragOver?: (e: React.DragEvent) => void;
 }
 
 const bgClassMap: Record<CanvasBackground, string> = {
@@ -43,6 +45,8 @@ export function CanvasView({
   layoutWidth,
   layoutHeight,
   contentRef,
+  onDrop,
+  onDragOver,
 }: CanvasViewProps) {
   const { transform, onMouseDown, onMouseMove, onMouseUp, onWheel, setFitView, zoomIn, zoomOut, resetZoom } = usePanZoom();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -105,6 +109,8 @@ export function CanvasView({
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
       onWheel={onWheel}
+      onDrop={onDrop}
+      onDragOver={onDragOver}
     >
       <div
         className={`${styles.canvasInner} ${bgClassMap[background]}`}

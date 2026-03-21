@@ -1,6 +1,6 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { FlowCanvas } from '../src';
-import type { FlowDiagram } from '../src';
+import type { FlowDiagram, SidebarNodeTemplate } from '../src';
 import type { FlowCanvasRef } from '../src/FlowCanvas';
 
 const sampleDiagram: FlowDiagram = {
@@ -89,10 +89,31 @@ const datacenterDiagram: FlowDiagram = {
   ],
 };
 
+const nodeTemplates: SidebarNodeTemplate[] = [
+  { type: 'default', label: 'Process', description: 'A process step' },
+  { type: 'decision', label: 'Decision', description: 'A branch point' },
+  { type: 'start', label: 'Start', description: 'Entry point' },
+  { type: 'end', label: 'End', description: 'Exit point' },
+];
+
 export function App() {
   const [activeDemo, setActiveDemo] = React.useState<'vertical' | 'horizontal' | 'datacenter'>('vertical');
-  const diagram = activeDemo === 'vertical' ? sampleDiagram : activeDemo === 'horizontal' ? horizontalDiagram : datacenterDiagram;
+  const [currentDiagram, setCurrentDiagram] = useState<FlowDiagram>(sampleDiagram);
+  const baseDiagram = activeDemo === 'vertical' ? sampleDiagram : activeDemo === 'horizontal' ? horizontalDiagram : datacenterDiagram;
+  const diagram = activeDemo === 'vertical' ? currentDiagram : baseDiagram;
   const canvasRef = useRef<FlowCanvasRef>(null);
+
+  const handleNodeCollapse = (nodeId: string, collapsed: boolean) => {
+    setCurrentDiagram(prev => ({
+      ...prev,
+      nodes: prev.nodes.map(n => n.id === nodeId ? { ...n, branchCollapsed: collapsed } : n),
+    }));
+  };
+
+  const handleDemoChange = (demo: 'vertical' | 'horizontal' | 'datacenter') => {
+    setActiveDemo(demo);
+    if (demo === 'vertical') setCurrentDiagram(sampleDiagram);
+  };
 
   return (
     <div style={{ width: '100%', height: '100vh', position: 'relative' }}>
@@ -128,7 +149,7 @@ export function App() {
       </div>
       <div style={{ position: 'absolute', top: 16, left: 16, display: 'flex', gap: 8, zIndex: 20 }}>
         <button
-          onClick={() => setActiveDemo('vertical')}
+          onClick={() => handleDemoChange('vertical')}
           style={{
             padding: '6px 12px',
             borderRadius: 6,
@@ -144,7 +165,7 @@ export function App() {
           Vertical (TB)
         </button>
         <button
-          onClick={() => setActiveDemo('horizontal')}
+          onClick={() => handleDemoChange('horizontal')}
           style={{
             padding: '6px 12px',
             borderRadius: 6,
@@ -160,7 +181,7 @@ export function App() {
           Horizontal (LR)
         </button>
         <button
-          onClick={() => setActiveDemo('datacenter')}
+          onClick={() => handleDemoChange('datacenter')}
           style={{
             padding: '6px 12px',
             borderRadius: 6,
@@ -186,6 +207,9 @@ export function App() {
         theme="dark"
         onNodeClick={(id, node) => console.log('Node clicked:', id, node.label)}
         contextMenu
+        onNodeCollapse={handleNodeCollapse}
+        sidebar={nodeTemplates}
+        onNodeDrop={(template, pos) => console.log('Dropped:', template.label, 'at', pos)}
       />
     </div>
   );

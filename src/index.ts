@@ -9,5 +9,7 @@ export type {
   NodeSection,
   EdgeRouting,
   ContextMenuItem,
+  SidebarNodeTemplate,
 } from './types';
 export { serializeDiagram, deserializeDiagram, saveDiagramToStorage, loadDiagramFromStorage } from './utils/serialization';
+export { DragDropSidebar } from './sidebar/DragDropSidebar';
