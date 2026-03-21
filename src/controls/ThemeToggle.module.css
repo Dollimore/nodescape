@@ -1,0 +1,22 @@
+.toggle {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--fc-node-border, #e0e0e0);
+  background: var(--fc-node-bg, #fff);
+  color: var(--fc-node-label, #1a1a1a);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  z-index: 10;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.toggle:hover {
+  background: var(--fc-node-section-border, #f0f0f0);
+}

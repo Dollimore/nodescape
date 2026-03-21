@@ -204,7 +204,8 @@ export function App() {
         onDiagramChange={console.log}
         background="isometric"
         minimap
-        theme="dark"
+        themeToggle
+        onThemeChange={(t) => console.log('Theme:', t)}
         onNodeClick={(id, node) => console.log('Node clicked:', id, node.label)}
         contextMenu
         onNodeCollapse={handleNodeCollapse}
