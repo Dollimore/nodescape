@@ -26,9 +26,11 @@ test.describe('Canvas interaction', () => {
     const startNode = page.locator('[data-testid="node-start"]');
     const beforeBox = await startNode.boundingBox();
 
-    // Zoom out
+    // Zoom out — Ctrl+wheel (Figma-style: regular scroll pans, Ctrl+scroll zooms)
     await canvas.hover();
+    await page.keyboard.down('Control');
     await page.mouse.wheel(0, 300);
+    await page.keyboard.up('Control');
     await page.waitForTimeout(100);
 
     const afterBox = await startNode.boundingBox();

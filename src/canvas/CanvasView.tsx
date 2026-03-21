@@ -48,9 +48,15 @@ export function CanvasView({
   onDrop,
   onDragOver,
 }: CanvasViewProps) {
-  const { transform, onMouseDown, onMouseMove, onMouseUp, onWheel, setFitView, zoomIn, zoomOut, resetZoom } = usePanZoom();
+  const { transform, onMouseDown, onMouseMove, onMouseUp, attachWheelListener, setFitView, zoomIn, zoomOut, resetZoom } = usePanZoom();
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
+
+  // Attach native wheel listener with { passive: false } for preventDefault
+  useEffect(() => {
+    attachWheelListener(containerRef.current);
+    return () => attachWheelListener(null);
+  }, [attachWheelListener]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -108,7 +114,6 @@ export function CanvasView({
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
-      onWheel={onWheel}
       onDrop={onDrop}
       onDragOver={onDragOver}
     >

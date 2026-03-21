@@ -1,5 +1,5 @@
-import { useState, useCallback, useRef } from 'react';
-import type { MouseEvent, WheelEvent } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
+import type { MouseEvent } from 'react';
 
 interface PanZoomState {
   x: number;
@@ -17,6 +17,7 @@ export function usePanZoom(fitViewTransform?: PanZoomState) {
   );
   const isPanning = useRef(false);
   const panStart = useRef({ x: 0, y: 0 });
+  const containerElRef = useRef<HTMLElement | null>(null);
 
   const onMouseDown = useCallback(
     (e: MouseEvent) => {
@@ -43,7 +44,22 @@ export function usePanZoom(fitViewTransform?: PanZoomState) {
     isPanning.current = false;
   }, []);
 
-  const onWheel = useCallback((e: WheelEvent) => {
+  // Attach a native wheel listener with { passive: false } so preventDefault works.
+  // React's onWheel is passive and ignores preventDefault, which lets the browser
+  // zoom the page on pinch instead of zooming the canvas.
+  const attachWheelListener = useCallback((el: HTMLElement | null) => {
+    // Detach from previous element
+    if (containerElRef.current) {
+      containerElRef.current.removeEventListener('wheel', handleWheel as any);
+    }
+    containerElRef.current = el;
+    if (el) {
+      el.addEventListener('wheel', handleWheel as any, { passive: false });
+    }
+  }, []);
+
+  // Use a ref-based handler so we always read the latest setTransform
+  const handleWheel = useCallback((e: globalThis.WheelEvent) => {
     e.preventDefault();
 
     // Figma-style controls:
@@ -53,7 +69,7 @@ export function usePanZoom(fitViewTransform?: PanZoomState) {
     const isZoom = e.ctrlKey || e.metaKey;
 
     if (!isZoom) {
-      // Pan — two-finger scroll moves the canvas
+      // Pan
       setTransform((prev) => ({
         ...prev,
         x: prev.x - e.deltaX,
@@ -62,9 +78,11 @@ export function usePanZoom(fitViewTransform?: PanZoomState) {
       return;
     }
 
-    // Zoom — pinch or Ctrl+scroll
+    // Zoom toward cursor
     const delta = -e.deltaY * ZOOM_SENSITIVITY;
-    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const target = e.currentTarget as HTMLElement || containerElRef.current;
+    if (!target) return;
+    const rect = target.getBoundingClientRect();
     const clientX = e.clientX;
     const clientY = e.clientY;
     setTransform((prev) => {
@@ -79,6 +97,15 @@ export function usePanZoom(fitViewTransform?: PanZoomState) {
       };
     });
   }, []);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (containerElRef.current) {
+        containerElRef.current.removeEventListener('wheel', handleWheel as any);
+      }
+    };
+  }, [handleWheel]);
 
   const setFitView = useCallback((newTransform: PanZoomState) => {
     setTransform(newTransform);
@@ -110,7 +137,7 @@ export function usePanZoom(fitViewTransform?: PanZoomState) {
     onMouseDown,
     onMouseMove,
     onMouseUp,
-    onWheel,
+    attachWheelListener,
     setFitView,
     zoomIn,
     zoomOut,
