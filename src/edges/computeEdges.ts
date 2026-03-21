@@ -38,7 +38,8 @@ function getPortPosition(
   }
 }
 
-/** Determine which handle sides to use based on initial layout positions (locked once) */
+/** Determine which handle sides to use based on relative node positions.
+ *  Picks the sides that produce the shortest, most natural path. */
 export function computeHandleSides(
   sourcePos: { x: number; y: number },
   sourceSize: { width: number; height: number },
@@ -46,11 +47,33 @@ export function computeHandleSides(
   targetSize: { width: number; height: number },
   direction: string
 ): { sourceSide: 'top' | 'bottom' | 'left' | 'right'; targetSide: 'top' | 'bottom' | 'left' | 'right' } {
-  // For TB/BT layouts, default to bottom->top
-  // For LR/RL layouts, default to right->left
-  if (direction === 'LR' || direction === 'RL') {
-    const sourceCX = sourcePos.x + sourceSize.width / 2;
-    const targetCX = targetPos.x + targetSize.width / 2;
+  const sourceCX = sourcePos.x + sourceSize.width / 2;
+  const sourceCY = sourcePos.y + sourceSize.height / 2;
+  const targetCX = targetPos.x + targetSize.width / 2;
+  const targetCY = targetPos.y + targetSize.height / 2;
+
+  const dx = Math.abs(targetCX - sourceCX);
+  const dy = Math.abs(targetCY - sourceCY);
+
+  // Use the layout direction as preference, but override when the
+  // cross-axis distance is significantly larger than the main axis
+  const isMainlyVertical = direction === 'TB' || direction === 'BT';
+  const isMainlyHorizontal = direction === 'LR' || direction === 'RL';
+
+  // If the target is primarily to the side (cross-axis >> main axis), use side handles
+  const crossAxisDominant = isMainlyVertical ? (dx > dy * 1.5) : (dy > dx * 1.5);
+
+  if (isMainlyVertical && !crossAxisDominant) {
+    // Standard TB/BT — go vertical
+    if (targetCY >= sourceCY) {
+      return { sourceSide: 'bottom', targetSide: 'top' };
+    } else {
+      return { sourceSide: 'top', targetSide: 'bottom' };
+    }
+  }
+
+  if (isMainlyHorizontal && !crossAxisDominant) {
+    // Standard LR/RL — go horizontal
     if (targetCX >= sourceCX) {
       return { sourceSide: 'right', targetSide: 'left' };
     } else {
@@ -58,13 +81,21 @@ export function computeHandleSides(
     }
   }
 
-  // TB (default) / BT
-  const sourceCY = sourcePos.y + sourceSize.height / 2;
-  const targetCY = targetPos.y + targetSize.height / 2;
-  if (targetCY >= sourceCY) {
-    return { sourceSide: 'bottom', targetSide: 'top' };
+  // Cross-axis dominant or ambiguous — pick based on actual relative position
+  if (dx >= dy) {
+    // Target is mostly to the side
+    if (targetCX >= sourceCX) {
+      return { sourceSide: 'right', targetSide: 'left' };
+    } else {
+      return { sourceSide: 'left', targetSide: 'right' };
+    }
   } else {
-    return { sourceSide: 'top', targetSide: 'bottom' };
+    // Target is mostly above/below
+    if (targetCY >= sourceCY) {
+      return { sourceSide: 'bottom', targetSide: 'top' };
+    } else {
+      return { sourceSide: 'top', targetSide: 'bottom' };
+    }
   }
 }
 
