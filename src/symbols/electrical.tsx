@@ -726,6 +726,163 @@ export function HeatExchanger({ size = 24, color = 'currentColor' }: SymbolProps
   );
 }
 
+// --- Natural Gas ---
+
+// Gas Turbine
+export function GasTurbine({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <polygon points="4,6 20,12 4,18" />
+      <circle cx="20" cy="12" r="3" />
+      <line x1="0" y1="10" x2="4" y2="10" />
+      <line x1="0" y1="14" x2="4" y2="14" />
+    </svg>
+  );
+}
+
+// Gas Pipeline
+export function Pipeline({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size * 0.5} viewBox="0 0 40 16" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <line x1="0" y1="6" x2="40" y2="6" strokeWidth="3" />
+      <line x1="0" y1="10" x2="40" y2="10" strokeWidth="3" />
+      <line x1="10" y1="4" x2="10" y2="12" />
+      <line x1="20" y1="4" x2="20" y2="12" />
+      <line x1="30" y1="4" x2="30" y2="12" />
+    </svg>
+  );
+}
+
+// Compressor Station
+export function Compressor({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <circle cx="12" cy="12" r="8" />
+      <path d="M8 12 L16 8 L16 16 Z" fill="none" />
+      <line x1="0" y1="12" x2="4" y2="12" />
+      <line x1="20" y1="12" x2="24" y2="12" />
+    </svg>
+  );
+}
+
+// LNG Terminal
+export function LNGTerminal({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <rect x="4" y="8" width="16" height="14" rx="2" />
+      <path d="M4 8 Q12 0 20 8" />
+      <text x="12" y="18" textAnchor="middle" fontSize="6" fill={color} stroke="none" fontWeight="bold" fontFamily="system-ui">LNG</text>
+    </svg>
+  );
+}
+
+// Gas Meter / Flow Meter
+export function FlowMeter({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <circle cx="12" cy="12" r="8" />
+      <path d="M8 16 L12 8 L16 16" fill="none" />
+      <line x1="0" y1="12" x2="4" y2="12" />
+      <line x1="20" y1="12" x2="24" y2="12" />
+    </svg>
+  );
+}
+
+// --- Renewables ---
+
+// Wind Turbine
+export function WindTurbine({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="12" y1="12" x2="12" y2="22" />
+      <line x1="8" y1="22" x2="16" y2="22" />
+      <circle cx="12" cy="12" r="2" fill={color} />
+      <line x1="12" y1="10" x2="12" y2="2" />
+      <line x1="12" y1="12" x2="5" y2="18" />
+      <line x1="12" y1="12" x2="19" y2="18" />
+    </svg>
+  );
+}
+
+// Solar Panel
+export function SolarPanel({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <rect x="3" y="6" width="18" height="12" rx="1" />
+      <line x1="3" y1="10" x2="21" y2="10" />
+      <line x1="3" y1="14" x2="21" y2="14" />
+      <line x1="9" y1="6" x2="9" y2="18" />
+      <line x1="15" y1="6" x2="15" y2="18" />
+      <line x1="12" y1="18" x2="12" y2="22" />
+      <line x1="8" y1="22" x2="16" y2="22" />
+    </svg>
+  );
+}
+
+// Inverter (solar/wind)
+export function Inverter({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <rect x="4" y="4" width="16" height="16" rx="2" />
+      <path d="M8 12 C8 9 11 9 11 12" />
+      <path d="M13 12 L16 9 M13 12 L16 15" strokeWidth="1" />
+      <line x1="0" y1="12" x2="4" y2="12" />
+      <line x1="20" y1="12" x2="24" y2="12" />
+    </svg>
+  );
+}
+
+// --- Hydro ---
+
+// Hydro Dam
+export function HydroDam({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <path d="M2 20 L6 4 L18 4 L22 20" />
+      <line x1="2" y1="20" x2="22" y2="20" />
+      <path d="M8 14 C8 12 10 12 10 14 C10 16 12 16 12 14 C12 12 14 12 14 14 C14 16 16 16 16 14" strokeWidth="1" />
+      <line x1="12" y1="20" x2="12" y2="24" />
+    </svg>
+  );
+}
+
+// Water Turbine (Francis/Pelton)
+export function WaterTurbine({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <circle cx="12" cy="12" r="8" />
+      <circle cx="12" cy="12" r="3" />
+      <path d="M12 4 C14 8 14 8 12 9" />
+      <path d="M20 12 C16 14 16 14 15 12" />
+      <path d="M12 20 C10 16 10 16 12 15" />
+      <path d="M4 12 C8 10 8 10 9 12" />
+      <line x1="0" y1="8" x2="4" y2="8" />
+      <line x1="20" y1="16" x2="24" y2="16" />
+    </svg>
+  );
+}
+
+// Penstock
+export function Penstock({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size * 0.6} viewBox="0 0 40 20" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round">
+      <path d="M0 4 L16 4 Q20 4 20 8 L20 12 Q20 16 24 16 L40 16" />
+      <path d="M0 8 L12 8 Q16 8 16 12 L16 12 Q16 16 20 16 L24 16" strokeWidth="1" strokeDasharray="3 2" />
+    </svg>
+  );
+}
+
+// Reservoir
+export function Reservoir({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <path d="M4 8 Q12 4 20 8" />
+      <path d="M4 8 L4 18 Q12 22 20 18 L20 8" />
+      <path d="M6 12 C6 11 8 11 8 12 C8 13 10 13 10 12 C10 11 12 11 12 12" strokeWidth="1" />
+    </svg>
+  );
+}
+
 // Export a map of all symbols for easy lookup by name
 export const electricalSymbols: Record<string, React.ComponentType<SymbolProps>> = {
   resistor: Resistor,
@@ -783,4 +940,19 @@ export const electricalSymbols: Record<string, React.ComponentType<SymbolProps>>
   radiation: Radiation,
   pressurizer: Pressurizer,
   'heat-exchanger': HeatExchanger,
+  // Natural Gas
+  'gas-turbine': GasTurbine,
+  pipeline: Pipeline,
+  compressor: Compressor,
+  'lng-terminal': LNGTerminal,
+  'flow-meter': FlowMeter,
+  // Renewables
+  'wind-turbine': WindTurbine,
+  'solar-panel': SolarPanel,
+  inverter: Inverter,
+  // Hydro
+  'hydro-dam': HydroDam,
+  'water-turbine': WaterTurbine,
+  penstock: Penstock,
+  reservoir: Reservoir,
 };

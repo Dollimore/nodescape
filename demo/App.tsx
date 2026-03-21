@@ -896,6 +896,7 @@ export function App() {
         onSelectionChange={(ids) => console.log('Selected:', ids)}
         onNodeLabelChange={(id, label) => console.log('Label changed:', id, label)}
         detailPanel
+        legend
         story={activeDemo === 'showcase' ? {
           steps: [
             { nodeId: 'gen-solar', title: 'Solar Generation', content: 'The solar farm generates **1440 MW** using 4.2 million PV panels across 4200 acres.' },
