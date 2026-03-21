@@ -128,10 +128,23 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
     [diagram, onDiagramChange]
   );
 
+  // Build group -> children map for group dragging
+  const groupChildren = useMemo(() => {
+    const map: { [groupId: string]: string[] } = {};
+    for (const node of diagram.nodes) {
+      if (node.parentId) {
+        if (!map[node.parentId]) map[node.parentId] = [];
+        map[node.parentId].push(node.id);
+      }
+    }
+    return map;
+  }, [diagram.nodes]);
+
   const { positions, updatePositions, onDragStart, onDragMove, onDragEnd, isDragging } = useDragNode(
     layoutPositions,
     1,
-    handlePositionChange
+    handlePositionChange,
+    groupChildren
   );
 
   useEffect(() => {

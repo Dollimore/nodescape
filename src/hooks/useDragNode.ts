@@ -17,12 +17,19 @@ interface DragState {
   startY: number;
   originX: number;
   originY: number;
+  childIds: string[]; // children to move together (for group nodes)
+  childOrigins: { [id: string]: { x: number; y: number } };
+}
+
+interface GroupInfo {
+  [nodeId: string]: string[]; // groupId -> array of child nodeIds
 }
 
 export function useDragNode(
   initialPositions: NodePositions,
   scale: number,
-  onPositionChange?: (positions: NodePositions) => void
+  onPositionChange?: (positions: NodePositions) => void,
+  groupChildren?: GroupInfo
 ) {
   const [positions, setPositions] = useState<NodePositions>(initialPositions);
   const [isDragging, setIsDragging] = useState(false);
@@ -39,16 +46,28 @@ export function useDragNode(
       e.stopPropagation();
       const pos = positions[nodeId];
       if (!pos) return;
+
+      // If this is a group node, capture all children origins
+      const childIds = groupChildren?.[nodeId] || [];
+      const childOrigins: { [id: string]: { x: number; y: number } } = {};
+      for (const cid of childIds) {
+        if (positions[cid]) {
+          childOrigins[cid] = { ...positions[cid] };
+        }
+      }
+
       dragState.current = {
         nodeId,
         startX: e.clientX,
         startY: e.clientY,
         originX: pos.x,
         originY: pos.y,
+        childIds,
+        childOrigins,
       };
       setIsDragging(true);
     },
-    [positions]
+    [positions, groupChildren]
   );
 
   const onDragMove = useCallback(
@@ -59,13 +78,32 @@ export function useDragNode(
       const dy = (e.clientY - drag.startY) / scale;
       const rawX = drag.originX + dx;
       const rawY = drag.originY + dy;
-      setPositions((prev) => ({
-        ...prev,
-        [drag.nodeId]: {
-          x: snapToGrid(rawX, GRID_SIZE),
-          y: snapToGrid(rawY, GRID_SIZE),
-        },
-      }));
+      const snappedX = snapToGrid(rawX, GRID_SIZE);
+      const snappedY = snapToGrid(rawY, GRID_SIZE);
+
+      setPositions((prev) => {
+        const next = {
+          ...prev,
+          [drag.nodeId]: { x: snappedX, y: snappedY },
+        };
+
+        // Move children by the same delta (group drag)
+        if (drag.childIds.length > 0) {
+          const snapDx = snappedX - drag.originX;
+          const snapDy = snappedY - drag.originY;
+          for (const cid of drag.childIds) {
+            const origin = drag.childOrigins[cid];
+            if (origin) {
+              next[cid] = {
+                x: snapToGrid(origin.x + snapDx, GRID_SIZE),
+                y: snapToGrid(origin.y + snapDy, GRID_SIZE),
+              };
+            }
+          }
+        }
+
+        return next;
+      });
     },
     [scale]
   );

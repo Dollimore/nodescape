@@ -93,8 +93,8 @@ export function computeLayout(
       continue;
     }
 
-    const padding = GRID;
-    const headerHeight = GRID; // one grid unit for header
+    const padding = GRID * 4; // 32px padding around children
+    const headerHeight = GRID * 4; // 32px for group label
     const minX = snapTo(Math.min(...childLayouts.map(c => c.x)) - padding);
     const minY = snapTo(Math.min(...childLayouts.map(c => c.y)) - padding - headerHeight);
     const maxX = Math.max(...childLayouts.map(c => c.x + c.width)) + padding;

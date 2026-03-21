@@ -9,7 +9,7 @@ const sampleDiagram: FlowDiagram = {
   nodes: [
     { id: 'start', type: 'start', label: 'User visits login page', icon: 'log-in' },
     { id: 'input', label: 'Enter credentials', description: 'User provides **email** and `password`.', icon: 'key-round' },
-    { id: 'auth-group', type: 'group', label: 'Authentication' },
+    { id: 'auth-group', type: 'group', label: 'Authentication', style: { color: '#3b82f6' } },
     {
       id: 'validate',
       type: 'decision',
@@ -146,7 +146,7 @@ const hvdcDiagram: FlowDiagram = {
   layout: { direction: 'TB', routing: 'orthogonal', cornerRadius: 16 },
   nodes: [
     // ===== NORTH-WEST REGION — Offshore Wind =====
-    { id: 'nw-group', type: 'group', label: 'North-West — Offshore Wind Farm' },
+    { id: 'nw-group', type: 'group', label: 'North-West — Offshore Wind Farm', style: { color: '#06b6d4' } },
     { id: 'nw-wind1', label: 'Wind Array A', icon: 'zap', description: '120 turbines, 8MW each.', status: 'online', flowRate: '960 MW', parentId: 'nw-group' },
     { id: 'nw-wind2', label: 'Wind Array B', icon: 'zap', description: '80 turbines, 10MW each.', status: 'online', flowRate: '800 MW', parentId: 'nw-group' },
     { id: 'nw-collect', label: 'Collection Bus', icon: 'zap', description: '66kV AC offshore platform.', parentId: 'nw-group' },
@@ -157,7 +157,7 @@ const hvdcDiagram: FlowDiagram = {
       sections: [{ heading: 'Topology', content: 'Half-bridge MMC' }, { heading: 'DC Voltage', content: '+/-320 kV' }], parentId: 'nw-group' },
 
     // ===== NORTH-EAST REGION — Nuclear + Hydro =====
-    { id: 'ne-group', type: 'group', label: 'North-East — Nuclear & Hydro Generation' },
+    { id: 'ne-group', type: 'group', label: 'North-East — Nuclear & Hydro Generation', style: { color: '#8b5cf6' } },
     { id: 'ne-nuclear', label: 'Nuclear Plant', icon: 'generator', description: '2x EPR reactors.',
       status: 'online', flowRate: '3200 MW', style: { color: '#8b5cf6' }, parentId: 'ne-group' },
     { id: 'ne-hydro', label: 'Pumped Hydro', icon: 'generator', description: 'Reversible pump-turbine.',
@@ -181,7 +181,7 @@ const hvdcDiagram: FlowDiagram = {
     { id: 'dc-corridor3', label: 'HVDC Link 3 (+/-320kV)', description: '280km subsea cable from offshore.', flowRate: '+/-320 kV', style: { color: '#22c55e' } },
 
     // ===== CENTRAL DC HUB =====
-    { id: 'dc-hub-group', type: 'group', label: 'Central DC Switching Hub' },
+    { id: 'dc-hub-group', type: 'group', label: 'Central DC Switching Hub', style: { color: '#ef4444' } },
     { id: 'dc-breaker1', label: 'DC Breaker 1', icon: 'switch', description: 'Hybrid HVDC circuit breaker.',
       status: 'online', sections: [{ heading: 'Rating', content: '800kV / 5kA' }, { heading: 'Op Time', content: '<2ms' }], parentId: 'dc-hub-group' },
     { id: 'dc-breaker2', label: 'DC Breaker 2', icon: 'switch', description: 'Hybrid HVDC circuit breaker.',
@@ -190,7 +190,7 @@ const hvdcDiagram: FlowDiagram = {
       status: 'warning', sections: [{ heading: 'Rating', content: '320kV / 2kA' }, { heading: 'Alert', content: 'Maintenance due' }], parentId: 'dc-hub-group' },
 
     // ===== SOUTH-WEST REGION — Industrial Load =====
-    { id: 'sw-group', type: 'group', label: 'South-West — Industrial Load Center' },
+    { id: 'sw-group', type: 'group', label: 'South-West — Industrial Load Center', style: { color: '#f59e0b' } },
     { id: 'sw-conv', label: 'Inverter Station SW', icon: 'diode', description: 'VSC-MMC DC/AC inversion.',
       status: 'online', progress: 71, flowRate: '2800 MW',
       sections: [{ heading: 'Type', content: 'FB-MMC VSC' }, { heading: 'Output', content: '400 kV AC' }], parentId: 'sw-group' },
@@ -203,7 +203,7 @@ const hvdcDiagram: FlowDiagram = {
       status: 'online', flowRate: '1600 MW', parentId: 'sw-group' },
 
     // ===== SOUTH-EAST REGION — Solar + BESS =====
-    { id: 'se-group', type: 'group', label: 'South-East — Solar & Battery Storage' },
+    { id: 'se-group', type: 'group', label: 'South-East — Solar & Battery Storage', style: { color: '#22c55e' } },
     { id: 'se-solar', label: 'Solar Farm', icon: 'zap', description: '2GW utility-scale PV.',
       status: 'online', flowRate: '1400 MW', progress: 70, style: { color: '#f59e0b' }, parentId: 'se-group' },
     { id: 'se-bess', label: 'BESS', icon: 'battery', description: '500MW / 2000MWh Li-ion.',

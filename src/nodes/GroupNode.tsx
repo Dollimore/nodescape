@@ -8,13 +8,24 @@ interface GroupNodeProps {
 }
 
 export function GroupNode({ node, editable }: GroupNodeProps) {
+  const color = node.style?.color;
+
+  const groupStyle: React.CSSProperties = {};
+  if (color) {
+    groupStyle.borderColor = color;
+    groupStyle.backgroundColor = `${color}08`; // very subtle tint
+  }
+
   return (
     <div
       className={styles.group}
       data-testid={`node-${node.id}`}
       data-editable={editable}
+      style={groupStyle}
     >
-      <div className={styles.groupLabel}>{node.label}</div>
+      <div className={styles.groupLabel} style={color ? { color } : undefined}>
+        {node.label}
+      </div>
       {node.description && <div className={styles.groupDescription}>{node.description}</div>}
     </div>
   );
