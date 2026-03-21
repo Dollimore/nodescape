@@ -1,8 +1,24 @@
 import React, { useState } from 'react';
-import type { FlowNode } from '../types';
+import type { FlowNode, NodePort } from '../types';
 import styles from './DefaultNode.module.css';
 import { NodeIcon } from './NodeIcon';
 import { SimpleMarkdown } from './SimpleMarkdown';
+
+function getPortLabelStyle(port: NodePort): React.CSSProperties {
+  const pos = port.position ?? 0.5;
+  const base: React.CSSProperties = { position: 'absolute' };
+
+  switch (port.side) {
+    case 'top':
+      return { ...base, left: `${pos * 100}%`, top: 0, transform: 'translate(-50%, -100%) translateY(-2px)' };
+    case 'bottom':
+      return { ...base, left: `${pos * 100}%`, bottom: 0, transform: 'translate(-50%, 100%) translateY(2px)' };
+    case 'left':
+      return { ...base, top: `${pos * 100}%`, left: 0, transform: 'translate(-100%, -50%) translateX(-2px)' };
+    case 'right':
+      return { ...base, top: `${pos * 100}%`, right: 0, transform: 'translate(100%, -50%) translateX(2px)' };
+  }
+}
 
 interface DefaultNodeProps {
   node: FlowNode;
@@ -102,6 +118,15 @@ export function DefaultNode({ node, editable, onCollapseToggle }: DefaultNodePro
           {node.sections!.length} section{node.sections!.length > 1 ? 's' : ''}
         </div>
       )}
+      {node.ports && node.ports.map(port => (
+        <div
+          key={port.id}
+          className={styles.portLabel}
+          style={getPortLabelStyle(port)}
+        >
+          {port.label || port.id}
+        </div>
+      ))}
     </div>
   );
 }

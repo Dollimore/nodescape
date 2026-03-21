@@ -26,7 +26,7 @@ export interface NodePort {
 
 export interface FlowNode {
   id: string;
-  type?: 'default' | 'decision' | 'start' | 'end' | 'group' | 'bus';
+  type?: 'default' | 'decision' | 'start' | 'end' | 'group' | 'bus' | 'netlabel';
   label: string;
   description?: string;
   parentId?: string; // ID of the group node this node belongs to
@@ -65,6 +65,7 @@ export interface FlowEdge {
   color?: string;
   flowAnimation?: boolean; // directional pulse traveling along the edge
   showJunction?: boolean; // show a filled dot at source/target connection points
+  showHops?: boolean; // render small semicircle hops to indicate crossovers with other wires
   annotation?: string;          // component value displayed near the edge (e.g., "10K", "22uF")
   annotationPosition?: number;  // 0-1, where along the edge to place it (default 0.5)
   thickness?: number;           // override stroke width (for current-based thickness)

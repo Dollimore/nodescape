@@ -51,8 +51,12 @@ export function computeLayout(
   for (const node of diagram.nodes) {
     if (node.type === 'group') continue; // groups are positioned after layout
     const el = nodeRefs.get(node.id);
-    const rawW = el ? el.offsetWidth : DEFAULT_NODE_WIDTH;
-    const rawH = el ? el.offsetHeight : DEFAULT_NODE_HEIGHT;
+    let rawW = el ? el.offsetWidth : DEFAULT_NODE_WIDTH;
+    let rawH = el ? el.offsetHeight : DEFAULT_NODE_HEIGHT;
+    // Swap width/height for 90/270 rotations so dagre allocates correct space
+    if (node.rotation === 90 || node.rotation === 270) {
+      [rawW, rawH] = [rawH, rawW];
+    }
     // Snap dimensions up to nearest grid unit so nodes align with the grid
     g.setNode(node.id, { width: snapUp(rawW), height: snapUp(rawH) });
   }

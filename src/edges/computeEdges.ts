@@ -1,4 +1,4 @@
-import type { FlowDiagram, LayoutEdge, LayoutNode } from '../types';
+import type { FlowDiagram, FlowNode, LayoutEdge, LayoutNode, NodePort } from '../types';
 
 /** Minimum distance a line extends straight out from a handle before bending */
 export const STUB_LENGTH = 30;
@@ -16,6 +16,25 @@ export function getHandlePosition(
     case 'bottom': return { x: cx, y: pos.y + size.height };
     case 'left': return { x: pos.x, y: cy };
     case 'right': return { x: pos.x + size.width, y: cy };
+  }
+}
+
+/** Compute exact position for a specific port on a node */
+function getPortPosition(
+  nodePos: { x: number; y: number },
+  nodeSize: { width: number; height: number },
+  port: NodePort
+): { x: number; y: number } {
+  const pos = port.position ?? 0.5;
+  switch (port.side) {
+    case 'top':
+      return { x: nodePos.x + nodeSize.width * pos, y: nodePos.y };
+    case 'bottom':
+      return { x: nodePos.x + nodeSize.width * pos, y: nodePos.y + nodeSize.height };
+    case 'left':
+      return { x: nodePos.x, y: nodePos.y + nodeSize.height * pos };
+    case 'right':
+      return { x: nodePos.x + nodeSize.width, y: nodePos.y + nodeSize.height * pos };
   }
 }
 
@@ -68,9 +87,18 @@ export function computeDynamicEdges(
   layoutNodes: LayoutNode[],
   initialPositions: { [id: string]: { x: number; y: number } },
   direction: string,
-  routing: string
+  routing: string,
+  nodes?: FlowNode[]
 ): LayoutEdge[] {
   const nodeSizes = new Map(layoutNodes.map((n) => [n.id, { width: n.width, height: n.height }]));
+
+  // Build a map from node ID to FlowNode for port lookups
+  const nodeMap = new Map<string, FlowNode>();
+  if (nodes) {
+    for (const n of nodes) {
+      nodeMap.set(n.id, n);
+    }
+  }
 
   return edges.map((edge) => {
     const sourcePos = positions[edge.source];
@@ -82,14 +110,50 @@ export function computeDynamicEdges(
       return { id: edge.id, source: edge.source, target: edge.target, points: [] };
     }
 
-    const initSource = initialPositions[edge.source] || sourcePos;
-    const initTarget = initialPositions[edge.target] || targetPos;
-    const { sourceSide, targetSide } = computeHandleSides(
-      initSource, sourceSize, initTarget, targetSize, direction
-    );
+    // Resolve port-based positions if specified
+    const sourceNode = nodeMap.get(edge.source);
+    const targetNode = nodeMap.get(edge.target);
+    const sourcePort = edge.sourcePort && sourceNode?.ports?.find(p => p.id === edge.sourcePort);
+    const targetPort = edge.targetPort && targetNode?.ports?.find(p => p.id === edge.targetPort);
 
-    const start = getHandlePosition(sourcePos, sourceSize, sourceSide);
-    const end = getHandlePosition(targetPos, targetSize, targetSide);
+    let start: { x: number; y: number };
+    let end: { x: number; y: number };
+    let sourceSide: 'top' | 'bottom' | 'left' | 'right';
+    let targetSide: 'top' | 'bottom' | 'left' | 'right';
+
+    if (sourcePort || targetPort) {
+      // When ports are specified, use port positions and sides
+      if (sourcePort) {
+        start = getPortPosition(sourcePos, sourceSize, sourcePort);
+        sourceSide = sourcePort.side;
+      } else {
+        const initSource = initialPositions[edge.source] || sourcePos;
+        const initTarget = initialPositions[edge.target] || targetPos;
+        const sides = computeHandleSides(initSource, sourceSize, initTarget, targetSize, direction);
+        sourceSide = sides.sourceSide;
+        start = getHandlePosition(sourcePos, sourceSize, sourceSide);
+      }
+
+      if (targetPort) {
+        end = getPortPosition(targetPos, targetSize, targetPort);
+        targetSide = targetPort.side;
+      } else {
+        const initSource = initialPositions[edge.source] || sourcePos;
+        const initTarget = initialPositions[edge.target] || targetPos;
+        const sides = computeHandleSides(initSource, sourceSize, initTarget, targetSize, direction);
+        targetSide = sides.targetSide;
+        end = getHandlePosition(targetPos, targetSize, targetSide);
+      }
+    } else {
+      // No ports — use standard handle-based positions
+      const initSource = initialPositions[edge.source] || sourcePos;
+      const initTarget = initialPositions[edge.target] || targetPos;
+      const sides = computeHandleSides(initSource, sourceSize, initTarget, targetSize, direction);
+      sourceSide = sides.sourceSide;
+      targetSide = sides.targetSide;
+      start = getHandlePosition(sourcePos, sourceSize, sourceSide);
+      end = getHandlePosition(targetPos, targetSize, targetSide);
+    }
 
     const edgeRouting = edge.routing || routing;
 

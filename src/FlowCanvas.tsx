@@ -148,7 +148,8 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
       layout.nodes,
       layoutPositions,
       diagram.layout?.direction || 'TB',
-      diagram.layout?.routing || 'curved'
+      diagram.layout?.routing || 'curved',
+      visibleNodes
     );
   }, [visibleEdges, positions, layout?.nodes, layoutPositions, diagram.layout?.direction, diagram.layout?.routing, layoutVersion]);
 

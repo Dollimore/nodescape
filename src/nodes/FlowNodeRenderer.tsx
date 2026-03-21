@@ -62,9 +62,17 @@ export const FlowNodeRenderer = React.forwardRef<HTMLDivElement, FlowNodeRendere
       }
     };
 
+    const nodeContent = <NodeComponent node={node} editable={editable} onCollapseToggle={onRelayout ? () => onRelayout() : undefined} />;
+
     return (
       <div ref={ref} style={style} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onContextMenu={handleContextMenu} data-node-draggable={editable || undefined}>
-        <NodeComponent node={node} editable={editable} onCollapseToggle={onRelayout ? () => onRelayout() : undefined} />
+        {node.rotation ? (
+          <div style={{ transform: `rotate(${node.rotation}deg)` }}>
+            {nodeContent}
+          </div>
+        ) : (
+          nodeContent
+        )}
       </div>
     );
   }
