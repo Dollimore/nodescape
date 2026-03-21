@@ -44,3 +44,5 @@ export type { ReactorStatus } from './utils/nuclearUtils';
 export { StoryOverlay } from './story/StoryOverlay';
 export { useStory } from './story/useStory';
 export type { StoryStep, StoryConfig } from './types';
+export { InlineMeasurement } from './edges/InlineMeasurement';
+export type { EdgeMeasurement } from './types';

@@ -3,6 +3,7 @@ import type { FlowEdge, EdgeRouting } from '../types';
 import type { LayoutEdge } from '../types';
 import { buildPath, getMidpoint, getArrowheadPoints } from './pathUtils';
 import { detectCrossovers } from './crossoverDetection';
+import { InlineMeasurement } from './InlineMeasurement';
 import styles from './Edge.module.css';
 
 interface EdgeRendererProps {
@@ -184,6 +185,42 @@ export function EdgeRenderer({ edges, layoutEdges, defaultRouting = 'curved', co
             {edge.annotation}
           </div>
         );
+      })}
+      {edges.map((edge) => {
+        if (!edge.measurements || edge.measurements.length === 0) return null;
+        const layout = layoutMap.get(edge.id);
+        if (!layout || layout.points.length < 2) return null;
+
+        return edge.measurements.map((m, mi) => {
+          const pos = m.position ?? 0.5;
+          // Find point along the path
+          const totalPoints = layout.points.length;
+          const idx = Math.min(Math.floor((totalPoints - 1) * pos), totalPoints - 2);
+          const p1 = layout.points[idx];
+          const p2 = layout.points[idx + 1];
+          const frac = ((totalPoints - 1) * pos) - idx;
+          const mx = p1.x + (p2.x - p1.x) * frac;
+          const my = p1.y + (p2.y - p1.y) * frac;
+
+          // Offset perpendicular
+          const dx = p2.x - p1.x;
+          const dy = p2.y - p1.y;
+          const len = Math.sqrt(dx * dx + dy * dy) || 1;
+          // Alternate offset direction for multiple measurements
+          const dir = mi % 2 === 0 ? 1 : -1;
+          const offsetX = (-dy / len) * 20 * dir;
+          const offsetY = (dx / len) * 20 * dir;
+
+          return (
+            <InlineMeasurement
+              key={`m-${edge.id}-${mi}`}
+              measurement={m}
+              x={mx + offsetX}
+              y={my + offsetY}
+              isDragging={isDragging}
+            />
+          );
+        });
       })}
     </>
   );

@@ -665,7 +665,13 @@ const nuclearDiagram: FlowDiagram = {
     { id: 'n19', source: 'circ-pump', target: 'cooling-tower-2', color: '#06b6d4', flowAnimation: true },
 
     // Grid
-    { id: 'n20', source: 'generator', target: 'xfmr-main', color: '#22c55e', flowAnimation: true, annotation: '22kV', thickness: 4 },
+    { id: 'n20', source: 'generator', target: 'xfmr-main', color: '#22c55e', flowAnimation: true, annotation: '22kV', thickness: 4,
+      measurements: [
+        { label: 'P', value: '1200', unit: 'MW' },
+        { label: 'V', value: '22', unit: 'kV' },
+        { label: 'I', value: '31.5', unit: 'kA' },
+      ],
+    },
     { id: 'n21', source: 'xfmr-main', target: 'grid', color: '#22c55e', flowAnimation: true, annotation: '400kV', thickness: 4 },
     { id: 'n22', source: 'grid', target: 'nl-grid', color: '#22c55e', type: 'dashed' },
 
