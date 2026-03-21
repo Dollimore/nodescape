@@ -20,20 +20,23 @@
   height: 20000px;
 }
 
+/* 8px grid with dots at every intersection, plus bolder lines every 32px */
 .dotGrid {
   background-image:
-    linear-gradient(var(--fc-grid-line, rgba(0,0,0,0.06)) 1px, transparent 1px),
-    linear-gradient(90deg, var(--fc-grid-line, rgba(0,0,0,0.06)) 1px, transparent 1px),
-    radial-gradient(circle, var(--fc-dot) 1.5px, transparent 1.5px);
-  background-size: 32px 32px;
+    linear-gradient(var(--fc-grid-line-major, rgba(0,0,0,0.08)) 1px, transparent 1px),
+    linear-gradient(90deg, var(--fc-grid-line-major, rgba(0,0,0,0.08)) 1px, transparent 1px),
+    linear-gradient(var(--fc-grid-line, rgba(0,0,0,0.03)) 1px, transparent 1px),
+    linear-gradient(90deg, var(--fc-grid-line, rgba(0,0,0,0.03)) 1px, transparent 1px);
+  background-size: 32px 32px, 32px 32px, 8px 8px, 8px 8px;
 }
 
 .isometricDots {
   background-image:
-    linear-gradient(var(--fc-grid-line, rgba(0,0,0,0.06)) 1px, transparent 1px),
-    linear-gradient(90deg, var(--fc-grid-line, rgba(0,0,0,0.06)) 1px, transparent 1px),
-    radial-gradient(circle, var(--fc-dot) 1.5px, transparent 1.5px);
-  background-size: 32px 32px;
+    linear-gradient(var(--fc-grid-line-major, rgba(0,0,0,0.08)) 1px, transparent 1px),
+    linear-gradient(90deg, var(--fc-grid-line-major, rgba(0,0,0,0.08)) 1px, transparent 1px),
+    linear-gradient(var(--fc-grid-line, rgba(0,0,0,0.03)) 1px, transparent 1px),
+    linear-gradient(90deg, var(--fc-grid-line, rgba(0,0,0,0.03)) 1px, transparent 1px);
+  background-size: 32px 32px, 32px 32px, 8px 8px, 8px 8px;
 }
 
 .plain {

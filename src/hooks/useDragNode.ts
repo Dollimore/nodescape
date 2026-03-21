@@ -1,8 +1,7 @@
 import { useCallback, useRef, useState } from 'react';
 import React from 'react';
 
-// Snap to visual grid lines (every 32px)
-const GRID_SIZE = 32;
+const GRID_SIZE = 8;
 
 function snapToGrid(value: number, gridSize: number): number {
   return Math.round(value / gridSize) * gridSize;

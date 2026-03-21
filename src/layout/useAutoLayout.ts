@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import * as dagre from 'dagre';
 import type { FlowDiagram, LayoutResult, LayoutNode, LayoutEdge } from '../types';
 
-const DEFAULT_NODE_WIDTH = 192; // 6 * 32
-const DEFAULT_NODE_HEIGHT = 64;  // 2 * 32
+const DEFAULT_NODE_WIDTH = 192; // 24 * 8
+const DEFAULT_NODE_HEIGHT = 64;  // 8 * 8
 
 export function useAutoLayout(
   diagram: FlowDiagram,
@@ -32,19 +32,19 @@ export function computeLayout(
   g.setDefaultEdgeLabel(() => ({}));
 
   const direction = diagram.layout?.direction || 'TB';
-  const nodeSpacing = diagram.layout?.nodeSpacing ?? 64;  // 2 * 32
-  const rankSpacing = diagram.layout?.rankSpacing ?? 96;  // 3 * 32
+  const nodeSpacing = diagram.layout?.nodeSpacing ?? 64;  // 8 * 8
+  const rankSpacing = diagram.layout?.rankSpacing ?? 80;  // 10 * 8
 
   g.setGraph({
     rankdir: direction,
     nodesep: nodeSpacing,
     ranksep: rankSpacing,
-    marginx: 32,
+    marginx: 32, // 4 * 8
     marginy: 32,
   });
 
-  // Visual grid lines are every 32px. Node edges must land ON these lines.
-  const GRID = 32;
+  // Universal 8px grid. All dimensions and positions are multiples of 8.
+  const GRID = 8;
   const snapUp = (v: number) => Math.ceil(v / GRID) * GRID;
 
   for (const node of diagram.nodes) {
