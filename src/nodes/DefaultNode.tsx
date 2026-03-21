@@ -26,9 +26,10 @@ interface DefaultNodeProps {
   onCollapseToggle?: (nodeId: string, collapsed: boolean) => void;
   onHandleDrag?: (nodeId: string, side: string, e: React.MouseEvent) => void;
   onLabelChange?: (nodeId: string, newLabel: string) => void;
+  detailLevel?: 'minimal' | 'compact' | 'full';
 }
 
-export function DefaultNode({ node, editable, onCollapseToggle, onHandleDrag, onLabelChange }: DefaultNodeProps) {
+export function DefaultNode({ node, editable, onCollapseToggle, onHandleDrag, onLabelChange, detailLevel = 'full' }: DefaultNodeProps) {
   const [isCollapsed, setIsCollapsed] = useState(node.collapsed ?? false);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -135,16 +136,16 @@ export function DefaultNode({ node, editable, onCollapseToggle, onHandleDrag, on
           </button>
         )}
       </div>
-      {node.description && <SimpleMarkdown text={node.description} className={styles.description} />}
-      {node.flowRate && (
+      {detailLevel !== 'minimal' && node.description && <SimpleMarkdown text={node.description} className={styles.description} />}
+      {detailLevel !== 'minimal' && node.flowRate && (
         <div className={styles.flowRate}>{node.flowRate}</div>
       )}
-      {node.progress !== undefined && (
+      {detailLevel !== 'minimal' && node.progress !== undefined && (
         <div className={styles.progressBar}>
           <div className={styles.progressFill} style={{ width: `${Math.min(100, Math.max(0, node.progress))}%` }} />
         </div>
       )}
-      {hasSections && !isCollapsed && (
+      {detailLevel === 'full' && hasSections && !isCollapsed && (
         <div className={styles.sections}>
           {node.sections!.map((section, i) => (
             <div key={i} className={styles.section}>
@@ -156,12 +157,12 @@ export function DefaultNode({ node, editable, onCollapseToggle, onHandleDrag, on
           ))}
         </div>
       )}
-      {isCollapsed && hasSections && (
+      {detailLevel !== 'minimal' && isCollapsed && hasSections && (
         <div className={styles.collapsedIndicator}>
           {node.sections!.length} section{node.sections!.length > 1 ? 's' : ''}
         </div>
       )}
-      {node.ports && node.ports.map(port => (
+      {detailLevel !== 'minimal' && node.ports && node.ports.map(port => (
         <div
           key={port.id}
           className={styles.portLabel}

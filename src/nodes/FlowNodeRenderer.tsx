@@ -24,10 +24,11 @@ interface FlowNodeRendererProps {
   onHandleDrag?: (nodeId: string, side: string, e: React.MouseEvent) => void;
   onLabelChange?: (nodeId: string, newLabel: string) => void;
   isOverlapping?: boolean;
+  detailLevel?: 'minimal' | 'compact' | 'full';
 }
 
 export const FlowNodeRenderer = React.forwardRef<HTMLDivElement, FlowNodeRendererProps>(
-  function FlowNodeRenderer({ node, editable, position, size, onDragStart, isDragging, onClick, onNodeSelect, isSelected, isOverlapping, customRenderers, onNodeContextMenu, onRelayout, onHandleDrag, onLabelChange }, ref) {
+  function FlowNodeRenderer({ node, editable, position, size, onDragStart, isDragging, onClick, onNodeSelect, isSelected, isOverlapping, customRenderers, onNodeContextMenu, onRelayout, onHandleDrag, onLabelChange, detailLevel = 'full' }, ref) {
     const startPos = useRef<{ x: number; y: number } | null>(null);
 
     const style: React.CSSProperties = {
@@ -78,10 +79,10 @@ export const FlowNodeRenderer = React.forwardRef<HTMLDivElement, FlowNodeRendere
       }
     };
 
-    const nodeContent = <NodeComponent node={node} editable={editable} onCollapseToggle={onRelayout ? () => onRelayout() : undefined} onHandleDrag={onHandleDrag} {...(NodeComponent === DefaultNode ? { onLabelChange } : {})} />;
+    const nodeContent = <NodeComponent node={node} editable={editable} onCollapseToggle={onRelayout ? () => onRelayout() : undefined} onHandleDrag={onHandleDrag} {...(NodeComponent === DefaultNode ? { onLabelChange, detailLevel } : {})} />;
 
     return (
-      <div ref={ref} style={style} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onContextMenu={handleContextMenu} data-node-draggable={editable || undefined}>
+      <div ref={ref} style={style} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onContextMenu={handleContextMenu} data-node-draggable={editable || undefined} data-node-id={node.id}>
         {node.rotation ? (
           <div style={{ transform: `rotate(${node.rotation}deg)` }}>
             {nodeContent}

@@ -125,6 +125,7 @@ export interface FlowCanvasProps {
   onNodesPaste?: (position: { x: number; y: number }) => void;
   onEdgeCreate?: (source: string, target: string) => void;
   onNodeLabelChange?: (nodeId: string, newLabel: string) => void;
+  contextualZoom?: boolean;
 }
 
 export interface LayoutNode {

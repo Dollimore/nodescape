@@ -55,8 +55,17 @@ function getVisibleNodesAndEdges(diagram: FlowDiagram): { nodes: FlowNode[]; edg
 
 
 export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
-  function FlowCanvas({ diagram, mode = 'view', className, onDiagramChange, background, minimap, theme, onNodeClick, nodeRenderers, onContextMenu, contextMenu, onNodeCollapse, sidebar, onNodeDrop, themeToggle, onThemeChange, zoomControls, onUndo, onRedo, canUndo, canRedo, onSelectionChange, onNodesDelete, onNodesCopy, onNodesPaste, onEdgeCreate, onNodeLabelChange }: FlowCanvasProps, ref) {
+  function FlowCanvas({ diagram, mode = 'view', className, onDiagramChange, background, minimap, theme, onNodeClick, nodeRenderers, onContextMenu, contextMenu, onNodeCollapse, sidebar, onNodeDrop, themeToggle, onThemeChange, zoomControls, onUndo, onRedo, canUndo, canRedo, onSelectionChange, onNodesDelete, onNodesCopy, onNodesPaste, onEdgeCreate, onNodeLabelChange, contextualZoom }: FlowCanvasProps, ref) {
   const editable = mode === 'edit';
+
+  const [currentScale, setCurrentScale] = useState(1);
+  const detailLevel: 'minimal' | 'compact' | 'full' = !contextualZoom
+    ? 'full'
+    : currentScale < 0.3
+    ? 'minimal'
+    : currentScale < 0.6
+    ? 'compact'
+    : 'full';
 
   const [internalTheme, setInternalTheme] = useState<'light' | 'dark'>(theme || 'light');
   const activeTheme = theme !== undefined && !themeToggle ? theme : internalTheme;
@@ -350,6 +359,14 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
     return set;
   }, [diagram.edges]);
 
+  const handleLassoSelect = useCallback((nodeIds: string[]) => {
+    setSelectedNodeIds(prev => {
+      const next = new Set(prev);
+      for (const id of nodeIds) next.add(id);
+      return next;
+    });
+  }, []);
+
   const handleCanvasDrop = useCallback((e: React.DragEvent) => {
     const data = e.dataTransfer.getData('application/drawing-mvp-node');
     if (!data || !onNodeDrop) return;
@@ -388,6 +405,8 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
       onPaste={editable ? handlePaste : undefined}
       onConnectionMouseMove={editable ? handleConnectionMouseMove : undefined}
       onConnectionMouseUp={editable ? handleConnectionMouseUp : undefined}
+      onLassoSelect={editable ? handleLassoSelect : undefined}
+      onZoomChange={contextualZoom ? setCurrentScale : undefined}
     >
       {layout && (
         <EdgeRenderer
@@ -424,6 +443,7 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
           editable={editable}
           position={positions[node.id] || { x: 0, y: 0 }}
           size={nodeSizesMap.get(node.id)}
+          detailLevel={detailLevel}
           onDragStart={editable ? onDragStart : undefined}
           isDragging={isDragging}
           onClick={onNodeClick ? () => onNodeClick(node.id, node) : undefined}
