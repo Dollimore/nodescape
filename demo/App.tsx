@@ -450,6 +450,7 @@ export function App() {
         onNodeDrop={(template, pos) => console.log('Dropped:', template.label, 'at', pos)}
         onNodesDelete={(ids) => console.log('Delete nodes:', ids)}
         onSelectionChange={(ids) => console.log('Selected:', ids)}
+        onNodeLabelChange={(id, label) => console.log('Label changed:', id, label)}
       />
     </div>
   );

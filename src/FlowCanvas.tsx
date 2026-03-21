@@ -55,7 +55,7 @@ function getVisibleNodesAndEdges(diagram: FlowDiagram): { nodes: FlowNode[]; edg
 
 
 export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
-  function FlowCanvas({ diagram, mode = 'view', className, onDiagramChange, background, minimap, theme, onNodeClick, nodeRenderers, onContextMenu, contextMenu, onNodeCollapse, sidebar, onNodeDrop, themeToggle, onThemeChange, zoomControls, onUndo, onRedo, canUndo, canRedo, onSelectionChange, onNodesDelete, onNodesCopy, onNodesPaste, onEdgeCreate }: FlowCanvasProps, ref) {
+  function FlowCanvas({ diagram, mode = 'view', className, onDiagramChange, background, minimap, theme, onNodeClick, nodeRenderers, onContextMenu, contextMenu, onNodeCollapse, sidebar, onNodeDrop, themeToggle, onThemeChange, zoomControls, onUndo, onRedo, canUndo, canRedo, onSelectionChange, onNodesDelete, onNodesCopy, onNodesPaste, onEdgeCreate, onNodeLabelChange }: FlowCanvasProps, ref) {
   const editable = mode === 'edit';
 
   const [internalTheme, setInternalTheme] = useState<'light' | 'dark'>(theme || 'light');
@@ -301,6 +301,46 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
     return lines;
   }, [isDragging, positions, layout, layoutPositions]);
 
+  // Compute overlapping node IDs for visual feedback during drag
+  const overlappingNodeIds = useMemo(() => {
+    if (!isDragging || !layout) return new Set<string>();
+
+    const nodeSizes = new Map(layout.nodes.map(n => [n.id, { width: n.width, height: n.height }]));
+    const overlapping = new Set<string>();
+
+    const nodeIds = Object.keys(positions);
+    for (let i = 0; i < nodeIds.length; i++) {
+      for (let j = i + 1; j < nodeIds.length; j++) {
+        const a = nodeIds[i];
+        const b = nodeIds[j];
+        const posA = positions[a];
+        const posB = positions[b];
+        const sizeA = nodeSizes.get(a);
+        const sizeB = nodeSizes.get(b);
+        if (!posA || !posB || !sizeA || !sizeB) continue;
+
+        // Skip group nodes
+        const nodeA = diagram.nodes.find(n => n.id === a);
+        const nodeB = diagram.nodes.find(n => n.id === b);
+        if (nodeA?.type === 'group' || nodeB?.type === 'group') continue;
+        // Skip parent-child pairs
+        if (nodeA?.parentId === b || nodeB?.parentId === a) continue;
+
+        if (
+          posA.x < posB.x + sizeB.width &&
+          posA.x + sizeA.width > posB.x &&
+          posA.y < posB.y + sizeB.height &&
+          posA.y + sizeA.height > posB.y
+        ) {
+          overlapping.add(a);
+          overlapping.add(b);
+        }
+      }
+    }
+
+    return overlapping;
+  }, [isDragging, positions, layout, diagram.nodes]);
+
   // Build a set of node IDs that have outgoing edges (used for collapse menu items)
   const nodesWithOutgoingEdges = useMemo(() => {
     const set = new Set<string>();
@@ -400,6 +440,7 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
             }
           }}
           isSelected={selectedNodeIds.has(node.id)}
+          isOverlapping={overlappingNodeIds.has(node.id)}
           customRenderers={nodeRenderers}
           onRelayout={triggerRelayout}
           onHandleDrag={editable ? handleHandleDrag : undefined}
@@ -418,6 +459,7 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
               });
             }
           }}
+          onLabelChange={onNodeLabelChange}
         />
       ))}
     </CanvasView>

@@ -22,10 +22,12 @@ interface FlowNodeRendererProps {
   onNodeContextMenu?: (nodeId: string, e: React.MouseEvent) => void;
   onRelayout?: () => void;
   onHandleDrag?: (nodeId: string, side: string, e: React.MouseEvent) => void;
+  onLabelChange?: (nodeId: string, newLabel: string) => void;
+  isOverlapping?: boolean;
 }
 
 export const FlowNodeRenderer = React.forwardRef<HTMLDivElement, FlowNodeRendererProps>(
-  function FlowNodeRenderer({ node, editable, position, size, onDragStart, isDragging, onClick, onNodeSelect, isSelected, customRenderers, onNodeContextMenu, onRelayout, onHandleDrag }, ref) {
+  function FlowNodeRenderer({ node, editable, position, size, onDragStart, isDragging, onClick, onNodeSelect, isSelected, isOverlapping, customRenderers, onNodeContextMenu, onRelayout, onHandleDrag, onLabelChange }, ref) {
     const startPos = useRef<{ x: number; y: number } | null>(null);
 
     const style: React.CSSProperties = {
@@ -39,6 +41,7 @@ export const FlowNodeRenderer = React.forwardRef<HTMLDivElement, FlowNodeRendere
         ...(node.type === 'group' ? { height: size.height } : { minHeight: size.height }),
       } : {}),
       ...(isSelected ? { outline: '2px solid #3b82f6', outlineOffset: '2px' } : {}),
+      ...(isOverlapping && !isSelected ? { outline: '2px solid #ef4444', outlineOffset: '1px' } : {}),
     };
 
     const handleMouseDown = (e: React.MouseEvent) => {
@@ -75,7 +78,7 @@ export const FlowNodeRenderer = React.forwardRef<HTMLDivElement, FlowNodeRendere
       }
     };
 
-    const nodeContent = <NodeComponent node={node} editable={editable} onCollapseToggle={onRelayout ? () => onRelayout() : undefined} onHandleDrag={onHandleDrag} />;
+    const nodeContent = <NodeComponent node={node} editable={editable} onCollapseToggle={onRelayout ? () => onRelayout() : undefined} onHandleDrag={onHandleDrag} {...(NodeComponent === DefaultNode ? { onLabelChange } : {})} />;
 
     return (
       <div ref={ref} style={style} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onContextMenu={handleContextMenu} data-node-draggable={editable || undefined}>

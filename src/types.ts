@@ -123,6 +123,7 @@ export interface FlowCanvasProps {
   onNodesCopy?: (nodes: FlowNode[]) => void;
   onNodesPaste?: (position: { x: number; y: number }) => void;
   onEdgeCreate?: (source: string, target: string) => void;
+  onNodeLabelChange?: (nodeId: string, newLabel: string) => void;
 }
 
 export interface LayoutNode {

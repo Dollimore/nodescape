@@ -25,10 +25,12 @@ interface DefaultNodeProps {
   editable: boolean;
   onCollapseToggle?: (nodeId: string, collapsed: boolean) => void;
   onHandleDrag?: (nodeId: string, side: string, e: React.MouseEvent) => void;
+  onLabelChange?: (nodeId: string, newLabel: string) => void;
 }
 
-export function DefaultNode({ node, editable, onCollapseToggle, onHandleDrag }: DefaultNodeProps) {
+export function DefaultNode({ node, editable, onCollapseToggle, onHandleDrag, onLabelChange }: DefaultNodeProps) {
   const [isCollapsed, setIsCollapsed] = useState(node.collapsed ?? false);
+  const [isEditing, setIsEditing] = useState(false);
 
   const customColor = node.style?.color;
   const variant = node.style?.variant || 'outlined';
@@ -76,15 +78,39 @@ export function DefaultNode({ node, editable, onCollapseToggle, onHandleDrag }: 
         }}
       />
       <div className={styles.labelRow}>
-        {node.icon ? (
+        {isEditing ? (
+          <input
+            className={styles.labelInput}
+            defaultValue={node.label}
+            autoFocus
+            onFocus={(e) => e.target.select()}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                const val = (e.target as HTMLInputElement).value.trim();
+                if (val && onLabelChange) onLabelChange(node.id, val);
+                setIsEditing(false);
+              } else if (e.key === 'Escape') {
+                setIsEditing(false);
+              }
+            }}
+            onBlur={(e) => {
+              const val = e.target.value.trim();
+              if (val && onLabelChange) onLabelChange(node.id, val);
+              setIsEditing(false);
+            }}
+            onClick={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
+          />
+        ) : node.icon ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <span style={{ flexShrink: 0 }}>
               <NodeIcon icon={node.icon} size={16} color={node.style?.color || '#666'} />
             </span>
-            <div className={styles.label} style={{ marginBottom: 0 }}>{node.label}</div>
+            <div className={styles.label} style={{ marginBottom: 0 }} onDoubleClick={() => editable && setIsEditing(true)}>{node.label}</div>
           </div>
         ) : (
-          <div className={styles.label} style={{ marginBottom: 0 }}>{node.label}</div>
+          <div className={styles.label} style={{ marginBottom: 0 }} onDoubleClick={() => editable && setIsEditing(true)}>{node.label}</div>
         )}
         {hasSections && (
           <button
