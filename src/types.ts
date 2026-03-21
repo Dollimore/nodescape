@@ -5,6 +5,7 @@ export type EdgeRouting = 'curved' | 'orthogonal' | 'straight';
 export interface FlowDiagram {
   title?: string;
   layout?: {
+    engine?: 'dagre' | 'force';
     direction?: 'TB' | 'LR' | 'BT' | 'RL';
     nodeSpacing?: number;
     rankSpacing?: number;
