@@ -184,20 +184,24 @@ export function computeDynamicEdges(
           // Aligned and going in the right direction — straight line
           points = [start, end];
         } else if (needsWrapAround) {
-          // Edge goes "backwards" — route around the source node
-          // Go out from handle, then sideways to clear the node, then up/down to target
+          // Edge goes "backwards" — route around via the closest side
+          const sourceLeft = sourcePos.x;
           const sourceRight = sourcePos.x + sourceSize.width;
+          const targetLeft = targetPos.x;
           const targetRight = targetPos.x + targetSize.width;
-          // Pick the side that gives more room (right side of whichever is wider)
-          const clearX = Math.max(sourceRight, targetRight) + STUB_LENGTH;
+
+          // Pick the side (left or right) that requires the shortest detour
+          const clearRight = Math.max(sourceRight, targetRight) + STUB_LENGTH;
+          const clearLeft = Math.min(sourceLeft, targetLeft) - STUB_LENGTH;
+          const distRight = clearRight - start.x;
+          const distLeft = start.x - clearLeft;
+          const clearX = distLeft < distRight ? clearLeft : clearRight;
 
           points = [
             start,
             stubOut,
-            { x: stubOut.x, y: stubOut.y },
             { x: clearX, y: stubOut.y },
             { x: clearX, y: stubIn.y },
-            { x: stubIn.x, y: stubIn.y },
             stubIn,
             end,
           ];
@@ -223,9 +227,16 @@ export function computeDynamicEdges(
         if (Math.abs(start.y - end.y) < 1 && !needsWrapAround) {
           points = [start, end];
         } else if (needsWrapAround) {
+          const sourceTop = sourcePos.y;
           const sourceBottom = sourcePos.y + sourceSize.height;
+          const targetTop = targetPos.y;
           const targetBottom = targetPos.y + targetSize.height;
-          const clearY = Math.max(sourceBottom, targetBottom) + STUB_LENGTH;
+
+          const clearBottom = Math.max(sourceBottom, targetBottom) + STUB_LENGTH;
+          const clearTop = Math.min(sourceTop, targetTop) - STUB_LENGTH;
+          const distBottom = clearBottom - start.y;
+          const distTop = start.y - clearTop;
+          const clearY = distTop < distBottom ? clearTop : clearBottom;
 
           points = [
             start,
