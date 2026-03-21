@@ -368,7 +368,7 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
   }, []);
 
   const handleCanvasDrop = useCallback((e: React.DragEvent) => {
-    const data = e.dataTransfer.getData('application/drawing-mvp-node');
+    const data = e.dataTransfer.getData('application/nodescape-node');
     if (!data || !onNodeDrop) return;
     e.preventDefault();
     const template = JSON.parse(data);

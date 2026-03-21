@@ -11,7 +11,7 @@ interface DragDropSidebarProps {
 
 export function DragDropSidebar({ templates }: DragDropSidebarProps) {
   const handleDragStart = (e: React.DragEvent, template: SidebarNodeTemplate) => {
-    e.dataTransfer.setData('application/drawing-mvp-node', JSON.stringify(template));
+    e.dataTransfer.setData('application/nodescape-node', JSON.stringify(template));
     e.dataTransfer.effectAllowed = 'copy';
   };
 
