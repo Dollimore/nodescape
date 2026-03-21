@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { FlowCanvas } from '../src';
 import type { FlowDiagram } from '../src';
+import type { FlowCanvasRef } from '../src/FlowCanvas';
 
 const sampleDiagram: FlowDiagram = {
   title: 'User Authentication Flow',
@@ -39,10 +40,109 @@ const sampleDiagram: FlowDiagram = {
   ],
 };
 
+const horizontalDiagram: FlowDiagram = {
+  title: 'Data Pipeline',
+  layout: { direction: 'LR', routing: 'orthogonal', cornerRadius: 12 },
+  nodes: [
+    { id: 'ingest', type: 'start', label: 'Ingest', description: 'Receive raw data from API.', icon: 'download' },
+    { id: 'validate', label: 'Validate', description: 'Check schema and types.', icon: 'shield-check' },
+    { id: 'transform', label: 'Transform', description: 'Normalize and enrich data.', icon: 'refresh-cw' },
+    { id: 'check', type: 'decision', label: 'Quality check?', icon: 'check-circle' },
+    { id: 'store', label: 'Store', description: 'Write to database.', icon: 'database' },
+    { id: 'reject', type: 'end', label: 'Reject', description: 'Send to dead letter queue.', icon: 'x-circle' },
+    { id: 'done', type: 'end', label: 'Complete', icon: 'check' },
+  ],
+  edges: [
+    { id: 'h1', source: 'ingest', target: 'validate' },
+    { id: 'h2', source: 'validate', target: 'transform' },
+    { id: 'h3', source: 'transform', target: 'check' },
+    { id: 'h4', source: 'check', target: 'store', label: 'Pass', type: 'success' },
+    { id: 'h5', source: 'check', target: 'reject', label: 'Fail', type: 'failure' },
+    { id: 'h6', source: 'store', target: 'done' },
+  ],
+};
+
 export function App() {
+  const [activeDemo, setActiveDemo] = React.useState<'vertical' | 'horizontal'>('vertical');
+  const diagram = activeDemo === 'vertical' ? sampleDiagram : horizontalDiagram;
+  const canvasRef = useRef<FlowCanvasRef>(null);
+
   return (
-    <div style={{ width: '100%', height: '100vh' }}>
-      <FlowCanvas diagram={sampleDiagram} mode="edit" onDiagramChange={console.log} background="isometric" minimap theme="dark" onNodeClick={(id, node) => console.log('Node clicked:', id, node.label)} />
+    <div style={{ width: '100%', height: '100vh', position: 'relative' }}>
+      <div style={{ position: 'absolute', top: 16, right: 16, display: 'flex', gap: 8, zIndex: 20 }}>
+        <button
+          onClick={() => canvasRef.current?.downloadPng()}
+          style={{
+            padding: '6px 12px',
+            borderRadius: 6,
+            border: '1px solid #e0e0e0',
+            background: '#fff',
+            cursor: 'pointer',
+            fontSize: 12,
+            fontWeight: 600,
+          }}
+        >
+          Export PNG
+        </button>
+        <button
+          onClick={() => canvasRef.current?.downloadSvg()}
+          style={{
+            padding: '6px 12px',
+            borderRadius: 6,
+            border: '1px solid #e0e0e0',
+            background: '#fff',
+            cursor: 'pointer',
+            fontSize: 12,
+            fontWeight: 600,
+          }}
+        >
+          Export SVG
+        </button>
+      </div>
+      <div style={{ position: 'absolute', top: 16, left: 16, display: 'flex', gap: 8, zIndex: 20 }}>
+        <button
+          onClick={() => setActiveDemo('vertical')}
+          style={{
+            padding: '6px 12px',
+            borderRadius: 6,
+            border: '1px solid rgba(255,255,255,0.15)',
+            background: activeDemo === 'vertical' ? '#e2e8f0' : 'rgba(22,33,62,0.85)',
+            color: activeDemo === 'vertical' ? '#1a1a1a' : '#e2e8f0',
+            cursor: 'pointer',
+            fontSize: 12,
+            fontWeight: 600,
+            backdropFilter: 'blur(4px)',
+          }}
+        >
+          Vertical (TB)
+        </button>
+        <button
+          onClick={() => setActiveDemo('horizontal')}
+          style={{
+            padding: '6px 12px',
+            borderRadius: 6,
+            border: '1px solid rgba(255,255,255,0.15)',
+            background: activeDemo === 'horizontal' ? '#e2e8f0' : 'rgba(22,33,62,0.85)',
+            color: activeDemo === 'horizontal' ? '#1a1a1a' : '#e2e8f0',
+            cursor: 'pointer',
+            fontSize: 12,
+            fontWeight: 600,
+            backdropFilter: 'blur(4px)',
+          }}
+        >
+          Horizontal (LR)
+        </button>
+      </div>
+      <FlowCanvas
+        ref={canvasRef}
+        diagram={diagram}
+        mode="edit"
+        onDiagramChange={console.log}
+        background="isometric"
+        minimap
+        theme="dark"
+        onNodeClick={(id, node) => console.log('Node clicked:', id, node.label)}
+      />
     </div>
   );
 }
