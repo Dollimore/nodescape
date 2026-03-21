@@ -43,8 +43,8 @@ export const FlowNodeRenderer = React.forwardRef<HTMLDivElement, FlowNodeRendere
         width: size.width,
         ...(node.type === 'group' ? { height: size.height } : { minHeight: size.height }),
       } : {}),
-      ...(isSelected ? { outline: '2px solid #3b82f6', outlineOffset: '2px' } : {}),
-      ...(isOverlapping && !isSelected ? { outline: '2px solid #ef4444', outlineOffset: '1px' } : {}),
+      ...(isSelected ? { boxShadow: '0 0 0 2px #3b82f6', borderRadius: '10px' } : {}),
+      ...(isOverlapping && !isSelected ? { boxShadow: '0 0 0 2px #ef4444', borderRadius: '10px' } : {}),
     };
 
     const handleMouseDown = (e: React.MouseEvent) => {
