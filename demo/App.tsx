@@ -5,7 +5,7 @@ import type { FlowCanvasRef } from '../src/FlowCanvas';
 
 const sampleDiagram: FlowDiagram = {
   title: 'User Authentication Flow',
-  layout: { direction: 'TB', routing: 'orthogonal', cornerRadius: 16 },
+  layout: { direction: 'TB', routing: 'orthogonal', cornerRadius: 24 },
   nodes: [
     { id: 'start', type: 'start', label: 'User visits login page', icon: 'log-in' },
     { id: 'input', label: 'Enter credentials', description: 'User provides **email** and `password`.', icon: 'key-round' },
@@ -45,7 +45,7 @@ const sampleDiagram: FlowDiagram = {
 
 const horizontalDiagram: FlowDiagram = {
   title: 'Data Pipeline',
-  layout: { direction: 'LR', routing: 'orthogonal', cornerRadius: 12 },
+  layout: { direction: 'LR', routing: 'orthogonal', cornerRadius: 24 },
   nodes: [
     { id: 'ingest', type: 'start', label: 'Ingest', description: 'Receive raw data from API.', icon: 'download' },
     { id: 'validate', label: 'Validate', description: 'Check schema and types.', icon: 'shield-check' },
@@ -67,7 +67,7 @@ const horizontalDiagram: FlowDiagram = {
 
 const datacenterDiagram: FlowDiagram = {
   title: 'Data Center Power Distribution',
-  layout: { direction: 'TB', routing: 'orthogonal', cornerRadius: 12 },
+  layout: { direction: 'TB', routing: 'orthogonal', cornerRadius: 24 },
   nodes: [
     { id: 'grid', type: 'start', label: 'Utility Grid', icon: 'zap', status: 'online', flowRate: '12.4 MW' },
     { id: 'xfmr', label: 'Main Transformer', description: '132kV to 11kV step-down.', icon: 'box', status: 'online', progress: 78 },

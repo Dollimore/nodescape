@@ -1,14 +1,14 @@
 {
-  "name": "drawing-mvp",
+  "name": "nodescape",
   "version": "0.1.0",
   "type": "module",
-  "main": "dist/drawing-mvp.cjs",
-  "module": "dist/drawing-mvp.js",
+  "main": "dist/nodescape.cjs",
+  "module": "dist/nodescape.js",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/drawing-mvp.js",
-      "require": "./dist/drawing-mvp.cjs"
+      "import": "./dist/nodescape.js",
+      "require": "./dist/nodescape.cjs"
     },
     "./style.css": "./dist/style.css"
   },

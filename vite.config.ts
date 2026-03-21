@@ -8,8 +8,8 @@ export default defineConfig(({ command }) => ({
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
-      name: 'DrawingMVP',
-      fileName: 'drawing-mvp',
+      name: 'Nodescape',
+      fileName: 'nodescape',
       formats: ['es', 'cjs'],
     },
     rollupOptions: {

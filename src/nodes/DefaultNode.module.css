@@ -100,6 +100,18 @@
   background: var(--fc-handle-bg);
   border: 1.5px solid var(--fc-handle-border);
   border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+/* Show handles at reduced opacity when hovering any node */
+.node:hover .handle {
+  opacity: 0.6;
+}
+
+/* Show handles at full opacity when hovering an editable node */
+.node[data-editable="true"]:hover .handle {
+  opacity: 1;
 }
 
 .handleTop {

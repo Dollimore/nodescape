@@ -10,6 +10,8 @@ export type {
   EdgeRouting,
   ContextMenuItem,
   SidebarNodeTemplate,
+  CanvasBackground,
+  CustomNodeProps,
 } from './types';
 export { serializeDiagram, deserializeDiagram, saveDiagramToStorage, loadDiagramFromStorage } from './utils/serialization';
 export { DragDropSidebar } from './sidebar/DragDropSidebar';
