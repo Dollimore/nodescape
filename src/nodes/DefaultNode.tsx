@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { FlowNode } from '../types';
 import styles from './DefaultNode.module.css';
 import { NodeIcon } from './NodeIcon';
@@ -10,6 +10,8 @@ interface DefaultNodeProps {
 }
 
 export function DefaultNode({ node, editable }: DefaultNodeProps) {
+  const [isCollapsed, setIsCollapsed] = useState(node.collapsed ?? false);
+
   const customColor = node.style?.color;
   const variant = node.style?.variant || 'outlined';
 
@@ -25,6 +27,8 @@ export function DefaultNode({ node, editable }: DefaultNodeProps) {
     nodeStyle.boxShadow = 'none';
   }
 
+  const hasSections = node.sections && node.sections.length > 0;
+
   return (
     <div
       className={styles.node}
@@ -34,20 +38,39 @@ export function DefaultNode({ node, editable }: DefaultNodeProps) {
     >
       <div className={styles.handle + ' ' + styles.handleTop} />
       <div className={styles.handle + ' ' + styles.handleBottom} />
-      {node.icon ? (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '3px' }}>
-          <span style={{ flexShrink: 0 }}>
-            <NodeIcon icon={node.icon} size={16} color={node.style?.color || '#666'} />
-          </span>
+      <div className={styles.labelRow}>
+        {node.icon ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ flexShrink: 0 }}>
+              <NodeIcon icon={node.icon} size={16} color={node.style?.color || '#666'} />
+            </span>
+            <div className={styles.label} style={{ marginBottom: 0 }}>{node.label}</div>
+          </div>
+        ) : (
           <div className={styles.label} style={{ marginBottom: 0 }}>{node.label}</div>
-        </div>
-      ) : (
-        <div className={styles.label}>{node.label}</div>
-      )}
+        )}
+        {hasSections && (
+          <button
+            className={styles.collapseToggle}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsCollapsed(!isCollapsed);
+            }}
+            aria-label={isCollapsed ? 'Expand sections' : 'Collapse sections'}
+          >
+            <svg width="12" height="12" viewBox="0 0 12 12" style={{
+              transform: isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
+              transition: 'transform 0.2s ease',
+            }}>
+              <path d="M3 4.5L6 7.5L9 4.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+          </button>
+        )}
+      </div>
       {node.description && <SimpleMarkdown text={node.description} className={styles.description} />}
-      {node.sections && node.sections.length > 0 && (
+      {hasSections && !isCollapsed && (
         <div className={styles.sections}>
-          {node.sections.map((section, i) => (
+          {node.sections!.map((section, i) => (
             <div key={i} className={styles.section}>
               {section.heading && (
                 <div className={styles.sectionHeading}>{section.heading}</div>
@@ -55,6 +78,11 @@ export function DefaultNode({ node, editable }: DefaultNodeProps) {
               <SimpleMarkdown text={section.content} className={styles.sectionContent} />
             </div>
           ))}
+        </div>
+      )}
+      {isCollapsed && hasSections && (
+        <div className={styles.collapsedIndicator}>
+          {node.sections!.length} section{node.sections!.length > 1 ? 's' : ''}
         </div>
       )}
     </div>
