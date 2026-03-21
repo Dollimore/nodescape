@@ -89,6 +89,30 @@ const datacenterDiagram: FlowDiagram = {
   ],
 };
 
+const circuitDiagram: FlowDiagram = {
+  title: 'Simple Power Circuit',
+  layout: { direction: 'TB', routing: 'orthogonal', cornerRadius: 8 },
+  nodes: [
+    { id: 'source', label: 'AC Supply', icon: 'voltage-source', description: '240V AC mains.' },
+    { id: 'breaker', label: 'Circuit Breaker', icon: 'switch', description: '32A rated.' },
+    { id: 'xfmr', label: 'Transformer', icon: 'transformer', description: '240V to 24V step-down.' },
+    { id: 'rect', label: 'Rectifier', icon: 'diode', description: 'Full bridge rectifier.' },
+    { id: 'cap', label: 'Filter Cap', icon: 'capacitor', description: '1000uF smoothing.', flowRate: '1000uF' },
+    { id: 'reg', label: 'Voltage Regulator', icon: 'resistor', description: '24V to 12V regulation.' },
+    { id: 'load', label: 'Load', icon: 'motor', description: '12V DC motor.', status: 'online', flowRate: '2.4A' },
+    { id: 'gnd', label: 'Ground', icon: 'ground' },
+  ],
+  edges: [
+    { id: 'c1', source: 'source', target: 'breaker', color: '#ef4444', flowAnimation: true },
+    { id: 'c2', source: 'breaker', target: 'xfmr', color: '#ef4444', flowAnimation: true },
+    { id: 'c3', source: 'xfmr', target: 'rect', color: '#f59e0b', flowAnimation: true },
+    { id: 'c4', source: 'rect', target: 'cap', color: '#3b82f6', flowAnimation: true, showJunction: true },
+    { id: 'c5', source: 'cap', target: 'reg', color: '#3b82f6', flowAnimation: true },
+    { id: 'c6', source: 'reg', target: 'load', label: '12V DC', color: '#22c55e', flowAnimation: true },
+    { id: 'c7', source: 'load', target: 'gnd', color: '#94a3b8' },
+  ],
+};
+
 const nodeTemplates: SidebarNodeTemplate[] = [
   { type: 'default', label: 'Process', description: 'A process step' },
   { type: 'decision', label: 'Decision', description: 'A branch point' },
@@ -97,9 +121,9 @@ const nodeTemplates: SidebarNodeTemplate[] = [
 ];
 
 export function App() {
-  const [activeDemo, setActiveDemo] = React.useState<'vertical' | 'horizontal' | 'datacenter'>('vertical');
+  const [activeDemo, setActiveDemo] = React.useState<'vertical' | 'horizontal' | 'datacenter' | 'circuit'>('vertical');
   const [currentDiagram, setCurrentDiagram] = useState<FlowDiagram>(sampleDiagram);
-  const baseDiagram = activeDemo === 'vertical' ? sampleDiagram : activeDemo === 'horizontal' ? horizontalDiagram : datacenterDiagram;
+  const baseDiagram = activeDemo === 'vertical' ? sampleDiagram : activeDemo === 'horizontal' ? horizontalDiagram : activeDemo === 'datacenter' ? datacenterDiagram : circuitDiagram;
   const diagram = activeDemo === 'vertical' ? currentDiagram : baseDiagram;
   const canvasRef = useRef<FlowCanvasRef>(null);
 
@@ -110,7 +134,7 @@ export function App() {
     }));
   };
 
-  const handleDemoChange = (demo: 'vertical' | 'horizontal' | 'datacenter') => {
+  const handleDemoChange = (demo: 'vertical' | 'horizontal' | 'datacenter' | 'circuit') => {
     setActiveDemo(demo);
     if (demo === 'vertical') setCurrentDiagram(sampleDiagram);
   };
@@ -195,6 +219,22 @@ export function App() {
           }}
         >
           Data Center
+        </button>
+        <button
+          onClick={() => handleDemoChange('circuit')}
+          style={{
+            padding: '6px 12px',
+            borderRadius: 6,
+            border: '1px solid rgba(255,255,255,0.15)',
+            background: activeDemo === 'circuit' ? '#e2e8f0' : 'rgba(22,33,62,0.85)',
+            color: activeDemo === 'circuit' ? '#1a1a1a' : '#e2e8f0',
+            cursor: 'pointer',
+            fontSize: 12,
+            fontWeight: 600,
+            backdropFilter: 'blur(4px)',
+          }}
+        >
+          Circuit
         </button>
       </div>
       <FlowCanvas
