@@ -21,16 +21,21 @@
 }
 
 .dotGrid {
-  background-image: radial-gradient(circle, var(--fc-dot) 1px, transparent 1px);
+  background-image:
+    linear-gradient(var(--fc-grid-line, rgba(0,0,0,0.03)) 1px, transparent 1px),
+    linear-gradient(90deg, var(--fc-grid-line, rgba(0,0,0,0.03)) 1px, transparent 1px),
+    radial-gradient(circle, var(--fc-dot) 1px, transparent 1px);
   background-size: 20px 20px;
 }
 
 .isometricDots {
   background-image:
+    linear-gradient(var(--fc-grid-line, rgba(0,0,0,0.03)) 1px, transparent 1px),
+    linear-gradient(90deg, var(--fc-grid-line, rgba(0,0,0,0.03)) 1px, transparent 1px),
     radial-gradient(circle, var(--fc-dot) 1px, transparent 1px),
     radial-gradient(circle, var(--fc-dot) 1px, transparent 1px);
   background-size: 28px 28px;
-  background-position: 0 0, 14px 14px;
+  background-position: 0 0, 0 0, 0 0, 14px 14px;
 }
 
 .plain {

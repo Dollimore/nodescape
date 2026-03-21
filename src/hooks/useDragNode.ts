@@ -1,6 +1,12 @@
 import { useCallback, useRef, useState } from 'react';
 import React from 'react';
 
+const GRID_SIZE = 20;
+
+function snapToGrid(value: number, gridSize: number): number {
+  return Math.round(value / gridSize) * gridSize;
+}
+
 interface NodePositions {
   [nodeId: string]: { x: number; y: number };
 }
@@ -51,11 +57,13 @@ export function useDragNode(
       if (!drag) return;
       const dx = (e.clientX - drag.startX) / scale;
       const dy = (e.clientY - drag.startY) / scale;
+      const rawX = drag.originX + dx;
+      const rawY = drag.originY + dy;
       setPositions((prev) => ({
         ...prev,
         [drag.nodeId]: {
-          x: drag.originX + dx,
-          y: drag.originY + dy,
+          x: snapToGrid(rawX, GRID_SIZE),
+          y: snapToGrid(rawY, GRID_SIZE),
         },
       }));
     },

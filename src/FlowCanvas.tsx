@@ -11,6 +11,7 @@ import type { ExportOptions } from './export/exportUtils';
 import styles from './FlowCanvas.module.css';
 import { HelperLines } from './helpers/HelperLines';
 import { DragDropSidebar } from './sidebar/DragDropSidebar';
+import { ThemeToggle } from './controls/ThemeToggle';
 
 export interface FlowCanvasRef {
   exportPng: (options?: ExportOptions) => Promise<string>;
@@ -231,8 +232,20 @@ function computeDynamicEdges(
 }
 
 export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
-  function FlowCanvas({ diagram, mode = 'view', className, onDiagramChange, background, minimap, theme, onNodeClick, nodeRenderers, onContextMenu, contextMenu, onNodeCollapse, sidebar, onNodeDrop }: FlowCanvasProps, ref) {
+  function FlowCanvas({ diagram, mode = 'view', className, onDiagramChange, background, minimap, theme, onNodeClick, nodeRenderers, onContextMenu, contextMenu, onNodeCollapse, sidebar, onNodeDrop, themeToggle, onThemeChange }: FlowCanvasProps, ref) {
   const editable = mode === 'edit';
+
+  const [internalTheme, setInternalTheme] = useState<'light' | 'dark'>(theme || 'light');
+  const activeTheme = theme !== undefined && !themeToggle ? theme : internalTheme;
+
+  useEffect(() => {
+    if (theme !== undefined) setInternalTheme(theme);
+  }, [theme]);
+
+  const handleThemeChange = useCallback((newTheme: 'light' | 'dark') => {
+    setInternalTheme(newTheme);
+    if (onThemeChange) onThemeChange(newTheme);
+  }, [onThemeChange]);
 
   const [contextMenuState, setContextMenuState] = useState<{
     x: number; y: number; nodeId: string; node: FlowNode;
@@ -391,7 +404,7 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
   }, [onNodeDrop]);
 
   return (
-    <div className={`${styles.root} ${theme === 'dark' ? styles.dark : ''}`}>
+    <div className={`${styles.root} ${activeTheme === 'dark' ? styles.dark : ''}`}>
     <CanvasView
       className={className}
       onDragMove={editable ? onDragMove : undefined}
@@ -415,6 +428,7 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
           layoutEdges={dynamicEdges}
           defaultRouting={diagram.layout?.routing || 'curved'}
           cornerRadius={diagram.layout?.cornerRadius}
+          isDragging={isDragging}
         />
       )}
       {editable && <HelperLines lines={helperLines} />}
@@ -451,6 +465,9 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
         />
       ))}
     </CanvasView>
+    {themeToggle && (
+      <ThemeToggle theme={activeTheme} onChange={handleThemeChange} />
+    )}
     {sidebar && sidebar.length > 0 && (
       <DragDropSidebar templates={sidebar} />
     )}

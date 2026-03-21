@@ -9,9 +9,10 @@ interface EdgeRendererProps {
   layoutEdges: LayoutEdge[];
   defaultRouting?: EdgeRouting;
   cornerRadius?: number;
+  isDragging?: boolean;
 }
 
-export function EdgeRenderer({ edges, layoutEdges, defaultRouting = 'curved', cornerRadius = 12 }: EdgeRendererProps) {
+export function EdgeRenderer({ edges, layoutEdges, defaultRouting = 'curved', cornerRadius = 12, isDragging }: EdgeRendererProps) {
   const layoutMap = new Map(layoutEdges.map((le) => [le.id, le]));
 
   return (
@@ -38,7 +39,7 @@ export function EdgeRenderer({ edges, layoutEdges, defaultRouting = 'curved', co
 
           return (
             <g key={edge.id} data-testid={`edge-${edge.id}`}>
-              <path d={pathD} className={pathClass} />
+              <path d={pathD} className={pathClass} style={isDragging ? { transition: 'none' } : undefined} />
               <polygon points={arrowPoints} className={styles.arrowhead} />
             </g>
           );
@@ -73,6 +74,7 @@ export function EdgeRenderer({ edges, layoutEdges, defaultRouting = 'curved', co
               left: midpoint.x,
               top: midpoint.y,
               transform: 'translate(-50%, -50%)',
+              transition: isDragging ? 'none' : undefined,
             }}
           >
             {edge.label}
