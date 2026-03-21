@@ -79,13 +79,13 @@ const datacenterDiagram: FlowDiagram = {
     { id: 'gen', label: 'Backup Generator', description: '4MW diesel generator.', icon: 'fuel', status: 'idle', flowRate: '0 MW' },
   ],
   edges: [
-    { id: 'dc1', source: 'grid', target: 'xfmr', animated: true },
-    { id: 'dc2', source: 'xfmr', target: 'swgr', animated: true },
-    { id: 'dc3', source: 'swgr', target: 'ups-a', label: 'Feed A', type: 'success', animated: true },
-    { id: 'dc4', source: 'swgr', target: 'ups-b', label: 'Feed B', type: 'success', animated: true },
-    { id: 'dc5', source: 'ups-a', target: 'pdu-a', animated: true },
-    { id: 'dc6', source: 'ups-b', target: 'pdu-b', animated: true },
-    { id: 'dc7', source: 'gen', target: 'swgr', label: 'Backup', type: 'dashed' },
+    { id: 'dc1', source: 'grid', target: 'xfmr', flowAnimation: true, color: '#22c55e' },
+    { id: 'dc2', source: 'xfmr', target: 'swgr', flowAnimation: true, color: '#22c55e' },
+    { id: 'dc3', source: 'swgr', target: 'ups-a', label: 'Feed A', type: 'success', flowAnimation: true, color: '#3b82f6' },
+    { id: 'dc4', source: 'swgr', target: 'ups-b', label: 'Feed B', type: 'success', flowAnimation: true, color: '#3b82f6' },
+    { id: 'dc5', source: 'ups-a', target: 'pdu-a', flowAnimation: true, color: '#3b82f6' },
+    { id: 'dc6', source: 'ups-b', target: 'pdu-b', flowAnimation: true, color: '#f59e0b' },
+    { id: 'dc7', source: 'gen', target: 'swgr', label: 'Backup', type: 'dashed', color: '#94a3b8' },
   ],
 };
 

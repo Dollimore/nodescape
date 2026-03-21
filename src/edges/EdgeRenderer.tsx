@@ -37,10 +37,25 @@ export function EdgeRenderer({ edges, layoutEdges, defaultRouting = 'curved', co
             .filter(Boolean)
             .join(' ');
 
+          const edgeColor = edge.color;
+          const pathStyle: React.CSSProperties = {
+            ...(isDragging ? { transition: 'none' } : {}),
+            ...(edgeColor ? { stroke: edgeColor } : {}),
+          };
+          const arrowStyle: React.CSSProperties = edgeColor ? { fill: edgeColor } : {};
+
           return (
             <g key={edge.id} data-testid={`edge-${edge.id}`}>
-              <path d={pathD} className={pathClass} style={isDragging ? { transition: 'none' } : undefined} />
-              <polygon points={arrowPoints} className={styles.arrowhead} />
+              <path d={pathD} className={pathClass} style={pathStyle} />
+              <polygon points={arrowPoints} className={styles.arrowhead} style={arrowStyle} />
+              {/* Directional flow pulse — a highlighted segment traveling along the path */}
+              {edge.flowAnimation && (
+                <path
+                  d={pathD}
+                  className={styles.flowPulse}
+                  style={edgeColor ? { stroke: edgeColor } : undefined}
+                />
+              )}
             </g>
           );
         })}
@@ -50,7 +65,6 @@ export function EdgeRenderer({ edges, layoutEdges, defaultRouting = 'curved', co
         const layout = layoutMap.get(edge.id);
         if (!layout || layout.points.length < 2) return null;
 
-        // Position label at the visual midpoint of the path
         const midpoint = getMidpoint(layout.points);
 
         const labelClass = [

@@ -51,6 +51,8 @@ export interface FlowEdge {
   type?: 'default' | 'success' | 'failure' | 'dashed';
   routing?: EdgeRouting;
   animated?: boolean;
+  color?: string;
+  flowAnimation?: boolean; // directional pulse traveling along the edge
 }
 
 export type CanvasBackground = 'dots' | 'isometric' | 'plain';

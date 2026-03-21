@@ -327,7 +327,7 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
       diagram.layout?.direction || 'TB',
       diagram.layout?.routing || 'curved'
     );
-  }, [visibleEdges, positions, layout?.nodes, layoutPositions, diagram.layout?.direction, diagram.layout?.routing]);
+  }, [visibleEdges, positions, layout?.nodes, layoutPositions, diagram.layout?.direction, diagram.layout?.routing, layoutVersion]);
 
   // Compute alignment helper lines when dragging in edit mode
   const helperLines = useMemo(() => {
