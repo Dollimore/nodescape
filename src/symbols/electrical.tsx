@@ -406,6 +406,171 @@ export function Disconnector({ size = 24, color = 'currentColor' }: SymbolProps)
   );
 }
 
+// Server Rack
+export function ServerRack({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <rect x="4" y="2" width="16" height="20" rx="2" />
+      <line x1="4" y1="8" x2="20" y2="8" />
+      <line x1="4" y1="14" x2="20" y2="14" />
+      <circle cx="8" cy="5" r="1" fill={color} />
+      <circle cx="8" cy="11" r="1" fill={color} />
+      <circle cx="8" cy="18" r="1" fill={color} />
+      <line x1="12" y1="5" x2="17" y2="5" />
+      <line x1="12" y1="11" x2="17" y2="11" />
+      <line x1="12" y1="18" x2="17" y2="18" />
+    </svg>
+  );
+}
+
+// Network Switch
+export function NetworkSwitch({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <rect x="2" y="6" width="20" height="12" rx="2" />
+      <circle cx="6" cy="12" r="1.5" fill={color} />
+      <circle cx="10" cy="12" r="1.5" fill={color} />
+      <circle cx="14" cy="12" r="1.5" fill={color} />
+      <circle cx="18" cy="12" r="1.5" fill={color} />
+      <line x1="6" y1="6" x2="6" y2="4" />
+      <line x1="10" y1="6" x2="10" y2="4" />
+      <line x1="14" y1="6" x2="14" y2="4" />
+      <line x1="18" y1="6" x2="18" y2="4" />
+    </svg>
+  );
+}
+
+// Firewall
+export function Firewall({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="18" height="18" rx="2" />
+      <line x1="3" y1="12" x2="21" y2="12" />
+      <line x1="12" y1="3" x2="12" y2="21" />
+      <line x1="3" y1="7.5" x2="21" y2="7.5" strokeDasharray="2 2" />
+      <line x1="3" y1="16.5" x2="21" y2="16.5" strokeDasharray="2 2" />
+    </svg>
+  );
+}
+
+// Router
+export function Router({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <circle cx="12" cy="12" r="8" />
+      <path d="M12 4 L12 8 M12 16 L12 20 M4 12 L8 12 M16 12 L20 12" />
+      <path d="M9 9 L15 15 M15 9 L9 15" strokeWidth="1" />
+    </svg>
+  );
+}
+
+// Load Balancer
+export function LoadBalancer({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <rect x="2" y="8" width="20" height="8" rx="2" />
+      <line x1="12" y1="4" x2="12" y2="8" />
+      <line x1="6" y1="16" x2="6" y2="20" />
+      <line x1="12" y1="16" x2="12" y2="20" />
+      <line x1="18" y1="16" x2="18" y2="20" />
+      <path d="M8 12 L16 12" />
+      <polygon points="14,10 16,12 14,14" fill={color} stroke="none" />
+    </svg>
+  );
+}
+
+// Chiller / Cooling Unit
+export function Chiller({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <rect x="3" y="6" width="18" height="12" rx="2" />
+      <path d="M12 9 L12 15" />
+      <path d="M9 10 L12 12 L15 10" />
+      <path d="M9 14 L12 12 L15 14" />
+      <line x1="7" y1="6" x2="7" y2="3" />
+      <line x1="17" y1="6" x2="17" y2="3" />
+    </svg>
+  );
+}
+
+// ATS (Automatic Transfer Switch)
+export function ATS({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <rect x="4" y="4" width="16" height="16" rx="2" />
+      <text x="12" y="14" textAnchor="middle" fontSize="7" fill={color} stroke="none" fontWeight="bold" fontFamily="system-ui">ATS</text>
+      <line x1="8" y1="4" x2="8" y2="1" />
+      <line x1="16" y1="4" x2="16" y2="1" />
+      <line x1="12" y1="20" x2="12" y2="23" />
+    </svg>
+  );
+}
+
+// STS (Static Transfer Switch)
+export function STS({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <rect x="4" y="4" width="16" height="16" rx="2" />
+      <text x="12" y="14" textAnchor="middle" fontSize="7" fill={color} stroke="none" fontWeight="bold" fontFamily="system-ui">STS</text>
+      <line x1="8" y1="4" x2="8" y2="1" />
+      <line x1="16" y1="4" x2="16" y2="1" />
+      <line x1="12" y1="20" x2="12" y2="23" />
+    </svg>
+  );
+}
+
+// Fiber Patch Panel
+export function PatchPanel({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <rect x="2" y="7" width="20" height="10" rx="2" />
+      <circle cx="6" cy="12" r="1" fill={color} />
+      <circle cx="9" cy="12" r="1" fill={color} />
+      <circle cx="12" cy="12" r="1" fill={color} />
+      <circle cx="15" cy="12" r="1" fill={color} />
+      <circle cx="18" cy="12" r="1" fill={color} />
+    </svg>
+  );
+}
+
+// PDU (Power Distribution Unit) — rack-mount style
+export function PDURack({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <rect x="6" y="2" width="12" height="20" rx="1" />
+      <circle cx="12" cy="6" r="2" />
+      <line x1="10" y1="10" x2="14" y2="10" />
+      <line x1="10" y1="13" x2="14" y2="13" />
+      <line x1="10" y1="16" x2="14" y2="16" />
+      <line x1="10" y1="19" x2="14" y2="19" />
+    </svg>
+  );
+}
+
+// CRAH / CRAC (Computer Room Air Handler)
+export function CRAH({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <rect x="3" y="4" width="18" height="16" rx="2" />
+      <circle cx="12" cy="12" r="5" />
+      <path d="M12 7 C14 9, 14 11, 12 12 C10 13, 10 15, 12 17" />
+    </svg>
+  );
+}
+
+// UPS symbol (different from battery)
+export function UPSUnit({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <rect x="3" y="4" width="18" height="16" rx="2" />
+      <text x="12" y="14" textAnchor="middle" fontSize="7" fill={color} stroke="none" fontWeight="bold" fontFamily="system-ui">UPS</text>
+      <line x1="8" y1="4" x2="8" y2="1" />
+      <line x1="16" y1="4" x2="16" y2="1" />
+      <line x1="12" y1="20" x2="12" y2="23" />
+    </svg>
+  );
+}
+
 // Export a map of all symbols for easy lookup by name
 export const electricalSymbols: Record<string, React.ComponentType<SymbolProps>> = {
   resistor: Resistor,
@@ -439,4 +604,16 @@ export const electricalSymbols: Record<string, React.ComponentType<SymbolProps>>
   'surge-arrester': SurgeArrester,
   'circuit-breaker': CircuitBreaker,
   disconnector: Disconnector,
+  'server-rack': ServerRack,
+  'network-switch': NetworkSwitch,
+  firewall: Firewall,
+  router: Router,
+  'load-balancer': LoadBalancer,
+  chiller: Chiller,
+  ats: ATS,
+  sts: STS,
+  'patch-panel': PatchPanel,
+  'pdu-rack': PDURack,
+  crah: CRAH,
+  'ups-unit': UPSUnit,
 };

@@ -456,6 +456,73 @@ const showcaseDiagram: FlowDiagram = {
   ],
 };
 
+const dcFacilityDiagram: FlowDiagram = {
+  title: 'Data Center Facility Layout',
+  layout: { direction: 'TB', routing: 'orthogonal', cornerRadius: 16 },
+  nodes: [
+    // Power
+    { id: 'grp-power', type: 'group', label: 'Power Infrastructure', style: { color: '#ef4444' } },
+    { id: 'utility', label: 'Utility Feed', icon: 'zap', status: 'online', flowRate: '12 MW', parentId: 'grp-power' },
+    { id: 'gen-a', label: 'Generator A', icon: 'generator', status: 'idle', flowRate: '6 MW', parentId: 'grp-power' },
+    { id: 'gen-b', label: 'Generator B', icon: 'generator', status: 'idle', flowRate: '6 MW', parentId: 'grp-power' },
+    { id: 'ats-1', label: 'ATS-1', icon: 'ats', status: 'online', parentId: 'grp-power' },
+    { id: 'ups-a', label: 'UPS A', icon: 'ups-unit', status: 'online', progress: 45, flowRate: '4 MW', parentId: 'grp-power' },
+    { id: 'ups-b', label: 'UPS B', icon: 'ups-unit', status: 'online', progress: 42, flowRate: '3.8 MW', parentId: 'grp-power' },
+
+    // Cooling
+    { id: 'grp-cool', type: 'group', label: 'Cooling Systems', style: { color: '#06b6d4' } },
+    { id: 'chiller-1', label: 'Chiller 1', icon: 'chiller', status: 'online', progress: 68, flowRate: '2.4 MW', parentId: 'grp-cool' },
+    { id: 'chiller-2', label: 'Chiller 2', icon: 'chiller', status: 'online', progress: 55, flowRate: '1.8 MW', parentId: 'grp-cool' },
+    { id: 'crah-1', label: 'CRAH Row A', icon: 'crah', status: 'online', parentId: 'grp-cool' },
+    { id: 'crah-2', label: 'CRAH Row B', icon: 'crah', status: 'warning', parentId: 'grp-cool',
+      sections: [{ heading: 'Alert', content: 'Return temp **28.5C** (threshold 28C)' }] },
+
+    // IT Infrastructure
+    { id: 'grp-it', type: 'group', label: 'IT Infrastructure', style: { color: '#8b5cf6' } },
+    { id: 'pdu-a1', label: 'PDU A1', icon: 'pdu-rack', status: 'online', progress: 72, flowRate: '180 kW', parentId: 'grp-it' },
+    { id: 'pdu-b1', label: 'PDU B1', icon: 'pdu-rack', status: 'online', progress: 68, flowRate: '170 kW', parentId: 'grp-it' },
+    { id: 'rack-1', label: 'Rack Row 1', icon: 'server-rack', status: 'online', progress: 85, flowRate: '320 kW', parentId: 'grp-it',
+      description: '40 racks, high density compute.',
+      sections: [{ heading: 'Avg Power', content: '8 kW/rack' }] },
+    { id: 'rack-2', label: 'Rack Row 2', icon: 'server-rack', status: 'online', progress: 62, flowRate: '240 kW', parentId: 'grp-it',
+      description: '40 racks, storage and network.' },
+
+    // Network
+    { id: 'grp-net', type: 'group', label: 'Network', style: { color: '#22c55e' } },
+    { id: 'core-sw', label: 'Core Switch', icon: 'network-switch', status: 'online', flowRate: '400 Gbps', parentId: 'grp-net' },
+    { id: 'fw-1', label: 'Firewall', icon: 'firewall', status: 'online', parentId: 'grp-net' },
+    { id: 'lb-1', label: 'Load Balancer', icon: 'load-balancer', status: 'online', parentId: 'grp-net' },
+    { id: 'isp-a', label: 'ISP A', icon: 'zap', status: 'online', flowRate: '100 Gbps', parentId: 'grp-net' },
+    { id: 'isp-b', label: 'ISP B', icon: 'zap', status: 'online', flowRate: '100 Gbps', parentId: 'grp-net' },
+  ],
+  edges: [
+    // Power distribution
+    { id: 'p1', source: 'utility', target: 'ats-1', color: '#ef4444', flowAnimation: true, thickness: 3, annotation: '12 MW' },
+    { id: 'p2', source: 'gen-a', target: 'ats-1', color: '#94a3b8', type: 'dashed' },
+    { id: 'p3', source: 'gen-b', target: 'ats-1', color: '#94a3b8', type: 'dashed' },
+    { id: 'p4', source: 'ats-1', target: 'ups-a', color: '#ef4444', flowAnimation: true, label: 'Feed A' },
+    { id: 'p5', source: 'ats-1', target: 'ups-b', color: '#ef4444', flowAnimation: true, label: 'Feed B' },
+    { id: 'p6', source: 'ups-a', target: 'pdu-a1', color: '#f59e0b', flowAnimation: true },
+    { id: 'p7', source: 'ups-b', target: 'pdu-b1', color: '#f59e0b', flowAnimation: true },
+    { id: 'p8', source: 'pdu-a1', target: 'rack-1', color: '#3b82f6', flowAnimation: true, showJunction: true },
+    { id: 'p9', source: 'pdu-b1', target: 'rack-1', color: '#3b82f6', flowAnimation: true, showJunction: true },
+    { id: 'p10', source: 'pdu-a1', target: 'rack-2', color: '#3b82f6', flowAnimation: true },
+    { id: 'p11', source: 'pdu-b1', target: 'rack-2', color: '#3b82f6', flowAnimation: true },
+
+    // Cooling
+    { id: 'c1', source: 'chiller-1', target: 'crah-1', color: '#06b6d4', flowAnimation: true, annotation: 'Supply 7C' },
+    { id: 'c2', source: 'chiller-2', target: 'crah-2', color: '#06b6d4', flowAnimation: true, annotation: 'Supply 7C' },
+
+    // Network
+    { id: 'n1', source: 'isp-a', target: 'fw-1', color: '#22c55e', flowAnimation: true },
+    { id: 'n2', source: 'isp-b', target: 'fw-1', color: '#22c55e', flowAnimation: true },
+    { id: 'n3', source: 'fw-1', target: 'lb-1', color: '#22c55e', flowAnimation: true },
+    { id: 'n4', source: 'lb-1', target: 'core-sw', color: '#22c55e', flowAnimation: true, annotation: '400 Gbps' },
+    { id: 'n5', source: 'core-sw', target: 'rack-1', color: '#22c55e', flowAnimation: true },
+    { id: 'n6', source: 'core-sw', target: 'rack-2', color: '#22c55e', flowAnimation: true },
+  ],
+};
+
 const nodeTemplates: SidebarNodeTemplate[] = [
   { type: 'default', label: 'Process', description: 'A process step' },
   { type: 'decision', label: 'Decision', description: 'A branch point' },
@@ -464,9 +531,9 @@ const nodeTemplates: SidebarNodeTemplate[] = [
 ];
 
 export function App() {
-  const [activeDemo, setActiveDemo] = React.useState<'vertical' | 'horizontal' | 'datacenter' | 'circuit' | 'hvdc' | 'showcase'>('vertical');
+  const [activeDemo, setActiveDemo] = React.useState<'vertical' | 'horizontal' | 'datacenter' | 'circuit' | 'hvdc' | 'showcase' | 'dc-facility'>('vertical');
   const [currentDiagram, setCurrentDiagram] = useState<FlowDiagram>(sampleDiagram);
-  const demoMap: Record<string, FlowDiagram> = { vertical: sampleDiagram, horizontal: horizontalDiagram, datacenter: datacenterDiagram, circuit: circuitDiagram, hvdc: hvdcDiagram, showcase: showcaseDiagram };
+  const demoMap: Record<string, FlowDiagram> = { vertical: sampleDiagram, horizontal: horizontalDiagram, datacenter: datacenterDiagram, circuit: circuitDiagram, hvdc: hvdcDiagram, showcase: showcaseDiagram, 'dc-facility': dcFacilityDiagram };
   const baseDiagram = demoMap[activeDemo] || sampleDiagram;
   const diagram = (activeDemo === 'vertical' || activeDemo === 'showcase') ? currentDiagram : baseDiagram;
   const canvasRef = useRef<FlowCanvasRef>(null);
@@ -478,7 +545,7 @@ export function App() {
     }));
   };
 
-  const handleDemoChange = (demo: 'vertical' | 'horizontal' | 'datacenter' | 'circuit' | 'hvdc' | 'showcase') => {
+  const handleDemoChange = (demo: 'vertical' | 'horizontal' | 'datacenter' | 'circuit' | 'hvdc' | 'showcase' | 'dc-facility') => {
     setActiveDemo(demo);
     if (demo === 'vertical') setCurrentDiagram(sampleDiagram);
     if (demo === 'showcase') setCurrentDiagram(showcaseDiagram);
@@ -612,6 +679,22 @@ export function App() {
           }}
         >
           HVDC
+        </button>
+        <button
+          onClick={() => handleDemoChange('dc-facility')}
+          style={{
+            padding: '6px 12px',
+            borderRadius: 6,
+            border: '1px solid rgba(255,255,255,0.15)',
+            background: activeDemo === 'dc-facility' ? '#e2e8f0' : 'rgba(22,33,62,0.85)',
+            color: activeDemo === 'dc-facility' ? '#1a1a1a' : '#e2e8f0',
+            cursor: 'pointer',
+            fontSize: 12,
+            fontWeight: 600,
+            backdropFilter: 'blur(4px)',
+          }}
+        >
+          DC Facility
         </button>
       </div>
       <FlowCanvas
