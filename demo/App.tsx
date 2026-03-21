@@ -62,9 +62,33 @@ const horizontalDiagram: FlowDiagram = {
   ],
 };
 
+const datacenterDiagram: FlowDiagram = {
+  title: 'Data Center Power Distribution',
+  layout: { direction: 'TB', routing: 'orthogonal', cornerRadius: 12 },
+  nodes: [
+    { id: 'grid', type: 'start', label: 'Utility Grid', icon: 'zap', status: 'online', flowRate: '12.4 MW' },
+    { id: 'xfmr', label: 'Main Transformer', description: '132kV to 11kV step-down.', icon: 'box', status: 'online', progress: 78 },
+    { id: 'swgr', label: 'Main Switchgear', description: '11kV distribution.', icon: 'git-branch', status: 'online' },
+    { id: 'ups-a', label: 'UPS System A', description: '2MW capacity.', icon: 'battery-charging', status: 'online', progress: 65, flowRate: '1.3 MW' },
+    { id: 'ups-b', label: 'UPS System B', description: '2MW capacity.', icon: 'battery-charging', status: 'warning', progress: 92, flowRate: '1.8 MW' },
+    { id: 'pdu-a', label: 'PDU Row A', description: 'Power distribution to racks.', icon: 'server', status: 'online', progress: 45 },
+    { id: 'pdu-b', label: 'PDU Row B', description: 'Power distribution to racks.', icon: 'server', status: 'online', progress: 71 },
+    { id: 'gen', label: 'Backup Generator', description: '4MW diesel generator.', icon: 'fuel', status: 'idle', flowRate: '0 MW' },
+  ],
+  edges: [
+    { id: 'dc1', source: 'grid', target: 'xfmr', animated: true },
+    { id: 'dc2', source: 'xfmr', target: 'swgr', animated: true },
+    { id: 'dc3', source: 'swgr', target: 'ups-a', label: 'Feed A', type: 'success', animated: true },
+    { id: 'dc4', source: 'swgr', target: 'ups-b', label: 'Feed B', type: 'success', animated: true },
+    { id: 'dc5', source: 'ups-a', target: 'pdu-a', animated: true },
+    { id: 'dc6', source: 'ups-b', target: 'pdu-b', animated: true },
+    { id: 'dc7', source: 'gen', target: 'swgr', label: 'Backup', type: 'dashed' },
+  ],
+};
+
 export function App() {
-  const [activeDemo, setActiveDemo] = React.useState<'vertical' | 'horizontal'>('vertical');
-  const diagram = activeDemo === 'vertical' ? sampleDiagram : horizontalDiagram;
+  const [activeDemo, setActiveDemo] = React.useState<'vertical' | 'horizontal' | 'datacenter'>('vertical');
+  const diagram = activeDemo === 'vertical' ? sampleDiagram : activeDemo === 'horizontal' ? horizontalDiagram : datacenterDiagram;
   const canvasRef = useRef<FlowCanvasRef>(null);
 
   return (
@@ -132,6 +156,22 @@ export function App() {
         >
           Horizontal (LR)
         </button>
+        <button
+          onClick={() => setActiveDemo('datacenter')}
+          style={{
+            padding: '6px 12px',
+            borderRadius: 6,
+            border: '1px solid rgba(255,255,255,0.15)',
+            background: activeDemo === 'datacenter' ? '#e2e8f0' : 'rgba(22,33,62,0.85)',
+            color: activeDemo === 'datacenter' ? '#1a1a1a' : '#e2e8f0',
+            cursor: 'pointer',
+            fontSize: 12,
+            fontWeight: 600,
+            backdropFilter: 'blur(4px)',
+          }}
+        >
+          Data Center
+        </button>
       </div>
       <FlowCanvas
         ref={canvasRef}
@@ -142,6 +182,7 @@ export function App() {
         minimap
         theme="dark"
         onNodeClick={(id, node) => console.log('Node clicked:', id, node.label)}
+        contextMenu
       />
     </div>
   );

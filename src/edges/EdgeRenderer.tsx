@@ -31,6 +31,7 @@ export function EdgeRenderer({ edges, layoutEdges, defaultRouting = 'curved', co
           const pathClass = [
             styles.edgePath,
             edge.type === 'dashed' ? styles.edgePathDashed : '',
+            edge.animated ? styles.edgePathAnimated : '',
           ]
             .filter(Boolean)
             .join(' ');

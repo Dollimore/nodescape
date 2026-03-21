@@ -123,3 +123,71 @@
   right: -5px;
   transform: translateY(-50%);
 }
+
+.statusBadge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--fc-node-bg);
+}
+
+.statusBadge[data-status="online"] { background: #22c55e; }
+.statusBadge[data-status="offline"] { background: #94a3b8; }
+.statusBadge[data-status="warning"] { background: #f59e0b; }
+.statusBadge[data-status="error"] { background: #ef4444; }
+.statusBadge[data-status="idle"] { background: #d0d0d0; }
+
+.progressBar {
+  margin-top: 8px;
+  height: 4px;
+  background: var(--fc-node-section-border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: #3b82f6;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.flowRate {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.1);
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+.nodeGlow {
+  position: relative;
+}
+
+.nodeGlow::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border-radius: 12px;
+  background: linear-gradient(45deg, #3b82f6, #8b5cf6, #ec4899, #f59e0b, #3b82f6);
+  background-size: 300% 300%;
+  animation: glowRotate 3s linear infinite;
+  z-index: -1;
+  opacity: 0.6;
+}
+
+@keyframes glowRotate {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}

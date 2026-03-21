@@ -13,10 +13,11 @@ interface FlowNodeRendererProps {
   isDragging?: boolean;
   onClick?: () => void;
   customRenderers?: Record<string, ComponentType<CustomNodeProps>>;
+  onNodeContextMenu?: (nodeId: string, e: React.MouseEvent) => void;
 }
 
 export const FlowNodeRenderer = React.forwardRef<HTMLDivElement, FlowNodeRendererProps>(
-  function FlowNodeRenderer({ node, editable, position, onDragStart, isDragging, onClick, customRenderers }, ref) {
+  function FlowNodeRenderer({ node, editable, position, onDragStart, isDragging, onClick, customRenderers, onNodeContextMenu }, ref) {
     const startPos = useRef<{ x: number; y: number } | null>(null);
 
     const style: React.CSSProperties = {
@@ -48,8 +49,15 @@ export const FlowNodeRenderer = React.forwardRef<HTMLDivElement, FlowNodeRendere
     const NodeComponent =
       (node.type && customRenderers?.[node.type]) || getNodeComponent(node.type);
 
+    const handleContextMenu = (e: React.MouseEvent) => {
+      if (onNodeContextMenu) {
+        e.preventDefault();
+        onNodeContextMenu(node.id, e);
+      }
+    };
+
     return (
-      <div ref={ref} style={style} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} data-node-draggable={editable || undefined}>
+      <div ref={ref} style={style} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onContextMenu={handleContextMenu} data-node-draggable={editable || undefined}>
         <NodeComponent node={node} editable={editable} />
       </div>
     );

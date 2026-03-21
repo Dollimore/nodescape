@@ -31,11 +31,14 @@ export function DefaultNode({ node, editable }: DefaultNodeProps) {
 
   return (
     <div
-      className={styles.node}
+      className={`${styles.node} ${node.style?.glow ? styles.nodeGlow : ''}`}
       data-testid={`node-${node.id}`}
       data-editable={editable}
-      style={nodeStyle}
+      style={{ ...nodeStyle, position: 'relative' }}
     >
+      {node.status && (
+        <div className={styles.statusBadge} data-status={node.status} />
+      )}
       <div className={styles.handle + ' ' + styles.handleTop} />
       <div className={styles.handle + ' ' + styles.handleBottom} />
       <div className={styles.labelRow}>
@@ -68,6 +71,14 @@ export function DefaultNode({ node, editable }: DefaultNodeProps) {
         )}
       </div>
       {node.description && <SimpleMarkdown text={node.description} className={styles.description} />}
+      {node.flowRate && (
+        <div className={styles.flowRate}>{node.flowRate}</div>
+      )}
+      {node.progress !== undefined && (
+        <div className={styles.progressBar}>
+          <div className={styles.progressFill} style={{ width: `${Math.min(100, Math.max(0, node.progress))}%` }} />
+        </div>
+      )}
       {hasSections && !isCollapsed && (
         <div className={styles.sections}>
           {node.sections!.map((section, i) => (

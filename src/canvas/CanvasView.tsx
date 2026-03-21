@@ -20,6 +20,7 @@ interface CanvasViewProps {
   layoutNodes?: LayoutNode[];
   layoutWidth?: number;
   layoutHeight?: number;
+  contentRef?: React.RefObject<HTMLDivElement | null>;
 }
 
 const bgClassMap: Record<CanvasBackground, string> = {
@@ -41,6 +42,7 @@ export function CanvasView({
   layoutNodes,
   layoutWidth,
   layoutHeight,
+  contentRef,
 }: CanvasViewProps) {
   const { transform, onMouseDown, onMouseMove, onMouseUp, onWheel, setFitView, zoomIn, zoomOut, resetZoom } = usePanZoom();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -111,7 +113,7 @@ export function CanvasView({
         }}
       >
         {/* Offset children back to the origin point within the oversized background */}
-        <div style={{ position: 'absolute', top: 10000, left: 10000 }}>
+        <div ref={contentRef} style={{ position: 'absolute', top: 10000, left: 10000 }}>
           {children}
         </div>
       </div>

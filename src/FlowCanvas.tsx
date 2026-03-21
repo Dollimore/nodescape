@@ -1,11 +1,22 @@
-import React, { useRef, useCallback, useEffect, useMemo } from 'react';
-import type { FlowCanvasProps, FlowDiagram, LayoutEdge, LayoutNode } from './types';
+import React, { useRef, useCallback, useEffect, useMemo, useImperativeHandle, useState } from 'react';
+import type { FlowCanvasProps, FlowDiagram, FlowNode, LayoutEdge, LayoutNode } from './types';
+import { ContextMenu } from './contextmenu/ContextMenu';
 import { FlowNodeRenderer } from './nodes/FlowNodeRenderer';
 import { EdgeRenderer } from './edges/EdgeRenderer';
 import { useAutoLayout } from './layout/useAutoLayout';
 import { CanvasView } from './canvas/CanvasView';
 import { useDragNode } from './hooks/useDragNode';
+import { exportDiagram, exportAndDownload } from './export/exportUtils';
+import type { ExportOptions } from './export/exportUtils';
 import styles from './FlowCanvas.module.css';
+import { HelperLines } from './helpers/HelperLines';
+
+export interface FlowCanvasRef {
+  exportPng: (options?: ExportOptions) => Promise<string>;
+  exportSvg: (options?: ExportOptions) => Promise<string>;
+  downloadPng: (options?: ExportOptions) => Promise<void>;
+  downloadSvg: (options?: ExportOptions) => Promise<void>;
+}
 
 /** Get the fixed handle position for a node edge connection */
 function getHandlePosition(
@@ -186,9 +197,26 @@ function computeDynamicEdges(
   });
 }
 
-export function FlowCanvas({ diagram, mode = 'view', className, onDiagramChange, background, minimap, theme, onNodeClick, nodeRenderers }: FlowCanvasProps) {
+export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
+  function FlowCanvas({ diagram, mode = 'view', className, onDiagramChange, background, minimap, theme, onNodeClick, nodeRenderers, onContextMenu, contextMenu }: FlowCanvasProps, ref) {
   const editable = mode === 'edit';
+
+  const [contextMenuState, setContextMenuState] = useState<{
+    x: number; y: number; nodeId: string; node: FlowNode;
+  } | null>(null);
   const nodeRefs = useRef(new Map<string, HTMLElement | null>());
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  useImperativeHandle(ref, () => ({
+    exportPng: (options?: ExportOptions) =>
+      exportDiagram(contentRef.current!, { ...options, format: 'png' }),
+    exportSvg: (options?: ExportOptions) =>
+      exportDiagram(contentRef.current!, { ...options, format: 'svg' }),
+    downloadPng: (options?: ExportOptions) =>
+      exportAndDownload(contentRef.current!, { ...options, format: 'png' }),
+    downloadSvg: (options?: ExportOptions) =>
+      exportAndDownload(contentRef.current!, { ...options, format: 'svg' }),
+  }));
 
   const setNodeRef = useCallback((id: string, el: HTMLElement | null) => {
     nodeRefs.current.set(id, el);
@@ -252,6 +280,7 @@ export function FlowCanvas({ diagram, mode = 'view', className, onDiagramChange,
       layoutNodes={layout?.nodes}
       layoutWidth={layout?.width}
       layoutHeight={layout?.height}
+      contentRef={contentRef}
     >
       {layout && (
         <EdgeRenderer
@@ -272,9 +301,57 @@ export function FlowCanvas({ diagram, mode = 'view', className, onDiagramChange,
           onClick={onNodeClick ? () => onNodeClick(node.id, node) : undefined}
           customRenderers={nodeRenderers}
           ref={(el) => setNodeRef(node.id, el)}
+          onNodeContextMenu={(nodeId, e) => {
+            e.preventDefault();
+            if (onContextMenu) {
+              onContextMenu(nodeId, diagram.nodes.find(n => n.id === nodeId)!, { x: e.clientX, y: e.clientY });
+            }
+            if (contextMenu) {
+              setContextMenuState({
+                x: e.clientX,
+                y: e.clientY,
+                nodeId,
+                node: diagram.nodes.find(n => n.id === nodeId)!,
+              });
+            }
+          }}
         />
       ))}
     </CanvasView>
+    {contextMenuState && (
+      <ContextMenu
+        x={contextMenuState.x}
+        y={contextMenuState.y}
+        onClose={() => setContextMenuState(null)}
+        items={(() => {
+          const { nodeId, node } = contextMenuState;
+          if (typeof contextMenu === 'object' && contextMenu.items) {
+            return contextMenu.items.map(item => ({
+              label: item.label,
+              onClick: () => item.action(nodeId, node),
+            }));
+          }
+          // Default items when contextMenu={true}
+          const defaultItems: { label: string; onClick: () => void }[] = [
+            {
+              label: 'Duplicate',
+              onClick: () => console.log('Duplicate node:', nodeId, node),
+            },
+            {
+              label: 'Delete',
+              onClick: () => console.log('Delete node:', nodeId, node),
+            },
+          ];
+          if (node.sections && node.sections.length > 0) {
+            defaultItems.push({
+              label: node.collapsed ? 'Expand' : 'Collapse',
+              onClick: () => console.log(node.collapsed ? 'Expand' : 'Collapse', 'node:', nodeId, node),
+            });
+          }
+          return defaultItems;
+        })()}
+      />
+    )}
     </div>
   );
-}
+});

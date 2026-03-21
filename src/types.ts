@@ -29,7 +29,11 @@ export interface FlowNode {
   style?: {
     color?: string;
     variant?: 'filled' | 'outlined' | 'ghost';
+    glow?: boolean; // animated gradient border
   };
+  status?: 'online' | 'offline' | 'warning' | 'error' | 'idle';
+  progress?: number; // 0-100, renders a progress bar
+  flowRate?: string; // e.g., "1.2 MW", "340 Gbps" — displayed as a badge
 }
 
 export interface NodeSection {
@@ -44,6 +48,7 @@ export interface FlowEdge {
   label?: string;
   type?: 'default' | 'success' | 'failure' | 'dashed';
   routing?: EdgeRouting;
+  animated?: boolean;
 }
 
 export type CanvasBackground = 'dots' | 'isometric' | 'plain';
@@ -51,6 +56,12 @@ export type CanvasBackground = 'dots' | 'isometric' | 'plain';
 export interface CustomNodeProps {
   node: FlowNode;
   editable: boolean;
+}
+
+export interface ContextMenuItem {
+  label: string;
+  action: (nodeId: string, node: FlowNode) => void;
+  icon?: string;
 }
 
 export interface FlowCanvasProps {
@@ -64,6 +75,10 @@ export interface FlowCanvasProps {
   theme?: 'light' | 'dark';
   onNodeClick?: (nodeId: string, node: FlowNode) => void;
   nodeRenderers?: Record<string, ComponentType<CustomNodeProps>>;
+  onContextMenu?: (nodeId: string, node: FlowNode, position: { x: number; y: number }) => void;
+  contextMenu?: boolean | {
+    items?: ContextMenuItem[];
+  };
 }
 
 export interface LayoutNode {
