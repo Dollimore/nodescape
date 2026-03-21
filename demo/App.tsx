@@ -358,6 +358,7 @@ export function App() {
         background="dots"
         minimap
         themeToggle
+        zoomControls
         onThemeChange={(t) => console.log('Theme:', t)}
         onNodeClick={(id, node) => console.log('Node clicked:', id, node.label)}
         contextMenu

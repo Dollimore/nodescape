@@ -7,9 +7,9 @@ interface PanZoomState {
   scale: number;
 }
 
-const MIN_SCALE = 0.1;
-const MAX_SCALE = 3;
-const ZOOM_SENSITIVITY = 0.001;
+const MIN_SCALE = 0.05;
+const MAX_SCALE = 5;
+const ZOOM_SENSITIVITY = 0.005;
 
 export function usePanZoom(fitViewTransform?: PanZoomState) {
   const [transform, setTransform] = useState<PanZoomState>(

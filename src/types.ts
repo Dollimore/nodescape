@@ -109,8 +109,9 @@ export interface FlowCanvasProps {
   onNodeCollapse?: (nodeId: string, collapsed: boolean) => void;
   sidebar?: SidebarNodeTemplate[];
   onNodeDrop?: (template: SidebarNodeTemplate, position: { x: number; y: number }) => void;
-  themeToggle?: boolean; // show built-in theme toggle button
+  themeToggle?: boolean;
   onThemeChange?: (theme: 'light' | 'dark') => void;
+  zoomControls?: boolean;
 }
 
 export interface LayoutNode {

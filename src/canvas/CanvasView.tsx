@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useCallback, useState } from 'react';
 import { usePanZoom } from '../hooks/usePanZoom';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import { Minimap } from '../minimap/Minimap';
+import { ZoomControls } from '../controls/ZoomControls';
 import styles from './CanvasView.module.css';
 
 import type { CanvasBackground, LayoutNode } from '../types';
@@ -23,6 +24,7 @@ interface CanvasViewProps {
   contentRef?: React.RefObject<HTMLDivElement | null>;
   onDrop?: (e: React.DragEvent) => void;
   onDragOver?: (e: React.DragEvent) => void;
+  zoomControls?: boolean;
 }
 
 const bgClassMap: Record<CanvasBackground, string> = {
@@ -47,6 +49,7 @@ export function CanvasView({
   contentRef,
   onDrop,
   onDragOver,
+  zoomControls = false,
 }: CanvasViewProps) {
   const { transform, onMouseDown, onMouseMove, onMouseUp, attachWheelListener, setFitView, zoomIn, zoomOut, resetZoom } = usePanZoom();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -136,6 +139,15 @@ export function CanvasView({
           transform={transform}
           layoutWidth={layoutWidth || 0}
           layoutHeight={layoutHeight || 0}
+        />
+      )}
+      {zoomControls && (
+        <ZoomControls
+          scale={transform.scale}
+          onZoomIn={zoomIn}
+          onZoomOut={zoomOut}
+          onResetZoom={resetZoom}
+          onFitView={applyFitView}
         />
       )}
     </div>

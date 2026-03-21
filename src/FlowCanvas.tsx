@@ -55,7 +55,7 @@ function getVisibleNodesAndEdges(diagram: FlowDiagram): { nodes: FlowNode[]; edg
 
 
 export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
-  function FlowCanvas({ diagram, mode = 'view', className, onDiagramChange, background, minimap, theme, onNodeClick, nodeRenderers, onContextMenu, contextMenu, onNodeCollapse, sidebar, onNodeDrop, themeToggle, onThemeChange }: FlowCanvasProps, ref) {
+  function FlowCanvas({ diagram, mode = 'view', className, onDiagramChange, background, minimap, theme, onNodeClick, nodeRenderers, onContextMenu, contextMenu, onNodeCollapse, sidebar, onNodeDrop, themeToggle, onThemeChange, zoomControls }: FlowCanvasProps, ref) {
   const editable = mode === 'edit';
 
   const [internalTheme, setInternalTheme] = useState<'light' | 'dark'>(theme || 'light');
@@ -252,6 +252,7 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
       contentRef={contentRef}
       onDrop={handleCanvasDrop}
       onDragOver={(e) => e.preventDefault()}
+      zoomControls={!!zoomControls}
     >
       {layout && (
         <EdgeRenderer
