@@ -204,7 +204,7 @@ export function computeDynamicEdges(
       let points: { x: number; y: number }[];
 
       if (srcIsVertical && tgtIsVertical) {
-        // Both vertical (e.g., bottom->top in TB layout)
+        // Both vertical — source exits top/bottom, target enters top/bottom
         const goingDown = sourceSide === 'bottom';
         const goingUp = sourceSide === 'top';
         const targetIsAbove = end.y < start.y;
@@ -212,21 +212,12 @@ export function computeDynamicEdges(
         const needsWrapAround = (goingDown && targetIsAbove) || (goingUp && targetIsBelow);
 
         if (Math.abs(start.x - end.x) < 1 && !needsWrapAround) {
-          // Aligned and going in the right direction — straight line
           points = [start, end];
         } else if (needsWrapAround) {
-          // Edge goes "backwards" — route around via the closest side
-          const sourceLeft = sourcePos.x;
-          const sourceRight = sourcePos.x + sourceSize.width;
-          const targetLeft = targetPos.x;
-          const targetRight = targetPos.x + targetSize.width;
-
-          // Pick the side (left or right) that requires the shortest detour
-          const clearRight = Math.max(sourceRight, targetRight) + STUB_LENGTH;
-          const clearLeft = Math.min(sourceLeft, targetLeft) - STUB_LENGTH;
-          const distRight = clearRight - start.x;
-          const distLeft = start.x - clearLeft;
-          const clearX = distLeft < distRight ? clearLeft : clearRight;
+          // Route around — pick closest side that clears both nodes
+          const clearRight = Math.max(sourcePos.x + sourceSize.width, targetPos.x + targetSize.width) + STUB_LENGTH;
+          const clearLeft = Math.min(sourcePos.x, targetPos.x) - STUB_LENGTH;
+          const clearX = (start.x - clearLeft) < (clearRight - start.x) ? clearLeft : clearRight;
 
           points = [
             start,
@@ -237,7 +228,27 @@ export function computeDynamicEdges(
             end,
           ];
         } else {
-          const midY = (stubOut.y + stubIn.y) / 2;
+          // Normal case — ensure midY doesn't pass through either node
+          let midY = (stubOut.y + stubIn.y) / 2;
+
+          // Check if midY is inside source node's vertical range
+          const srcTop = sourcePos.y;
+          const srcBot = sourcePos.y + sourceSize.height;
+          const tgtTop = targetPos.y;
+          const tgtBot = targetPos.y + targetSize.height;
+
+          const midInsideSource = midY > srcTop && midY < srcBot;
+          const midInsideTarget = midY > tgtTop && midY < tgtBot;
+
+          if (midInsideSource || midInsideTarget) {
+            // Push midY outside both nodes
+            if (goingDown) {
+              midY = Math.max(srcBot, tgtBot) + STUB_LENGTH;
+            } else {
+              midY = Math.min(srcTop, tgtTop) - STUB_LENGTH;
+            }
+          }
+
           points = [
             start,
             stubOut,
@@ -248,7 +259,7 @@ export function computeDynamicEdges(
           ];
         }
       } else if (!srcIsVertical && !tgtIsVertical) {
-        // Both horizontal (e.g., right->left in LR layout)
+        // Both horizontal
         const goingRight = sourceSide === 'right';
         const goingLeft = sourceSide === 'left';
         const targetIsLeft = end.x < start.x;
@@ -258,16 +269,9 @@ export function computeDynamicEdges(
         if (Math.abs(start.y - end.y) < 1 && !needsWrapAround) {
           points = [start, end];
         } else if (needsWrapAround) {
-          const sourceTop = sourcePos.y;
-          const sourceBottom = sourcePos.y + sourceSize.height;
-          const targetTop = targetPos.y;
-          const targetBottom = targetPos.y + targetSize.height;
-
-          const clearBottom = Math.max(sourceBottom, targetBottom) + STUB_LENGTH;
-          const clearTop = Math.min(sourceTop, targetTop) - STUB_LENGTH;
-          const distBottom = clearBottom - start.y;
-          const distTop = start.y - clearTop;
-          const clearY = distTop < distBottom ? clearTop : clearBottom;
+          const clearBottom = Math.max(sourcePos.y + sourceSize.height, targetPos.y + targetSize.height) + STUB_LENGTH;
+          const clearTop = Math.min(sourcePos.y, targetPos.y) - STUB_LENGTH;
+          const clearY = (start.y - clearTop) < (clearBottom - start.y) ? clearTop : clearBottom;
 
           points = [
             start,
@@ -278,7 +282,25 @@ export function computeDynamicEdges(
             end,
           ];
         } else {
-          const midX = (stubOut.x + stubIn.x) / 2;
+          // Normal case — ensure midX doesn't pass through either node
+          let midX = (stubOut.x + stubIn.x) / 2;
+
+          const srcLeft = sourcePos.x;
+          const srcRight = sourcePos.x + sourceSize.width;
+          const tgtLeft = targetPos.x;
+          const tgtRight = targetPos.x + targetSize.width;
+
+          const midInsideSource = midX > srcLeft && midX < srcRight;
+          const midInsideTarget = midX > tgtLeft && midX < tgtRight;
+
+          if (midInsideSource || midInsideTarget) {
+            if (goingRight) {
+              midX = Math.max(srcRight, tgtRight) + STUB_LENGTH;
+            } else {
+              midX = Math.min(srcLeft, tgtLeft) - STUB_LENGTH;
+            }
+          }
+
           points = [
             start,
             stubOut,
