@@ -66,6 +66,14 @@ export interface NodeSection {
   content: string;
 }
 
+export interface EdgeMeasurement {
+  label: string;     // "V", "A", "W", "Hz", "MW", custom
+  value: string | number;
+  unit?: string;
+  position?: number; // 0-1 along edge, default 0.5
+  status?: 'normal' | 'warning' | 'critical';
+}
+
 export interface FlowEdge {
   id: string;
   source: string;
@@ -83,6 +91,7 @@ export interface FlowEdge {
   annotation?: string;          // component value displayed near the edge (e.g., "10K", "22uF")
   annotationPosition?: number;  // 0-1, where along the edge to place it (default 0.5)
   thickness?: number;           // override stroke width (for current-based thickness)
+  measurements?: EdgeMeasurement[];
 }
 
 export type CanvasBackground = 'dots' | 'isometric' | 'plain';
@@ -142,6 +151,22 @@ export interface FlowCanvasProps {
   displayMode?: 'standard' | 'single-line';
   detailPanel?: boolean | { width?: number; position?: 'right' | 'left' };
   renderDetailSection?: (section: DetailSection, node: FlowNode) => ReactNode;
+  legend?: boolean | { position?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left' };
+  story?: StoryConfig;
+  onStoryStepChange?: (stepIndex: number, step: StoryStep) => void;
+}
+
+export interface StoryStep {
+  nodeId: string;
+  title?: string;
+  content?: string; // markdown
+  duration?: number; // auto-advance after ms (optional)
+}
+
+export interface StoryConfig {
+  steps: StoryStep[];
+  autoPlay?: boolean;
+  autoPlayInterval?: number; // ms between steps, default 5000
 }
 
 export interface LayoutNode {

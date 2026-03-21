@@ -14,6 +14,9 @@ import { HelperLines } from './helpers/HelperLines';
 import { DragDropSidebar } from './sidebar/DragDropSidebar';
 import { ThemeToggle } from './controls/ThemeToggle';
 import { computeDynamicEdges } from './edges/computeEdges';
+import { useStory } from './story/useStory';
+import { StoryOverlay } from './story/StoryOverlay';
+import { Legend } from './legend/Legend';
 
 export interface FlowCanvasRef {
   exportPng: (options?: ExportOptions) => Promise<string>;
@@ -56,7 +59,7 @@ function getVisibleNodesAndEdges(diagram: FlowDiagram): { nodes: FlowNode[]; edg
 
 
 export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
-  function FlowCanvas({ diagram, mode = 'view', className, onDiagramChange, background, minimap, theme, onNodeClick, nodeRenderers, onContextMenu, contextMenu, onNodeCollapse, sidebar, onNodeDrop, themeToggle, onThemeChange, zoomControls, onUndo, onRedo, canUndo, canRedo, onSelectionChange, onNodesDelete, onNodesCopy, onNodesPaste, onEdgeCreate, onNodeLabelChange, contextualZoom, displayMode = 'standard', detailPanel, renderDetailSection }: FlowCanvasProps, ref) {
+  function FlowCanvas({ diagram, mode = 'view', className, onDiagramChange, background, minimap, theme, onNodeClick, nodeRenderers, onContextMenu, contextMenu, onNodeCollapse, sidebar, onNodeDrop, themeToggle, onThemeChange, zoomControls, onUndo, onRedo, canUndo, canRedo, onSelectionChange, onNodesDelete, onNodesCopy, onNodesPaste, onEdgeCreate, onNodeLabelChange, contextualZoom, displayMode = 'standard', detailPanel, renderDetailSection, legend, story: storyConfig, onStoryStepChange }: FlowCanvasProps, ref) {
   const editable = mode === 'edit';
 
   const [currentScale, setCurrentScale] = useState(1);
@@ -86,6 +89,18 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
 
   const [selectedNodeIds, setSelectedNodeIds] = useState<Set<string>>(new Set());
   const [detailNode, setDetailNode] = useState<FlowNode | null>(null);
+
+  const story = useStory(storyConfig, onStoryStepChange);
+
+  // When story step changes, highlight that node and open its detail panel
+  useEffect(() => {
+    if (story.activeNodeId) {
+      setSelectedNodeIds(new Set([story.activeNodeId]));
+      if (detailPanel) {
+        setDetailNode(diagram.nodes.find(n => n.id === story.activeNodeId) || null);
+      }
+    }
+  }, [story.activeNodeId]);
 
   const handleDelete = useCallback(() => {
     if (selectedNodeIds.size > 0 && onNodesDelete) {
@@ -409,6 +424,8 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
       onConnectionMouseUp={editable ? handleConnectionMouseUp : undefined}
       onLassoSelect={editable ? handleLassoSelect : undefined}
       onZoomChange={contextualZoom ? setCurrentScale : undefined}
+      zoomToNodeId={story.activeNodeId}
+      nodePositions={positions}
     >
       {layout && (
         <EdgeRenderer
@@ -489,6 +506,12 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
         />
       ))}
     </CanvasView>
+    {legend && (
+      <Legend
+        diagram={diagram}
+        position={typeof legend === 'object' ? legend.position : 'top-right'}
+      />
+    )}
     {themeToggle && (
       <ThemeToggle theme={activeTheme} onChange={handleThemeChange} />
     )}
@@ -547,6 +570,18 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
           }
           return defaultItems;
         })()}
+      />
+    )}
+    {story.isActive && storyConfig && (
+      <StoryOverlay
+        steps={storyConfig.steps}
+        currentStep={story.currentStep}
+        isPlaying={story.isPlaying}
+        onPrev={story.prev}
+        onNext={story.next}
+        onTogglePlay={story.togglePlay}
+        onClose={story.close}
+        onGoToStep={story.goToStep}
       />
     )}
     </div>

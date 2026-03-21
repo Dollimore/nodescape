@@ -37,6 +37,8 @@ interface CanvasViewProps {
   onConnectionMouseUp?: (e: React.MouseEvent) => void;
   onLassoSelect?: (nodeIds: string[]) => void;
   onZoomChange?: (scale: number) => void;
+  zoomToNodeId?: string | null;
+  nodePositions?: Record<string, { x: number; y: number }>;
 }
 
 const bgClassMap: Record<CanvasBackground, string> = {
@@ -74,6 +76,8 @@ export function CanvasView({
   onConnectionMouseUp,
   onLassoSelect,
   onZoomChange,
+  zoomToNodeId,
+  nodePositions,
 }: CanvasViewProps) {
   const { transform, onMouseDown, onMouseMove, onMouseUp, attachWheelListener, attachTouchListeners, setFitView, zoomIn, zoomOut, resetZoom } = usePanZoom();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -119,6 +123,22 @@ export function CanvasView({
   useEffect(() => {
     if (onZoomChange) onZoomChange(transform.scale);
   }, [transform.scale, onZoomChange]);
+
+  // Pan to center a specific node when story step changes
+  useEffect(() => {
+    if (!zoomToNodeId || !nodePositions?.[zoomToNodeId] || !containerRef.current) return;
+    const pos = nodePositions[zoomToNodeId];
+    const rect = containerRef.current.getBoundingClientRect();
+    const scale = Math.max(transform.scale, 0.8);
+    // Node positions are in diagram space; account for the canvas offset (9984px)
+    const canvasOffset = 9984;
+    setFitView({
+      x: rect.width / 2 - (canvasOffset + pos.x) * scale,
+      y: rect.height / 2 - (canvasOffset + pos.y) * scale,
+      scale,
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [zoomToNodeId]);
 
   const applyFitView = useCallback(() => {
     if (!contentWidth || !contentHeight || !containerRef.current) return;

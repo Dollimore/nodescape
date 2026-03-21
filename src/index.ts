@@ -41,3 +41,6 @@ export { Timeline } from './detail/Timeline';
 export type { NodeDetail, DetailSection } from './types';
 export { applyRadiationZones, reactorStatusSections } from './utils/nuclearUtils';
 export type { ReactorStatus } from './utils/nuclearUtils';
+export { StoryOverlay } from './story/StoryOverlay';
+export { useStory } from './story/useStory';
+export type { StoryStep, StoryConfig } from './types';

@@ -630,7 +630,12 @@ const nuclearDiagram: FlowDiagram = {
   ],
   edges: [
     // Primary loop
-    { id: 'n1', source: 'reactor', target: 'sg-1', color: '#ef4444', flowAnimation: true, annotation: '325C', thickness: 4 },
+    { id: 'n1', source: 'reactor', target: 'sg-1', color: '#ef4444', flowAnimation: true, annotation: '325C', thickness: 4,
+      measurements: [
+        { label: 'T', value: '325', unit: 'C', status: 'normal' as const },
+        { label: 'P', value: '155', unit: 'bar' },
+      ],
+    },
     { id: 'n2', source: 'reactor', target: 'sg-2', color: '#ef4444', flowAnimation: true, annotation: '325C', thickness: 4 },
     { id: 'n3', source: 'sg-1', target: 'rcp-1', color: '#f97316', flowAnimation: true, annotation: '290C' },
     { id: 'n4', source: 'sg-2', target: 'rcp-2', color: '#f97316', flowAnimation: true, annotation: '290C' },
@@ -644,7 +649,12 @@ const nuclearDiagram: FlowDiagram = {
     { id: 'n10', source: 'sg-2', target: 'msv', color: '#3b82f6', flowAnimation: true, showJunction: true },
     { id: 'n11', source: 'msv', target: 'hp-turbine', color: '#3b82f6', flowAnimation: true, thickness: 3 },
     { id: 'n12', source: 'hp-turbine', target: 'lp-turbine', color: '#3b82f6', flowAnimation: true, thickness: 3 },
-    { id: 'n13', source: 'lp-turbine', target: 'generator', color: '#22c55e', flowAnimation: true, annotation: '1200 MWe', thickness: 4 },
+    { id: 'n13', source: 'lp-turbine', target: 'generator', color: '#22c55e', flowAnimation: true, annotation: '1200 MWe', thickness: 4,
+      measurements: [
+        { label: 'P', value: '1200', unit: 'MWe', status: 'normal' as const },
+        { label: 'f', value: '50.0', unit: 'Hz' },
+      ],
+    },
     { id: 'n14', source: 'lp-turbine', target: 'condenser', color: '#06b6d4', flowAnimation: true, annotation: 'Exhaust' },
     { id: 'n15', source: 'condenser', target: 'feedpump', color: '#06b6d4', flowAnimation: true },
     { id: 'n16', source: 'feedpump', target: 'sg-1', color: '#3b82f6', flowAnimation: true, annotation: 'Feedwater' },
@@ -880,6 +890,16 @@ export function App() {
         onSelectionChange={(ids) => console.log('Selected:', ids)}
         onNodeLabelChange={(id, label) => console.log('Label changed:', id, label)}
         detailPanel
+        story={activeDemo === 'showcase' ? {
+          steps: [
+            { nodeId: 'gen-solar', title: 'Solar Generation', content: 'The solar farm generates **1440 MW** using 4.2 million PV panels across 4200 acres.' },
+            { nodeId: 'gen-nuclear', title: 'Nuclear Baseload', content: 'The nuclear plant provides steady **1600 MW** baseload from a Gen III+ EPR reactor.' },
+            { nodeId: 'bus-400', title: 'Transmission Bus', content: 'All generation feeds into the **400kV bus** for distribution to loads.' },
+            { nodeId: 'decision-load', title: 'Load Decision', content: 'When total load exceeds **3GW**, surplus power is exported via HVDC link.' },
+            { nodeId: 'load-datacenter', title: 'Data Center Load', content: 'The data center campus draws **380 MW** at PUE 1.12 with Tier IV redundancy.' },
+            { nodeId: 'scada', title: 'System Control', content: 'The SCADA/EMS monitors all generation, load, and frequency in real-time.' },
+          ],
+        } : undefined}
       />
     </div>
   );
