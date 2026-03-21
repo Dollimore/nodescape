@@ -22,7 +22,8 @@ export function EdgeRenderer({ edges, layoutEdges, defaultRouting = 'curved', co
           const layout = layoutMap.get(edge.id);
           if (!layout || layout.points.length < 2) return null;
 
-          const routing = edge.routing || defaultRouting;
+          const isWire = edge.type === 'wire';
+          const routing = isWire ? 'orthogonal' : (edge.routing || defaultRouting);
           const pathD = buildPath(layout.points, routing, cornerRadius);
 
           const end = layout.points[layout.points.length - 1];
@@ -33,6 +34,7 @@ export function EdgeRenderer({ edges, layoutEdges, defaultRouting = 'curved', co
             styles.edgePath,
             edge.type === 'dashed' ? styles.edgePathDashed : '',
             edge.animated ? styles.edgePathAnimated : '',
+            isWire ? styles.edgePathWire : '',
           ]
             .filter(Boolean)
             .join(' ');
@@ -47,7 +49,7 @@ export function EdgeRenderer({ edges, layoutEdges, defaultRouting = 'curved', co
           return (
             <g key={edge.id} data-testid={`edge-${edge.id}`}>
               <path d={pathD} className={pathClass} style={pathStyle} />
-              <polygon points={arrowPoints} className={styles.arrowhead} style={arrowStyle} />
+              {!isWire && <polygon points={arrowPoints} className={styles.arrowhead} style={arrowStyle} />}
               {/* Directional flow pulse — a highlighted segment traveling along the path */}
               {edge.flowAnimation && (
                 <path
@@ -55,6 +57,12 @@ export function EdgeRenderer({ edges, layoutEdges, defaultRouting = 'curved', co
                   className={styles.flowPulse}
                   style={edgeColor ? { stroke: edgeColor } : undefined}
                 />
+              )}
+              {edge.showJunction && (
+                <>
+                  <circle cx={layout.points[0].x} cy={layout.points[0].y} r={3} className={styles.junction} style={edgeColor ? { fill: edgeColor } : undefined} />
+                  <circle cx={end.x} cy={end.y} r={3} className={styles.junction} style={edgeColor ? { fill: edgeColor } : undefined} />
+                </>
               )}
             </g>
           );

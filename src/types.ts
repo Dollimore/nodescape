@@ -19,7 +19,7 @@ export interface FlowDiagram {
 
 export interface FlowNode {
   id: string;
-  type?: 'default' | 'decision' | 'start' | 'end' | 'group';
+  type?: 'default' | 'decision' | 'start' | 'end' | 'group' | 'bus';
   label: string;
   description?: string;
   parentId?: string; // ID of the group node this node belongs to
@@ -48,11 +48,12 @@ export interface FlowEdge {
   source: string;
   target: string;
   label?: string;
-  type?: 'default' | 'success' | 'failure' | 'dashed';
+  type?: 'default' | 'success' | 'failure' | 'dashed' | 'wire';
   routing?: EdgeRouting;
   animated?: boolean;
   color?: string;
   flowAnimation?: boolean; // directional pulse traveling along the edge
+  showJunction?: boolean; // show a filled dot at source/target connection points
 }
 
 export type CanvasBackground = 'dots' | 'isometric' | 'plain';

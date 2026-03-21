@@ -93,3 +93,12 @@
   background: var(--fc-edge-label-bg);
   color: var(--fc-edge-label-color);
 }
+
+.edgePathWire {
+  stroke-width: 2;
+}
+
+.junction {
+  fill: var(--fc-edge);
+  stroke: none;
+}
