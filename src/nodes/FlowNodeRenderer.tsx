@@ -6,6 +6,7 @@ import { DecisionNode } from './DecisionNode';
 import { StartEndNode } from './StartEndNode';
 import { GroupNode } from './GroupNode';
 import { BusNode } from './BusNode';
+import { NetLabelNode } from './NetLabelNode';
 
 interface FlowNodeRendererProps {
   node: FlowNode;
@@ -89,6 +90,8 @@ function getNodeComponent(type?: FlowNode['type']) {
       return GroupNode;
     case 'bus':
       return BusNode;
+    case 'netlabel':
+      return NetLabelNode;
     default:
       return DefaultNode;
   }

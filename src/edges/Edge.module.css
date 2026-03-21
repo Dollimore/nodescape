@@ -103,6 +103,12 @@
   stroke: none;
 }
 
+.edgePathHop {
+  /* A hop/bridge effect — slightly thicker with rounded endpoints */
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
 .edgeAnnotation {
   font-family: 'SF Mono', 'Fira Code', monospace;
   font-size: 10px;

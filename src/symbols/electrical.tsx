@@ -191,6 +191,96 @@ export function LED({ size = 24, color = 'currentColor' }: SymbolProps) {
   );
 }
 
+// Op-Amp — triangle
+export function OpAmp({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 32 32" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="4,2 4,30 28,16" fill="none" />
+      <text x="10" y="12" fontSize="8" fill={color} stroke="none" fontFamily="system-ui">+</text>
+      <text x="10" y="24" fontSize="8" fill={color} stroke="none" fontFamily="system-ui">-</text>
+      <line x1="0" y1="8" x2="4" y2="8" />
+      <line x1="0" y1="24" x2="4" y2="24" />
+      <line x1="28" y1="16" x2="32" y2="16" />
+    </svg>
+  );
+}
+
+// Battery
+export function Battery({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 28" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round">
+      <line x1="12" y1="0" x2="12" y2="6" />
+      <line x1="4" y1="6" x2="20" y2="6" />
+      <line x1="8" y1="10" x2="16" y2="10" />
+      <line x1="4" y1="14" x2="20" y2="14" />
+      <line x1="8" y1="18" x2="16" y2="18" />
+      <line x1="12" y1="18" x2="12" y2="24" />
+    </svg>
+  );
+}
+
+// Speaker
+export function Speaker({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="8" width="6" height="8" />
+      <polygon points="8,8 16,4 16,20 8,16" fill="none" />
+      <line x1="0" y1="12" x2="2" y2="12" />
+    </svg>
+  );
+}
+
+// Antenna
+export function Antenna({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round">
+      <line x1="12" y1="24" x2="12" y2="12" />
+      <line x1="4" y1="4" x2="12" y2="12" />
+      <line x1="20" y1="4" x2="12" y2="12" />
+    </svg>
+  );
+}
+
+// Crystal Oscillator
+export function Crystal({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
+      <line x1="12" y1="0" x2="12" y2="4" />
+      <line x1="6" y1="4" x2="18" y2="4" />
+      <rect x="8" y="6" width="8" height="12" />
+      <line x1="6" y1="20" x2="18" y2="20" />
+      <line x1="12" y1="20" x2="12" y2="24" />
+    </svg>
+  );
+}
+
+// Connector/Plug — circle with dot
+export function Connector({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
+      <circle cx="12" cy="12" r="6" />
+      <circle cx="12" cy="12" r="2" fill={color} />
+      <line x1="12" y1="0" x2="12" y2="6" />
+      <line x1="12" y1="18" x2="12" y2="24" />
+    </svg>
+  );
+}
+
+// Relay — coil with switch
+export function Relay({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 32 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round">
+      <rect x="4" y="2" width="16" height="20" rx="2" strokeDasharray="4 2" />
+      {/* Coil */}
+      <path d="M8 6 C8 6 8 10 10 10 C12 10 12 6 12 6 C12 6 12 10 14 10 C16 10 16 6 16 6" />
+      {/* Switch */}
+      <circle cx="10" cy="18" r="1.5" fill={color} />
+      <line x1="10" y1="18" x2="18" y2="14" />
+      <circle cx="18" cy="18" r="1.5" fill={color} />
+    </svg>
+  );
+}
+
 // Export a map of all symbols for easy lookup by name
 export const electricalSymbols: Record<string, React.ComponentType<SymbolProps>> = {
   resistor: Resistor,
@@ -207,4 +297,11 @@ export const electricalSymbols: Record<string, React.ComponentType<SymbolProps>>
   motor: Motor,
   generator: Generator,
   led: LED,
+  'op-amp': OpAmp,
+  battery: Battery,
+  speaker: Speaker,
+  antenna: Antenna,
+  crystal: Crystal,
+  connector: Connector,
+  relay: Relay,
 };
