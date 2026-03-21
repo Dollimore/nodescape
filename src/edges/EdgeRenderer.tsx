@@ -109,17 +109,36 @@ export function EdgeRenderer({ edges, layoutEdges, defaultRouting = 'curved', co
         const layout = layoutMap.get(edge.id);
         if (!layout || layout.points.length < 2) return null;
 
-        const pos = edge.annotationPosition ?? 0.3;
-        const idx = Math.min(Math.floor((layout.points.length - 1) * pos), layout.points.length - 2);
-        const point = layout.points[idx] || getMidpoint(layout.points);
+        // Find the longest segment in the path — place annotation on its midpoint.
+        // This avoids collisions at shared stubs near the source/target node.
+        let bestIdx = 0;
+        let bestLen = 0;
+        for (let i = 0; i < layout.points.length - 1; i++) {
+          const sx = layout.points[i + 1].x - layout.points[i].x;
+          const sy = layout.points[i + 1].y - layout.points[i].y;
+          const segLen = Math.sqrt(sx * sx + sy * sy);
+          if (segLen > bestLen) {
+            bestLen = segLen;
+            bestIdx = i;
+          }
+        }
 
-        // Offset the annotation perpendicular to the edge direction
-        const nextPt = layout.points[idx + 1] || layout.points[idx];
-        const dx = nextPt.x - point.x;
-        const dy = nextPt.y - point.y;
+        // If user specified a position, use that instead
+        const idx = edge.annotationPosition !== undefined
+          ? Math.min(Math.floor((layout.points.length - 1) * edge.annotationPosition), layout.points.length - 2)
+          : bestIdx;
+
+        const p1 = layout.points[idx];
+        const p2 = layout.points[idx + 1] || p1;
+        const midX = (p1.x + p2.x) / 2;
+        const midY = (p1.y + p2.y) / 2;
+
+        // Offset perpendicular to the segment direction
+        const dx = p2.x - p1.x;
+        const dy = p2.y - p1.y;
         const len = Math.sqrt(dx * dx + dy * dy) || 1;
-        const offsetX = (-dy / len) * 20;
-        const offsetY = (dx / len) * 20;
+        const offsetX = (-dy / len) * 16;
+        const offsetY = (dx / len) * 16;
 
         return (
           <div
@@ -127,8 +146,8 @@ export function EdgeRenderer({ edges, layoutEdges, defaultRouting = 'curved', co
             className={styles.edgeAnnotation}
             style={{
               position: 'absolute',
-              left: point.x + offsetX,
-              top: point.y + offsetY,
+              left: midX + offsetX,
+              top: midY + offsetY,
               transform: 'translate(-50%, -50%)',
               transition: isDragging ? 'none' : undefined,
             }}
