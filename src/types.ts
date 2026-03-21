@@ -112,6 +112,15 @@ export interface FlowCanvasProps {
   themeToggle?: boolean;
   onThemeChange?: (theme: 'light' | 'dark') => void;
   zoomControls?: boolean;
+  onSelectionChange?: (selectedIds: string[]) => void;
+  onNodesDelete?: (nodeIds: string[]) => void;
+  onUndo?: () => void;
+  onRedo?: () => void;
+  canUndo?: boolean;
+  canRedo?: boolean;
+  onNodesCopy?: (nodes: FlowNode[]) => void;
+  onNodesPaste?: (position: { x: number; y: number }) => void;
+  onEdgeCreate?: (source: string, target: string) => void;
 }
 
 export interface LayoutNode {

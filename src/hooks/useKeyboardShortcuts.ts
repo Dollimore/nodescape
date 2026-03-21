@@ -5,6 +5,11 @@ interface KeyboardShortcutHandlers {
   onZoomIn: () => void;
   onZoomOut: () => void;
   onResetZoom: () => void;
+  onUndo?: () => void;
+  onRedo?: () => void;
+  onDelete?: () => void;
+  onCopy?: () => void;
+  onPaste?: () => void;
 }
 
 export function useKeyboardShortcuts(
@@ -30,6 +35,21 @@ export function useKeyboardShortcuts(
     } else if (isMod && e.key === '1') {
       e.preventDefault();
       handlers.onResetZoom();
+    } else if (isMod && e.key === 'z' && !e.shiftKey) {
+      e.preventDefault();
+      handlers.onUndo?.();
+    } else if (isMod && e.key === 'z' && e.shiftKey) {
+      e.preventDefault();
+      handlers.onRedo?.();
+    } else if (e.key === 'Backspace' || e.key === 'Delete') {
+      e.preventDefault();
+      handlers.onDelete?.();
+    } else if (isMod && e.key === 'c') {
+      e.preventDefault();
+      handlers.onCopy?.();
+    } else if (isMod && e.key === 'v') {
+      e.preventDefault();
+      handlers.onPaste?.();
     }
   }, [handlers]);
 

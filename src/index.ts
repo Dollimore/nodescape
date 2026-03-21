@@ -22,3 +22,4 @@ export type { SymbolProps } from './symbols/electrical';
 export { WireCrossover } from './edges/WireCrossover';
 export { applyVoltageColoring, applyCurrentThickness, DEFAULT_VOLTAGE_LEVELS } from './utils/voltageColoring';
 export type { VoltageLevel } from './utils/voltageColoring';
+export { useHistory } from './hooks/useHistory';

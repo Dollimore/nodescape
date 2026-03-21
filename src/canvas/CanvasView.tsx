@@ -25,6 +25,11 @@ interface CanvasViewProps {
   onDrop?: (e: React.DragEvent) => void;
   onDragOver?: (e: React.DragEvent) => void;
   zoomControls?: boolean;
+  onUndo?: () => void;
+  onRedo?: () => void;
+  canUndo?: boolean;
+  canRedo?: boolean;
+  onBackgroundClick?: () => void;
 }
 
 const bgClassMap: Record<CanvasBackground, string> = {
@@ -50,6 +55,10 @@ export function CanvasView({
   onDrop,
   onDragOver,
   zoomControls = false,
+  onUndo,
+  onRedo,
+  canUndo,
+  canRedo,
 }: CanvasViewProps) {
   const { transform, onMouseDown, onMouseMove, onMouseUp, attachWheelListener, setFitView, zoomIn, zoomOut, resetZoom } = usePanZoom();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -96,6 +105,8 @@ export function CanvasView({
     onZoomIn: zoomIn,
     onZoomOut: zoomOut,
     onResetZoom: resetZoom,
+    onUndo,
+    onRedo,
   });
 
   const handleMouseMove = (e: React.MouseEvent) => {
@@ -148,6 +159,10 @@ export function CanvasView({
           onZoomOut={zoomOut}
           onResetZoom={resetZoom}
           onFitView={applyFitView}
+          onUndo={onUndo}
+          onRedo={onRedo}
+          canUndo={canUndo}
+          canRedo={canRedo}
         />
       )}
     </div>

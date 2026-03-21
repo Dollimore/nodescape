@@ -55,7 +55,7 @@ function getVisibleNodesAndEdges(diagram: FlowDiagram): { nodes: FlowNode[]; edg
 
 
 export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
-  function FlowCanvas({ diagram, mode = 'view', className, onDiagramChange, background, minimap, theme, onNodeClick, nodeRenderers, onContextMenu, contextMenu, onNodeCollapse, sidebar, onNodeDrop, themeToggle, onThemeChange, zoomControls }: FlowCanvasProps, ref) {
+  function FlowCanvas({ diagram, mode = 'view', className, onDiagramChange, background, minimap, theme, onNodeClick, nodeRenderers, onContextMenu, contextMenu, onNodeCollapse, sidebar, onNodeDrop, themeToggle, onThemeChange, zoomControls, onUndo, onRedo, canUndo, canRedo, onSelectionChange, onNodesDelete }: FlowCanvasProps, ref) {
   const editable = mode === 'edit';
 
   const [internalTheme, setInternalTheme] = useState<'light' | 'dark'>(theme || 'light');
@@ -73,6 +73,22 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
   const [contextMenuState, setContextMenuState] = useState<{
     x: number; y: number; nodeId: string; node: FlowNode;
   } | null>(null);
+
+  const [selectedNodeIds, setSelectedNodeIds] = useState<Set<string>>(new Set());
+
+  const handleDelete = useCallback(() => {
+    if (selectedNodeIds.size > 0 && onNodesDelete) {
+      onNodesDelete(Array.from(selectedNodeIds));
+      setSelectedNodeIds(new Set());
+    }
+  }, [selectedNodeIds, onNodesDelete]);
+
+  useEffect(() => {
+    if (onSelectionChange) {
+      onSelectionChange(Array.from(selectedNodeIds));
+    }
+  }, [selectedNodeIds, onSelectionChange]);
+
   const nodeRefs = useRef(new Map<string, HTMLElement | null>());
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -266,6 +282,10 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
       onDrop={handleCanvasDrop}
       onDragOver={(e) => e.preventDefault()}
       zoomControls={!!zoomControls}
+      onUndo={onUndo}
+      onRedo={onRedo}
+      canUndo={canUndo}
+      canRedo={canRedo}
     >
       {layout && (
         <EdgeRenderer

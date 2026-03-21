@@ -7,13 +7,46 @@ interface ZoomControlsProps {
   onZoomOut: () => void;
   onResetZoom: () => void;
   onFitView: () => void;
+  onUndo?: () => void;
+  onRedo?: () => void;
+  canUndo?: boolean;
+  canRedo?: boolean;
 }
 
-export function ZoomControls({ scale, onZoomIn, onZoomOut, onResetZoom, onFitView }: ZoomControlsProps) {
+export function ZoomControls({ scale, onZoomIn, onZoomOut, onResetZoom, onFitView, onUndo, onRedo, canUndo, canRedo }: ZoomControlsProps) {
   const percentage = Math.round(scale * 100);
 
   return (
     <div className={styles.container}>
+      {(onUndo || onRedo) && (
+        <>
+          <button
+            className={styles.button}
+            onClick={onUndo}
+            title="Undo (Cmd+Z)"
+            disabled={!canUndo}
+            style={{ opacity: canUndo ? 1 : 0.35 }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 7v6h6" />
+              <path d="M3 13C5.5 6.5 13 4 19 8" />
+            </svg>
+          </button>
+          <button
+            className={styles.button}
+            onClick={onRedo}
+            title="Redo (Cmd+Shift+Z)"
+            disabled={!canRedo}
+            style={{ opacity: canRedo ? 1 : 0.35 }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 7v6h-6" />
+              <path d="M21 13C18.5 6.5 11 4 5 8" />
+            </svg>
+          </button>
+          <div className={styles.divider} />
+        </>
+      )}
       <button className={styles.button} onClick={onZoomOut} title="Zoom out">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
           <line x1="5" y1="12" x2="19" y2="12" />
