@@ -30,8 +30,11 @@ export const FlowNodeRenderer = React.forwardRef<HTMLDivElement, FlowNodeRendere
       transform: `translate(${position.x}px, ${position.y}px)`,
       transition: isDragging ? undefined : 'transform 0.3s ease',
       cursor: onClick && !editable ? 'pointer' : undefined,
-      // Force grid-snapped width; height is min-height so collapse can shrink
-      ...(size ? { width: size.width, minHeight: size.height } : {}),
+      // Force grid-snapped width; groups use fixed height, others use min-height for collapse
+      ...(size ? {
+        width: size.width,
+        ...(node.type === 'group' ? { height: size.height } : { minHeight: size.height }),
+      } : {}),
     };
 
     const handleMouseDown = (e: React.MouseEvent) => {
