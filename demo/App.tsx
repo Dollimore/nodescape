@@ -308,7 +308,20 @@ const showcaseDiagram: FlowDiagram = {
       sections: [
         { heading: 'Panels', content: '4.2 million modules' },
         { heading: 'Inverters', content: '200x `SMA Sunny Central`' },
-      ]
+      ],
+      detail: {
+        content: 'The solar farm operates across **4200 acres** with tracking arrays optimized for maximum energy capture.',
+        sections: [
+          { type: 'chart', title: 'Daily Output (MW)', data: { type: 'bar', values: [800, 1200, 1400, 1380, 1100, 600, 200], labels: ['6am', '9am', '12pm', '3pm', '5pm', '7pm', '9pm'], color: '#f59e0b' } },
+          { type: 'keyvalue', title: 'Specifications', data: { 'Panel Type': 'Bifacial N-type', 'Capacity': '2000 MW', 'Annual Output': '3,800 GWh', 'Capacity Factor': '21.7%', 'Commissioning': '2024' } },
+          { type: 'timeline', title: 'Recent Events', data: [
+            { time: '14:32', event: 'Cloud cover clearing', status: 'success' },
+            { time: '13:15', event: 'Output reduced to 70%', status: 'warning' },
+            { time: '11:00', event: 'Peak output reached', status: 'success' },
+            { time: '06:30', event: 'Sunrise generation started', status: 'info' },
+          ]},
+        ],
+      },
     },
     { id: 'gen-wind', label: 'Offshore Wind', icon: 'zap', description: 'Floating turbine array.',
       status: 'online', progress: 88, flowRate: '960 MW', parentId: 'grp-gen' },
@@ -619,6 +632,7 @@ export function App() {
         onNodesDelete={(ids) => console.log('Delete nodes:', ids)}
         onSelectionChange={(ids) => console.log('Selected:', ids)}
         onNodeLabelChange={(id, label) => console.log('Label changed:', id, label)}
+        detailPanel
       />
     </div>
   );

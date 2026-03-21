@@ -1,5 +1,6 @@
 import React, { useRef, useCallback, useEffect, useMemo, useImperativeHandle, useState } from 'react';
 import type { FlowCanvasProps, FlowDiagram, FlowNode, FlowEdge } from './types';
+import { DetailPanel } from './detail/DetailPanel';
 import { ContextMenu } from './contextmenu/ContextMenu';
 import { FlowNodeRenderer } from './nodes/FlowNodeRenderer';
 import { EdgeRenderer } from './edges/EdgeRenderer';
@@ -55,7 +56,7 @@ function getVisibleNodesAndEdges(diagram: FlowDiagram): { nodes: FlowNode[]; edg
 
 
 export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
-  function FlowCanvas({ diagram, mode = 'view', className, onDiagramChange, background, minimap, theme, onNodeClick, nodeRenderers, onContextMenu, contextMenu, onNodeCollapse, sidebar, onNodeDrop, themeToggle, onThemeChange, zoomControls, onUndo, onRedo, canUndo, canRedo, onSelectionChange, onNodesDelete, onNodesCopy, onNodesPaste, onEdgeCreate, onNodeLabelChange, contextualZoom, displayMode = 'standard' }: FlowCanvasProps, ref) {
+  function FlowCanvas({ diagram, mode = 'view', className, onDiagramChange, background, minimap, theme, onNodeClick, nodeRenderers, onContextMenu, contextMenu, onNodeCollapse, sidebar, onNodeDrop, themeToggle, onThemeChange, zoomControls, onUndo, onRedo, canUndo, canRedo, onSelectionChange, onNodesDelete, onNodesCopy, onNodesPaste, onEdgeCreate, onNodeLabelChange, contextualZoom, displayMode = 'standard', detailPanel, renderDetailSection }: FlowCanvasProps, ref) {
   const editable = mode === 'edit';
 
   const [currentScale, setCurrentScale] = useState(1);
@@ -84,6 +85,7 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
   } | null>(null);
 
   const [selectedNodeIds, setSelectedNodeIds] = useState<Set<string>>(new Set());
+  const [detailNode, setDetailNode] = useState<FlowNode | null>(null);
 
   const handleDelete = useCallback(() => {
     if (selectedNodeIds.size > 0 && onNodesDelete) {
@@ -446,7 +448,10 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
           detailLevel={detailLevel}
           onDragStart={editable ? onDragStart : undefined}
           isDragging={isDragging}
-          onClick={onNodeClick ? () => onNodeClick(node.id, node) : undefined}
+          onClick={() => {
+            if (onNodeClick) onNodeClick(node.id, node);
+            if (detailPanel) setDetailNode(diagram.nodes.find(n => n.id === node.id) || null);
+          }}
           onNodeSelect={(nodeId, e) => {
             if (e.shiftKey) {
               setSelectedNodeIds(prev => {
@@ -486,6 +491,14 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
     </CanvasView>
     {themeToggle && (
       <ThemeToggle theme={activeTheme} onChange={handleThemeChange} />
+    )}
+    {detailPanel && detailNode && (
+      <DetailPanel
+        node={detailNode}
+        onClose={() => setDetailNode(null)}
+        width={typeof detailPanel === 'object' ? detailPanel.width : 360}
+        renderSection={renderDetailSection}
+      />
     )}
     {sidebar && sidebar.length > 0 && (
       <DragDropSidebar templates={sidebar} />

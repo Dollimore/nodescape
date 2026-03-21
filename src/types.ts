@@ -1,4 +1,4 @@
-import type { ComponentType, MouseEvent } from 'react';
+import type { ComponentType, MouseEvent, ReactNode } from 'react';
 
 export type EdgeRouting = 'curved' | 'orthogonal' | 'straight';
 
@@ -46,6 +46,19 @@ export interface FlowNode {
   progress?: number; // 0-100, renders a progress bar
   flowRate?: string; // e.g., "1.2 MW", "340 Gbps" — displayed as a badge
   branchCollapsed?: boolean; // if true, hide all downstream nodes
+  detail?: NodeDetail;
+}
+
+export interface NodeDetail {
+  title?: string;
+  content?: string; // markdown content
+  sections?: DetailSection[];
+}
+
+export interface DetailSection {
+  type: 'text' | 'keyvalue' | 'chart' | 'table' | 'timeline' | 'gallery' | 'custom';
+  title?: string;
+  data?: any;
 }
 
 export interface NodeSection {
@@ -127,6 +140,8 @@ export interface FlowCanvasProps {
   onNodeLabelChange?: (nodeId: string, newLabel: string) => void;
   contextualZoom?: boolean;
   displayMode?: 'standard' | 'single-line';
+  detailPanel?: boolean | { width?: number; position?: 'right' | 'left' };
+  renderDetailSection?: (section: DetailSection, node: FlowNode) => ReactNode;
 }
 
 export interface LayoutNode {

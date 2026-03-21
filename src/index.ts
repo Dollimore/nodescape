@@ -30,3 +30,8 @@ export { computePowerFlow, powerFlowSummary } from './utils/powerFlow';
 export type { PowerFlowResult, PowerFlowOptions } from './utils/powerFlow';
 export { analyzeDiagram } from './utils/diagramAnalysis';
 export type { DiagramStats } from './utils/diagramAnalysis';
+export { DetailPanel } from './detail/DetailPanel';
+export { KeyValueTable } from './detail/KeyValueTable';
+export { MiniChart } from './detail/MiniChart';
+export { Timeline } from './detail/Timeline';
+export type { NodeDetail, DetailSection } from './types';
