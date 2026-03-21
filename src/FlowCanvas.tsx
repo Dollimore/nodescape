@@ -282,8 +282,10 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
   const layout = useAutoLayout(visibleDiagram, nodeRefs.current);
 
   const layoutPositions: { [id: string]: { x: number; y: number } } = {};
+  const nodeSizesMap = new Map<string, { width: number; height: number }>();
   for (const n of layout?.nodes || []) {
     layoutPositions[n.id] = { x: n.x, y: n.y };
+    nodeSizesMap.set(n.id, { width: n.width, height: n.height });
   }
 
   const handlePositionChange = useCallback(
@@ -443,6 +445,7 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
           node={node}
           editable={editable}
           position={positions[node.id] || { x: 0, y: 0 }}
+          size={nodeSizesMap.get(node.id)}
           onDragStart={editable ? onDragStart : undefined}
           isDragging={isDragging}
           onClick={onNodeClick ? () => onNodeClick(node.id, node) : undefined}

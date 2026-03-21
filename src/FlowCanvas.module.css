@@ -16,7 +16,7 @@
   --fc-handle-bg: #fff;
   --fc-handle-border: #d0d0d0;
   --fc-dot: #d0d0d0;
-  --fc-grid-line: rgba(0, 0, 0, 0.04);
+  --fc-grid-line: rgba(0, 0, 0, 0.06);
   --fc-edge-label-bg: #fff;
   --fc-edge-label-color: #475569;
   --fc-edge-label-border: rgba(0, 0, 0, 0.06);
@@ -39,7 +39,7 @@
   --fc-handle-bg: #16213e;
   --fc-handle-border: #3a3a5a;
   --fc-dot: #2a2a4a;
-  --fc-grid-line: rgba(255, 255, 255, 0.04);
+  --fc-grid-line: rgba(255, 255, 255, 0.06);
   --fc-edge-label-bg: #16213e;
   --fc-edge-label-color: #94a3b8;
   --fc-edge-label-border: #2a2a4a;

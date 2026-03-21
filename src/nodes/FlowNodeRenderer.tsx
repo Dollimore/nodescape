@@ -10,6 +10,7 @@ interface FlowNodeRendererProps {
   node: FlowNode;
   editable: boolean;
   position: { x: number; y: number };
+  size?: { width: number; height: number };
   onDragStart?: (nodeId: string, e: React.MouseEvent) => void;
   isDragging?: boolean;
   onClick?: () => void;
@@ -18,7 +19,7 @@ interface FlowNodeRendererProps {
 }
 
 export const FlowNodeRenderer = React.forwardRef<HTMLDivElement, FlowNodeRendererProps>(
-  function FlowNodeRenderer({ node, editable, position, onDragStart, isDragging, onClick, customRenderers, onNodeContextMenu }, ref) {
+  function FlowNodeRenderer({ node, editable, position, size, onDragStart, isDragging, onClick, customRenderers, onNodeContextMenu }, ref) {
     const startPos = useRef<{ x: number; y: number } | null>(null);
 
     const style: React.CSSProperties = {
@@ -26,6 +27,8 @@ export const FlowNodeRenderer = React.forwardRef<HTMLDivElement, FlowNodeRendere
       transform: `translate(${position.x}px, ${position.y}px)`,
       transition: isDragging ? undefined : 'transform 0.3s ease',
       cursor: onClick && !editable ? 'pointer' : undefined,
+      // Force grid-snapped dimensions so nodes align with the background grid
+      ...(size ? { width: size.width, height: size.height } : {}),
     };
 
     const handleMouseDown = (e: React.MouseEvent) => {

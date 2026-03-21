@@ -202,7 +202,7 @@ export function App() {
         diagram={diagram}
         mode="edit"
         onDiagramChange={console.log}
-        background="isometric"
+        background="dots"
         minimap
         themeToggle
         onThemeChange={(t) => console.log('Theme:', t)}
