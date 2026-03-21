@@ -292,6 +292,157 @@ const hvdcDiagram: FlowDiagram = {
   ],
 };
 
+// ===== SHOWCASE: Every feature in one diagram =====
+const showcaseDiagram: FlowDiagram = {
+  title: 'Nodescape Feature Showcase',
+  layout: { direction: 'TB', routing: 'orthogonal', cornerRadius: 24 },
+  nodes: [
+    // --- Groups ---
+    { id: 'grp-gen', type: 'group', label: 'Generation Zone', style: { color: '#22c55e' } },
+    { id: 'grp-network', type: 'group', label: 'Transmission Network', style: { color: '#3b82f6' } },
+    { id: 'grp-load', type: 'group', label: 'Load Centers', style: { color: '#f59e0b' } },
+
+    // --- Generation (various icons, status, progress, flowRate, sections) ---
+    { id: 'gen-solar', label: 'Solar Farm', icon: 'zap', description: 'Utility-scale **2GW** PV array.',
+      status: 'online', progress: 72, flowRate: '1440 MW', style: { color: '#f59e0b' }, parentId: 'grp-gen',
+      sections: [
+        { heading: 'Panels', content: '4.2 million modules' },
+        { heading: 'Inverters', content: '200x `SMA Sunny Central`' },
+      ]
+    },
+    { id: 'gen-wind', label: 'Offshore Wind', icon: 'zap', description: 'Floating turbine array.',
+      status: 'online', progress: 88, flowRate: '960 MW', parentId: 'grp-gen' },
+    { id: 'gen-nuclear', label: 'Nuclear Plant', icon: 'generator', description: 'Gen III+ EPR reactor.',
+      status: 'online', progress: 95, flowRate: '1600 MW', style: { color: '#8b5cf6' }, parentId: 'grp-gen',
+      sections: [
+        { heading: 'Reactor', content: 'EPR 1600 MWe' },
+        { heading: 'Coolant', content: 'Pressurized water' },
+      ]
+    },
+    { id: 'gen-bess', label: 'Grid Battery', icon: 'battery', description: '800MW / 3200MWh storage.',
+      status: 'online', progress: 58, flowRate: '400 MW', parentId: 'grp-gen',
+      sections: [
+        { heading: 'Chemistry', content: 'LFP cells' },
+        { heading: 'SoC', content: '**58%** (1856 MWh)' },
+      ]
+    },
+
+    // --- Network (transformers, breakers, bus, measurement, protection) ---
+    { id: 'xfmr-main', label: 'Main Transformer', icon: 'transformer', description: '400/220kV auto-transformer.',
+      status: 'online', parentId: 'grp-network',
+      ports: [
+        { id: 'HV', label: 'HV', side: 'top', position: 0.5 },
+        { id: 'LV', label: 'LV', side: 'bottom', position: 0.3 },
+        { id: 'TV', label: 'TV', side: 'bottom', position: 0.7 },
+      ],
+      sections: [{ heading: 'Rating', content: '2000 MVA ONAN/ONAF' }]
+    },
+    { id: 'cb-main', label: 'Main CB', icon: 'circuit-breaker', description: 'SF6 circuit breaker.',
+      status: 'online', parentId: 'grp-network' },
+    { id: 'bus-400', label: '400kV Bus', description: 'Double busbar with bus coupler.',
+      parentId: 'grp-network' },
+    { id: 'ct-1', label: 'CT', icon: 'current-transformer', parentId: 'grp-network' },
+    { id: 'relay-87', label: 'Diff Relay', icon: 'protection-relay', description: 'Transformer differential.',
+      status: 'online', parentId: 'grp-network' },
+    { id: 'meter-v', label: 'Voltmeter', icon: 'voltmeter', parentId: 'grp-network' },
+    { id: 'meter-a', label: 'Ammeter', icon: 'ammeter', parentId: 'grp-network' },
+    { id: 'arr-1', label: 'Surge Arrester', icon: 'surge-arrester', parentId: 'grp-network' },
+
+    // --- Decision node ---
+    { id: 'decision-load', type: 'decision', label: 'Load > 3GW?', icon: 'shield-check',
+      description: 'Check if total demand exceeds threshold.' },
+
+    // --- HVDC link ---
+    { id: 'conv-rect', label: 'Rectifier', icon: 'diode', description: 'LCC thyristor converter.',
+      status: 'online', progress: 78, flowRate: '1200 MW',
+      sections: [{ heading: 'DC Voltage', content: '+/-500 kV' }] },
+    { id: 'dc-cable', label: 'HVDC Cable', description: '350km subsea XLPE.', flowRate: '+/-500 kV',
+      style: { color: '#ef4444' } },
+    { id: 'conv-inv', label: 'Inverter', icon: 'diode', description: 'VSC-MMC converter.',
+      status: 'online', progress: 72, flowRate: '1150 MW' },
+
+    // --- Load centers ---
+    { id: 'load-city', label: 'City Grid', icon: 'zap', description: 'Metropolitan distribution.',
+      status: 'online', flowRate: '2200 MW', progress: 82, parentId: 'grp-load' },
+    { id: 'load-industry', label: 'Industrial Park', icon: 'motor', description: 'Heavy industrial loads.',
+      status: 'online', flowRate: '1400 MW', progress: 91, parentId: 'grp-load',
+      sections: [{ heading: 'Peak Demand', content: '1800 MW' }] },
+    { id: 'load-datacenter', label: 'Data Center Campus', icon: 'server', description: '400MW campus with redundancy.',
+      status: 'warning', flowRate: '380 MW', progress: 95, parentId: 'grp-load',
+      sections: [
+        { heading: 'PUE', content: '1.12' },
+        { heading: 'Tier', content: 'IV (2N)' },
+        { heading: 'Alert', content: 'Cooling capacity **92%**' },
+      ]
+    },
+
+    // --- Net labels ---
+    { id: 'nl-vcc', type: 'netlabel', label: 'VCC 400kV', style: { color: '#22c55e' } },
+    { id: 'nl-gnd', type: 'netlabel', label: 'Station Earth', style: { color: '#94a3b8' } },
+
+    // --- Start/End ---
+    { id: 'start-grid', type: 'start', label: 'National Grid Connection', icon: 'zap' },
+    { id: 'end-export', type: 'end', label: 'Export to Neighbor', icon: 'log-out' },
+
+    // --- SCADA with glow ---
+    { id: 'scada', label: 'SCADA / EMS', icon: 'layout-dashboard', description: 'Energy Management System.',
+      status: 'online', style: { color: '#8b5cf6', glow: true },
+      sections: [
+        { heading: 'Generation', content: '4400 MW total' },
+        { heading: 'Demand', content: '3980 MW' },
+        { heading: 'Frequency', content: '50.01 Hz' },
+        { heading: 'Reserves', content: '420 MW spinning' },
+      ]
+    },
+  ],
+  edges: [
+    // Generation to bus
+    { id: 's1', source: 'gen-solar', target: 'bus-400', color: '#f59e0b', flowAnimation: true, annotation: '1440 MW', thickness: 3 },
+    { id: 's2', source: 'gen-wind', target: 'bus-400', color: '#06b6d4', flowAnimation: true, annotation: '960 MW', thickness: 2 },
+    { id: 's3', source: 'gen-nuclear', target: 'xfmr-main', targetPort: 'HV', color: '#8b5cf6', flowAnimation: true, annotation: '1600 MW', thickness: 4 },
+    { id: 's4', source: 'gen-bess', target: 'bus-400', color: '#22c55e', flowAnimation: true, annotation: '400 MW', showJunction: true },
+
+    // Transformer to bus
+    { id: 's5', source: 'xfmr-main', sourcePort: 'LV', target: 'cb-main', color: '#22c55e', flowAnimation: true },
+    { id: 's6', source: 'cb-main', target: 'bus-400', color: '#22c55e', flowAnimation: true, thickness: 3, showJunction: true },
+
+    // Protection & measurement
+    { id: 's7', source: 'xfmr-main', sourcePort: 'TV', target: 'ct-1', color: '#94a3b8' },
+    { id: 's8', source: 'ct-1', target: 'relay-87', color: '#94a3b8', type: 'dashed' },
+    { id: 's9', source: 'bus-400', target: 'meter-v', color: '#94a3b8', type: 'dashed' },
+    { id: 's10', source: 'bus-400', target: 'meter-a', color: '#94a3b8', type: 'dashed' },
+    { id: 's11', source: 'bus-400', target: 'arr-1', color: '#94a3b8' },
+
+    // Bus to decision
+    { id: 's12', source: 'bus-400', target: 'decision-load', color: '#3b82f6', flowAnimation: true, thickness: 3 },
+
+    // Decision branches
+    { id: 's13', source: 'decision-load', target: 'load-city', label: 'Yes', type: 'success', color: '#22c55e', flowAnimation: true, annotation: '2200 MW', thickness: 3 },
+    { id: 's14', source: 'decision-load', target: 'conv-rect', label: 'Export', type: 'failure', color: '#ef4444', flowAnimation: true },
+
+    // HVDC link
+    { id: 's15', source: 'conv-rect', target: 'dc-cable', color: '#ef4444', flowAnimation: true, annotation: '+500kV DC', thickness: 4 },
+    { id: 's16', source: 'dc-cable', target: 'conv-inv', color: '#ef4444', flowAnimation: true, thickness: 4 },
+    { id: 's17', source: 'conv-inv', target: 'end-export', color: '#f59e0b', flowAnimation: true, annotation: '1150 MW' },
+
+    // Load distribution
+    { id: 's18', source: 'bus-400', target: 'load-industry', color: '#f59e0b', flowAnimation: true, annotation: '1400 MW', thickness: 2, showJunction: true },
+    { id: 's19', source: 'bus-400', target: 'load-datacenter', color: '#3b82f6', flowAnimation: true, annotation: '380 MW', showJunction: true },
+
+    // Grid connection
+    { id: 's20', source: 'start-grid', target: 'bus-400', color: '#22c55e', flowAnimation: true, thickness: 3 },
+
+    // Net labels
+    { id: 's21', source: 'bus-400', target: 'nl-vcc', color: '#22c55e', type: 'dashed' },
+    { id: 's22', source: 'arr-1', target: 'nl-gnd', color: '#94a3b8', type: 'dashed' },
+
+    // SCADA monitoring
+    { id: 's23', source: 'scada', target: 'bus-400', color: '#8b5cf6', type: 'dashed', annotation: 'IEC 61850' },
+    { id: 's24', source: 'scada', target: 'relay-87', color: '#8b5cf6', type: 'dashed' },
+    { id: 's25', source: 'scada', target: 'conv-rect', color: '#8b5cf6', type: 'dashed' },
+  ],
+};
+
 const nodeTemplates: SidebarNodeTemplate[] = [
   { type: 'default', label: 'Process', description: 'A process step' },
   { type: 'decision', label: 'Decision', description: 'A branch point' },
@@ -300,11 +451,11 @@ const nodeTemplates: SidebarNodeTemplate[] = [
 ];
 
 export function App() {
-  const [activeDemo, setActiveDemo] = React.useState<'vertical' | 'horizontal' | 'datacenter' | 'circuit' | 'hvdc'>('vertical');
+  const [activeDemo, setActiveDemo] = React.useState<'vertical' | 'horizontal' | 'datacenter' | 'circuit' | 'hvdc' | 'showcase'>('vertical');
   const [currentDiagram, setCurrentDiagram] = useState<FlowDiagram>(sampleDiagram);
-  const demoMap: Record<string, FlowDiagram> = { vertical: sampleDiagram, horizontal: horizontalDiagram, datacenter: datacenterDiagram, circuit: circuitDiagram, hvdc: hvdcDiagram };
+  const demoMap: Record<string, FlowDiagram> = { vertical: sampleDiagram, horizontal: horizontalDiagram, datacenter: datacenterDiagram, circuit: circuitDiagram, hvdc: hvdcDiagram, showcase: showcaseDiagram };
   const baseDiagram = demoMap[activeDemo] || sampleDiagram;
-  const diagram = activeDemo === 'vertical' ? currentDiagram : baseDiagram;
+  const diagram = (activeDemo === 'vertical' || activeDemo === 'showcase') ? currentDiagram : baseDiagram;
   const canvasRef = useRef<FlowCanvasRef>(null);
 
   const handleNodeCollapse = (nodeId: string, collapsed: boolean) => {
@@ -314,9 +465,10 @@ export function App() {
     }));
   };
 
-  const handleDemoChange = (demo: 'vertical' | 'horizontal' | 'datacenter' | 'circuit' | 'hvdc') => {
+  const handleDemoChange = (demo: 'vertical' | 'horizontal' | 'datacenter' | 'circuit' | 'hvdc' | 'showcase') => {
     setActiveDemo(demo);
     if (demo === 'vertical') setCurrentDiagram(sampleDiagram);
+    if (demo === 'showcase') setCurrentDiagram(showcaseDiagram);
   };
 
   return (
@@ -351,7 +503,23 @@ export function App() {
           Export SVG
         </button>
       </div>
-      <div style={{ position: 'absolute', top: 16, left: 16, display: 'flex', gap: 8, zIndex: 20 }}>
+      <div style={{ position: 'absolute', top: 16, left: 16, display: 'flex', gap: 8, zIndex: 20, flexWrap: 'wrap' }}>
+        <button
+          onClick={() => handleDemoChange('showcase')}
+          style={{
+            padding: '6px 12px',
+            borderRadius: 6,
+            border: '1px solid rgba(255,255,255,0.15)',
+            background: activeDemo === 'showcase' ? '#e2e8f0' : 'rgba(22,33,62,0.85)',
+            color: activeDemo === 'showcase' ? '#1a1a1a' : '#e2e8f0',
+            cursor: 'pointer',
+            fontSize: 12,
+            fontWeight: 600,
+            backdropFilter: 'blur(4px)',
+          }}
+        >
+          Showcase
+        </button>
         <button
           onClick={() => handleDemoChange('vertical')}
           style={{
