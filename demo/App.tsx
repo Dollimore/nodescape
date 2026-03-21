@@ -103,12 +103,12 @@ const circuitDiagram: FlowDiagram = {
     { id: 'gnd', label: 'Ground', icon: 'ground' },
   ],
   edges: [
-    { id: 'c1', source: 'source', target: 'breaker', color: '#ef4444', flowAnimation: true },
+    { id: 'c1', source: 'source', target: 'breaker', color: '#ef4444', flowAnimation: true, annotation: '240V AC' },
     { id: 'c2', source: 'breaker', target: 'xfmr', color: '#ef4444', flowAnimation: true },
-    { id: 'c3', source: 'xfmr', target: 'rect', color: '#f59e0b', flowAnimation: true },
+    { id: 'c3', source: 'xfmr', target: 'rect', color: '#f59e0b', flowAnimation: true, annotation: '24V AC' },
     { id: 'c4', source: 'rect', target: 'cap', color: '#3b82f6', flowAnimation: true, showJunction: true },
     { id: 'c5', source: 'cap', target: 'reg', color: '#3b82f6', flowAnimation: true },
-    { id: 'c6', source: 'reg', target: 'load', label: '12V DC', color: '#22c55e', flowAnimation: true },
+    { id: 'c6', source: 'reg', target: 'load', label: '12V DC', color: '#22c55e', flowAnimation: true, annotation: '2.4A' },
     { id: 'c7', source: 'load', target: 'gnd', color: '#94a3b8' },
   ],
 };

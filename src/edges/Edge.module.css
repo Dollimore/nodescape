@@ -102,3 +102,16 @@
   fill: var(--fc-edge);
   stroke: none;
 }
+
+.edgeAnnotation {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--fc-node-desc);
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+  background: var(--fc-bg);
+  padding: 1px 4px;
+  border-radius: 3px;
+}

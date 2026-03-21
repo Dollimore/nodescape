@@ -43,6 +43,7 @@ export function EdgeRenderer({ edges, layoutEdges, defaultRouting = 'curved', co
           const pathStyle: React.CSSProperties = {
             ...(isDragging ? { transition: 'none' } : {}),
             ...(edgeColor ? { stroke: edgeColor } : {}),
+            ...(edge.thickness ? { strokeWidth: edge.thickness } : {}),
           };
           const arrowStyle: React.CSSProperties = edgeColor ? { fill: edgeColor } : {};
 
@@ -100,6 +101,40 @@ export function EdgeRenderer({ edges, layoutEdges, defaultRouting = 'curved', co
             }}
           >
             {edge.label}
+          </div>
+        );
+      })}
+      {edges.map((edge) => {
+        if (!edge.annotation) return null;
+        const layout = layoutMap.get(edge.id);
+        if (!layout || layout.points.length < 2) return null;
+
+        const pos = edge.annotationPosition ?? 0.5;
+        const idx = Math.floor((layout.points.length - 1) * pos);
+        const point = layout.points[idx] || getMidpoint(layout.points);
+
+        // Offset the annotation slightly from the edge
+        const nextPt = layout.points[idx + 1] || layout.points[idx];
+        const dx = nextPt.x - point.x;
+        const dy = nextPt.y - point.y;
+        // Perpendicular offset
+        const len = Math.sqrt(dx * dx + dy * dy) || 1;
+        const offsetX = (-dy / len) * 14;
+        const offsetY = (dx / len) * 14;
+
+        return (
+          <div
+            key={`annotation-${edge.id}`}
+            className={styles.edgeAnnotation}
+            style={{
+              position: 'absolute',
+              left: point.x + offsetX,
+              top: point.y + offsetY,
+              transform: 'translate(-50%, -50%)',
+              transition: isDragging ? 'none' : undefined,
+            }}
+          >
+            {edge.annotation}
           </div>
         );
       })}

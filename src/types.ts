@@ -17,6 +17,13 @@ export interface FlowDiagram {
   _positions?: { [nodeId: string]: { x: number; y: number } };
 }
 
+export interface NodePort {
+  id: string;           // unique port identifier within the node
+  label?: string;       // displayed label (e.g., "E", "B", "C", "VCC")
+  side: 'top' | 'bottom' | 'left' | 'right';
+  position?: number;    // 0-1, position along that side (0.5 = center, default)
+}
+
 export interface FlowNode {
   id: string;
   type?: 'default' | 'decision' | 'start' | 'end' | 'group' | 'bus';
@@ -27,6 +34,8 @@ export interface FlowNode {
   icon?: string | ComponentType<{ size?: number; color?: string }>;
   collapsed?: boolean;
   collapsible?: boolean;
+  ports?: NodePort[];
+  rotation?: 0 | 90 | 180 | 270;
   style?: {
     color?: string;
     variant?: 'filled' | 'outlined' | 'ghost';
@@ -47,6 +56,8 @@ export interface FlowEdge {
   id: string;
   source: string;
   target: string;
+  sourcePort?: string;  // port ID on the source node
+  targetPort?: string;  // port ID on the target node
   label?: string;
   type?: 'default' | 'success' | 'failure' | 'dashed' | 'wire';
   routing?: EdgeRouting;
@@ -54,6 +65,9 @@ export interface FlowEdge {
   color?: string;
   flowAnimation?: boolean; // directional pulse traveling along the edge
   showJunction?: boolean; // show a filled dot at source/target connection points
+  annotation?: string;          // component value displayed near the edge (e.g., "10K", "22uF")
+  annotationPosition?: number;  // 0-1, where along the edge to place it (default 0.5)
+  thickness?: number;           // override stroke width (for current-based thickness)
 }
 
 export type CanvasBackground = 'dots' | 'isometric' | 'plain';

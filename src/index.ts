@@ -6,6 +6,7 @@ export type {
   FlowNode,
   FlowEdge,
   FlowCanvasProps,
+  NodePort,
   NodeSection,
   EdgeRouting,
   ContextMenuItem,
@@ -18,3 +19,5 @@ export { DragDropSidebar } from './sidebar/DragDropSidebar';
 export { ThemeToggle } from './controls/ThemeToggle';
 export { electricalSymbols } from './symbols/electrical';
 export type { SymbolProps } from './symbols/electrical';
+export { applyVoltageColoring, applyCurrentThickness, DEFAULT_VOLTAGE_LEVELS } from './utils/voltageColoring';
+export type { VoltageLevel } from './utils/voltageColoring';
