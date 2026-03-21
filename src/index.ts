@@ -26,3 +26,7 @@ export { useHistory } from './hooks/useHistory';
 export { useRealtimeBinding } from './hooks/useRealtimeBinding';
 export type { NodeDataUpdate, RealtimeBindingOptions } from './hooks/useRealtimeBinding';
 export { computeForceLayout } from './layout/useForceLayout';
+export { computePowerFlow, powerFlowSummary } from './utils/powerFlow';
+export type { PowerFlowResult, PowerFlowOptions } from './utils/powerFlow';
+export { analyzeDiagram } from './utils/diagramAnalysis';
+export type { DiagramStats } from './utils/diagramAnalysis';
