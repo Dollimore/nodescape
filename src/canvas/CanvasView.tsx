@@ -31,6 +31,10 @@ interface CanvasViewProps {
   canRedo?: boolean;
   onBackgroundClick?: () => void;
   onDelete?: () => void;
+  onCopy?: () => void;
+  onPaste?: () => void;
+  onConnectionMouseMove?: (e: React.MouseEvent) => void;
+  onConnectionMouseUp?: (e: React.MouseEvent) => void;
 }
 
 const bgClassMap: Record<CanvasBackground, string> = {
@@ -62,6 +66,10 @@ export function CanvasView({
   canRedo,
   onBackgroundClick,
   onDelete,
+  onCopy,
+  onPaste,
+  onConnectionMouseMove,
+  onConnectionMouseUp,
 }: CanvasViewProps) {
   const { transform, onMouseDown, onMouseMove, onMouseUp, attachWheelListener, setFitView, zoomIn, zoomOut, resetZoom } = usePanZoom();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -111,16 +119,20 @@ export function CanvasView({
     onUndo,
     onRedo,
     onDelete,
+    onCopy,
+    onPaste,
   });
 
   const handleMouseMove = (e: React.MouseEvent) => {
     onMouseMove(e);
     if (onDragMove) onDragMove(e);
+    if (onConnectionMouseMove) onConnectionMouseMove(e);
   };
 
-  const handleMouseUp = () => {
+  const handleMouseUp = (e: React.MouseEvent) => {
     onMouseUp();
     if (onDragEnd) onDragEnd();
+    if (onConnectionMouseUp) onConnectionMouseUp(e);
   };
 
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {

@@ -109,6 +109,13 @@
   stroke-linecap: round;
 }
 
+.connectionLine {
+  stroke: #3b82f6;
+  stroke-width: 2;
+  stroke-dasharray: 6 4;
+  pointer-events: none;
+}
+
 .edgeAnnotation {
   font-family: 'SF Mono', 'Fira Code', monospace;
   font-size: 10px;

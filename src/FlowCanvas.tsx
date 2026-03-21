@@ -55,7 +55,7 @@ function getVisibleNodesAndEdges(diagram: FlowDiagram): { nodes: FlowNode[]; edg
 
 
 export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
-  function FlowCanvas({ diagram, mode = 'view', className, onDiagramChange, background, minimap, theme, onNodeClick, nodeRenderers, onContextMenu, contextMenu, onNodeCollapse, sidebar, onNodeDrop, themeToggle, onThemeChange, zoomControls, onUndo, onRedo, canUndo, canRedo, onSelectionChange, onNodesDelete }: FlowCanvasProps, ref) {
+  function FlowCanvas({ diagram, mode = 'view', className, onDiagramChange, background, minimap, theme, onNodeClick, nodeRenderers, onContextMenu, contextMenu, onNodeCollapse, sidebar, onNodeDrop, themeToggle, onThemeChange, zoomControls, onUndo, onRedo, canUndo, canRedo, onSelectionChange, onNodesDelete, onNodesCopy, onNodesPaste, onEdgeCreate }: FlowCanvasProps, ref) {
   const editable = mode === 'edit';
 
   const [internalTheme, setInternalTheme] = useState<'light' | 'dark'>(theme || 'light');
@@ -88,6 +88,62 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
       onSelectionChange(Array.from(selectedNodeIds));
     }
   }, [selectedNodeIds, onSelectionChange]);
+
+  // Copy/paste handlers
+  const handleCopy = useCallback(() => {
+    if (onNodesCopy) {
+      const nodes = diagram.nodes.filter(n => selectedNodeIds.has(n.id));
+      if (nodes.length > 0) onNodesCopy(nodes);
+    }
+  }, [diagram.nodes, onNodesCopy, selectedNodeIds]);
+
+  const handlePaste = useCallback(() => {
+    if (onNodesPaste) {
+      onNodesPaste({ x: 100, y: 100 });
+    }
+  }, [onNodesPaste]);
+
+  // Connection drag state for drawing edges between handles
+  const [connectionDrag, setConnectionDrag] = useState<{
+    sourceId: string;
+    sourcePoint: { x: number; y: number };
+    currentPoint: { x: number; y: number };
+  } | null>(null);
+
+  const handleHandleDrag = useCallback((nodeId: string, _side: string, e: React.MouseEvent) => {
+    setConnectionDrag({
+      sourceId: nodeId,
+      sourcePoint: { x: e.clientX, y: e.clientY },
+      currentPoint: { x: e.clientX, y: e.clientY },
+    });
+  }, []);
+
+  const handleConnectionMouseMove = useCallback((e: React.MouseEvent) => {
+    if (connectionDrag) {
+      setConnectionDrag(prev => prev ? { ...prev, currentPoint: { x: e.clientX, y: e.clientY } } : null);
+    }
+  }, [connectionDrag]);
+
+  const handleConnectionMouseUp = useCallback((e: React.MouseEvent) => {
+    if (!connectionDrag) return;
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+    if (el) {
+      // Walk up to find a node container with data-testid="node-<id>"
+      let target: Element | null = el;
+      while (target) {
+        const testId = target.getAttribute('data-testid');
+        if (testId && testId.startsWith('node-')) {
+          const targetId = testId.slice('node-'.length);
+          if (targetId !== connectionDrag.sourceId && onEdgeCreate) {
+            onEdgeCreate(connectionDrag.sourceId, targetId);
+          }
+          break;
+        }
+        target = target.parentElement;
+      }
+    }
+    setConnectionDrag(null);
+  }, [connectionDrag, onEdgeCreate]);
 
   const nodeRefs = useRef(new Map<string, HTMLElement | null>());
   const contentRef = useRef<HTMLDivElement>(null);
@@ -288,6 +344,10 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
       canRedo={canRedo}
       onBackgroundClick={() => setSelectedNodeIds(new Set())}
       onDelete={editable ? handleDelete : undefined}
+      onCopy={editable ? handleCopy : undefined}
+      onPaste={editable ? handlePaste : undefined}
+      onConnectionMouseMove={editable ? handleConnectionMouseMove : undefined}
+      onConnectionMouseUp={editable ? handleConnectionMouseUp : undefined}
     >
       {layout && (
         <EdgeRenderer
@@ -299,6 +359,19 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
         />
       )}
       {editable && <HelperLines lines={helperLines} />}
+      {connectionDrag && (
+        <svg style={{ position: 'fixed', top: 0, left: 0, width: 1, height: 1, overflow: 'visible', pointerEvents: 'none', zIndex: 9999 }}>
+          <line
+            x1={connectionDrag.sourcePoint.x}
+            y1={connectionDrag.sourcePoint.y}
+            x2={connectionDrag.currentPoint.x}
+            y2={connectionDrag.currentPoint.y}
+            stroke="#3b82f6"
+            strokeWidth={2}
+            strokeDasharray="6 4"
+          />
+        </svg>
+      )}
       {[...visibleNodes].sort((a, b) => {
         // Render group nodes first so they appear behind child nodes
         if (a.type === 'group' && b.type !== 'group') return -1;
@@ -329,6 +402,7 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
           isSelected={selectedNodeIds.has(node.id)}
           customRenderers={nodeRenderers}
           onRelayout={triggerRelayout}
+          onHandleDrag={editable ? handleHandleDrag : undefined}
           ref={(el) => setNodeRef(node.id, el)}
           onNodeContextMenu={(nodeId, e) => {
             e.preventDefault();

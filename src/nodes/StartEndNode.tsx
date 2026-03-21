@@ -7,9 +7,10 @@ import { NodeIcon } from './NodeIcon';
 interface StartEndNodeProps {
   node: FlowNode;
   editable: boolean;
+  onHandleDrag?: (nodeId: string, side: string, e: React.MouseEvent) => void;
 }
 
-export function StartEndNode({ node, editable }: StartEndNodeProps) {
+export function StartEndNode({ node, editable, onHandleDrag }: StartEndNodeProps) {
   const isStart = node.type === 'start';
 
   return (
@@ -18,8 +19,14 @@ export function StartEndNode({ node, editable }: StartEndNodeProps) {
       data-testid={`node-${node.id}`}
       data-editable={editable}
     >
-      <div className={defaultStyles.handle + ' ' + defaultStyles.handleTop} />
-      <div className={defaultStyles.handle + ' ' + defaultStyles.handleBottom} />
+      <div
+        className={defaultStyles.handle + ' ' + defaultStyles.handleTop}
+        onMouseDown={(e) => { if (editable && onHandleDrag) { e.stopPropagation(); onHandleDrag(node.id, 'top', e); } }}
+      />
+      <div
+        className={defaultStyles.handle + ' ' + defaultStyles.handleBottom}
+        onMouseDown={(e) => { if (editable && onHandleDrag) { e.stopPropagation(); onHandleDrag(node.id, 'bottom', e); } }}
+      />
       <div className={styles.header}>
         {node.icon ? (
           <span style={{ flexShrink: 0 }}>

@@ -24,9 +24,10 @@ interface DefaultNodeProps {
   node: FlowNode;
   editable: boolean;
   onCollapseToggle?: (nodeId: string, collapsed: boolean) => void;
+  onHandleDrag?: (nodeId: string, side: string, e: React.MouseEvent) => void;
 }
 
-export function DefaultNode({ node, editable, onCollapseToggle }: DefaultNodeProps) {
+export function DefaultNode({ node, editable, onCollapseToggle, onHandleDrag }: DefaultNodeProps) {
   const [isCollapsed, setIsCollapsed] = useState(node.collapsed ?? false);
 
   const customColor = node.style?.color;
@@ -56,8 +57,24 @@ export function DefaultNode({ node, editable, onCollapseToggle }: DefaultNodePro
       {node.status && (
         <div className={styles.statusBadge} data-status={node.status} />
       )}
-      <div className={styles.handle + ' ' + styles.handleTop} />
-      <div className={styles.handle + ' ' + styles.handleBottom} />
+      <div
+        className={styles.handle + ' ' + styles.handleTop}
+        onMouseDown={(e) => {
+          if (editable && onHandleDrag) {
+            e.stopPropagation();
+            onHandleDrag(node.id, 'top', e);
+          }
+        }}
+      />
+      <div
+        className={styles.handle + ' ' + styles.handleBottom}
+        onMouseDown={(e) => {
+          if (editable && onHandleDrag) {
+            e.stopPropagation();
+            onHandleDrag(node.id, 'bottom', e);
+          }
+        }}
+      />
       <div className={styles.labelRow}>
         {node.icon ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
