@@ -154,26 +154,32 @@ export function computeDynamicEdges(
 
     if (sourcePort || targetPort) {
       // When ports are specified, use port positions and sides
-      if (sourcePort) {
-        start = getPortPosition(sourcePos, sourceSize, sourcePort);
-        sourceSide = sourcePort.side;
-      } else {
-        const initSource = initialPositions[edge.source] || sourcePos;
-        const initTarget = initialPositions[edge.target] || targetPos;
-        const sides = computeHandleSides(initSource, sourceSize, initTarget, targetSize, direction);
-        sourceSide = sides.sourceSide;
-        start = getHandlePosition(sourcePos, sourceSize, sourceSide);
-      }
-
+      // Resolve target first so we can use its position for source side calculation
       if (targetPort) {
         end = getPortPosition(targetPos, targetSize, targetPort);
         targetSide = targetPort.side;
       } else {
-        const initSource = initialPositions[edge.source] || sourcePos;
-        const initTarget = initialPositions[edge.target] || targetPos;
-        const sides = computeHandleSides(initSource, sourceSize, initTarget, targetSize, direction);
+        const sides = computeHandleSides(sourcePos, sourceSize, targetPos, targetSize, direction);
         targetSide = sides.targetSide;
         end = getHandlePosition(targetPos, targetSize, targetSide);
+      }
+
+      if (sourcePort) {
+        start = getPortPosition(sourcePos, sourceSize, sourcePort);
+        sourceSide = sourcePort.side;
+      } else {
+        // Pick source side that points most directly at the resolved target point
+        const sourceCX = sourcePos.x + sourceSize.width / 2;
+        const sourceCY = sourcePos.y + sourceSize.height / 2;
+        const dx = end.x - sourceCX;
+        const dy = end.y - sourceCY;
+
+        if (Math.abs(dx) > Math.abs(dy)) {
+          sourceSide = dx > 0 ? 'right' : 'left';
+        } else {
+          sourceSide = dy > 0 ? 'bottom' : 'top';
+        }
+        start = getHandlePosition(sourcePos, sourceSize, sourceSide);
       }
     } else {
       // No ports — use standard handle-based positions
