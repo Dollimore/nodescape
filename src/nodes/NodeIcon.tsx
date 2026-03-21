@@ -1,6 +1,7 @@
 import React from 'react';
 import { icons } from 'lucide-react';
 import type { ComponentType } from 'react';
+import { electricalSymbols } from '../symbols/electrical';
 
 interface NodeIconProps {
   icon: string | ComponentType<{ size?: number; color?: string }>;
@@ -19,6 +20,11 @@ export function NodeIcon({ icon, size = 16, color = 'currentColor' }: NodeIconPr
   const LucideIcon = (icons as Record<string, ComponentType<any>>)[pascalName];
 
   if (!LucideIcon) {
+    // Try electrical symbols
+    const ElectricalSymbol = electricalSymbols[icon];
+    if (ElectricalSymbol) {
+      return <ElectricalSymbol size={size} color={color} />;
+    }
     return null;
   }
 

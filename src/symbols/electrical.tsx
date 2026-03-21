@@ -1,0 +1,210 @@
+import React from 'react';
+
+export interface SymbolProps {
+  size?: number;
+  color?: string;
+}
+
+// Resistor — zigzag pattern
+export function Resistor({ size = 24, color = 'currentColor' }: SymbolProps) {
+  const w = size;
+  const h = size * 0.4;
+  return (
+    <svg width={w} height={h} viewBox="0 0 60 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M0 12 L8 12 L12 2 L20 22 L28 2 L36 22 L44 2 L48 12 L60 12" />
+    </svg>
+  );
+}
+
+// Capacitor — two parallel lines
+export function Capacitor({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
+      <line x1="12" y1="2" x2="12" y2="8" />
+      <line x1="4" y1="8" x2="20" y2="8" />
+      <line x1="4" y1="16" x2="20" y2="16" />
+      <line x1="12" y1="16" x2="12" y2="22" />
+    </svg>
+  );
+}
+
+// Inductor — coil/bumps
+export function Inductor({ size = 24, color = 'currentColor' }: SymbolProps) {
+  const w = size;
+  const h = size * 0.5;
+  return (
+    <svg width={w} height={h} viewBox="0 0 60 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round">
+      <path d="M0 20 L8 20 C8 20 8 4 16 4 C24 4 24 20 24 20 C24 20 24 4 32 4 C40 4 40 20 40 20 C40 20 40 4 48 4 C56 4 56 20 52 20 L60 20" />
+    </svg>
+  );
+}
+
+// Transformer — two inductors with lines between
+export function Transformer({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 40 40" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round">
+      {/* Primary coil */}
+      <path d="M4 8 C4 8 4 14 8 14 C12 14 12 8 12 8 C12 8 12 14 16 14 C20 14 20 8 20 8" />
+      {/* Secondary coil */}
+      <path d="M4 26 C4 26 4 32 8 32 C12 32 12 26 12 26 C12 26 12 32 16 32 C20 32 20 26 20 26" />
+      {/* Core lines */}
+      <line x1="2" y1="18" x2="22" y2="18" />
+      <line x1="2" y1="22" x2="22" y2="22" />
+      {/* Leads */}
+      <line x1="0" y1="8" x2="4" y2="8" />
+      <line x1="20" y1="8" x2="24" y2="8" />
+      <line x1="0" y1="26" x2="4" y2="26" />
+      <line x1="20" y1="26" x2="24" y2="26" />
+    </svg>
+  );
+}
+
+// Ground — three horizontal lines decreasing in size
+export function Ground({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round">
+      <line x1="12" y1="2" x2="12" y2="10" />
+      <line x1="4" y1="10" x2="20" y2="10" />
+      <line x1="7" y1="14" x2="17" y2="14" />
+      <line x1="10" y1="18" x2="14" y2="18" />
+    </svg>
+  );
+}
+
+// VoltageSource — circle with + and -
+export function VoltageSource({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
+      <circle cx="12" cy="12" r="8" />
+      <line x1="12" y1="2" x2="12" y2="0" />
+      <line x1="12" y1="24" x2="12" y2="22" />
+      <text x="12" y="9" textAnchor="middle" fontSize="8" fill={color} stroke="none" fontFamily="system-ui">+</text>
+      <text x="12" y="19" textAnchor="middle" fontSize="8" fill={color} stroke="none" fontFamily="system-ui">-</text>
+    </svg>
+  );
+}
+
+// CurrentSource — circle with arrow
+export function CurrentSource({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
+      <circle cx="12" cy="12" r="8" />
+      <line x1="12" y1="2" x2="12" y2="0" />
+      <line x1="12" y1="24" x2="12" y2="22" />
+      <line x1="12" y1="18" x2="12" y2="6" />
+      <polyline points="9,10 12,6 15,10" fill="none" />
+    </svg>
+  );
+}
+
+// Switch — open/closed
+export function Switch({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size * 0.5} viewBox="0 0 40 16" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round">
+      <line x1="0" y1="12" x2="12" y2="12" />
+      <circle cx="14" cy="12" r="2" fill={color} />
+      <line x1="14" y1="12" x2="30" y2="4" />
+      <circle cx="32" cy="12" r="2" fill={color} />
+      <line x1="34" y1="12" x2="40" y2="12" />
+    </svg>
+  );
+}
+
+// Diode — triangle with line
+export function Diode({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size * 0.6} viewBox="0 0 40 20" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round">
+      <line x1="0" y1="10" x2="12" y2="10" />
+      <polygon points="12,2 12,18 28,10" fill="none" stroke={color} />
+      <line x1="28" y1="2" x2="28" y2="18" />
+      <line x1="28" y1="10" x2="40" y2="10" />
+    </svg>
+  );
+}
+
+// Transistor NPN
+export function TransistorNPN({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 32 32" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round">
+      <line x1="0" y1="16" x2="10" y2="16" />
+      <line x1="10" y1="6" x2="10" y2="26" />
+      <line x1="10" y1="10" x2="24" y2="4" />
+      <line x1="10" y1="22" x2="24" y2="28" />
+      {/* Arrow on emitter */}
+      <polyline points="18,26 24,28 20,22" fill="none" />
+      {/* Leads */}
+      <line x1="24" y1="4" x2="24" y2="0" />
+      <line x1="24" y1="28" x2="24" y2="32" />
+    </svg>
+  );
+}
+
+// Fuse
+export function Fuse({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size * 0.4} viewBox="0 0 40 12" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round">
+      <line x1="0" y1="6" x2="8" y2="6" />
+      <rect x="8" y="1" width="24" height="10" rx="2" />
+      <line x1="32" y1="6" x2="40" y2="6" />
+    </svg>
+  );
+}
+
+// Motor — circle with M
+export function Motor({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
+      <circle cx="12" cy="12" r="8" />
+      <text x="12" y="16" textAnchor="middle" fontSize="10" fill={color} stroke="none" fontWeight="bold" fontFamily="system-ui">M</text>
+      <line x1="12" y1="2" x2="12" y2="0" />
+      <line x1="12" y1="24" x2="12" y2="22" />
+    </svg>
+  );
+}
+
+// Generator — circle with G
+export function Generator({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
+      <circle cx="12" cy="12" r="8" />
+      <text x="12" y="16" textAnchor="middle" fontSize="10" fill={color} stroke="none" fontWeight="bold" fontFamily="system-ui">G</text>
+      <line x1="12" y1="2" x2="12" y2="0" />
+      <line x1="12" y1="24" x2="12" y2="22" />
+    </svg>
+  );
+}
+
+// LED
+export function LED({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 32 28" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round">
+      <line x1="0" y1="14" x2="8" y2="14" />
+      <polygon points="8,6 8,22 22,14" fill="none" />
+      <line x1="22" y1="6" x2="22" y2="22" />
+      <line x1="22" y1="14" x2="32" y2="14" />
+      {/* Light arrows */}
+      <line x1="18" y1="4" x2="22" y2="0" />
+      <polyline points="20,0 22,0 22,2" fill="none" strokeWidth="1.5" />
+      <line x1="22" y1="4" x2="26" y2="0" />
+      <polyline points="24,0 26,0 26,2" fill="none" strokeWidth="1.5" />
+    </svg>
+  );
+}
+
+// Export a map of all symbols for easy lookup by name
+export const electricalSymbols: Record<string, React.ComponentType<SymbolProps>> = {
+  resistor: Resistor,
+  capacitor: Capacitor,
+  inductor: Inductor,
+  transformer: Transformer,
+  ground: Ground,
+  'voltage-source': VoltageSource,
+  'current-source': CurrentSource,
+  switch: Switch,
+  diode: Diode,
+  'transistor-npn': TransistorNPN,
+  fuse: Fuse,
+  motor: Motor,
+  generator: Generator,
+  led: LED,
+};

@@ -16,3 +16,5 @@ export type {
 export { serializeDiagram, deserializeDiagram, saveDiagramToStorage, loadDiagramFromStorage } from './utils/serialization';
 export { DragDropSidebar } from './sidebar/DragDropSidebar';
 export { ThemeToggle } from './controls/ThemeToggle';
+export { electricalSymbols } from './symbols/electrical';
+export type { SymbolProps } from './symbols/electrical';
