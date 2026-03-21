@@ -523,6 +523,154 @@ const dcFacilityDiagram: FlowDiagram = {
   ],
 };
 
+const nuclearDiagram: FlowDiagram = {
+  title: 'PWR Nuclear Power Plant',
+  layout: { direction: 'LR', routing: 'orthogonal', cornerRadius: 16 },
+  nodes: [
+    // Primary Loop
+    { id: 'grp-primary', type: 'group', label: 'Primary Loop (Radioactive)', style: { color: '#ef4444' } },
+    { id: 'reactor', label: 'Reactor Vessel', icon: 'reactor-vessel', description: 'Pressurized Water Reactor.',
+      status: 'online', progress: 95, flowRate: '3400 MWt', parentId: 'grp-primary',
+      style: { color: '#ef4444' },
+      sections: [
+        { heading: 'Type', content: 'PWR Gen III+' },
+        { heading: 'Fuel', content: 'UO2 enriched 4.5%' },
+        { heading: 'Core Temp', content: 'Inlet **290C** / Outlet **325C**' },
+        { heading: 'Pressure', content: '155 bar' },
+      ],
+      detail: {
+        content: 'The reactor core contains **193 fuel assemblies** arranged in a cylindrical configuration. Each assembly contains 264 fuel rods with zircaloy cladding.',
+        sections: [
+          { type: 'keyvalue', title: 'Reactor Parameters', data: {
+            'Thermal Power': '3400 MWt',
+            'Core Flow': '18,800 kg/s',
+            'Avg Linear Heat Rate': '17.5 kW/m',
+            'Burnup': '45,000 MWd/tU',
+            'Cycle Length': '18 months',
+            'Control Rods': '69 RCCA assemblies',
+          }},
+          { type: 'chart', title: 'Core Temperature Distribution', data: {
+            type: 'line', values: [290, 295, 305, 315, 325, 322, 310, 298, 290], labels: ['In', '', '', '', 'Peak', '', '', '', 'Out'], color: '#ef4444',
+          }},
+          { type: 'timeline', title: 'Recent Events', data: [
+            { time: '08:00', event: 'Shift handover completed', status: 'info' },
+            { time: '06:30', event: 'Control rod test - satisfactory', status: 'success' },
+            { time: '02:15', event: 'Minor coolant chemistry adjustment', status: 'warning' },
+            { time: '00:00', event: 'Steady state operation at 100%', status: 'success' },
+          ]},
+        ],
+      },
+    },
+    { id: 'pressurizer', label: 'Pressurizer', icon: 'pressurizer', description: 'Maintains system pressure.',
+      status: 'online', flowRate: '155 bar', parentId: 'grp-primary' },
+    { id: 'rcp-1', label: 'RCP 1', icon: 'pump', description: 'Reactor Coolant Pump Loop 1.',
+      status: 'online', progress: 88, parentId: 'grp-primary' },
+    { id: 'rcp-2', label: 'RCP 2', icon: 'pump', description: 'Reactor Coolant Pump Loop 2.',
+      status: 'online', progress: 85, parentId: 'grp-primary' },
+    { id: 'ctrl-rods', label: 'Control Rods', icon: 'control-rod', description: '69 RCCA assemblies.',
+      status: 'online', progress: 15, flowRate: '15% inserted', parentId: 'grp-primary' },
+
+    // Steam Generators
+    { id: 'grp-sg', type: 'group', label: 'Steam Generation', style: { color: '#f59e0b' } },
+    { id: 'sg-1', label: 'Steam Gen 1', icon: 'steam-generator', description: 'U-tube heat exchanger.',
+      status: 'online', progress: 92, flowRate: '1700 MWt', parentId: 'grp-sg' },
+    { id: 'sg-2', label: 'Steam Gen 2', icon: 'steam-generator', description: 'U-tube heat exchanger.',
+      status: 'online', progress: 90, flowRate: '1700 MWt', parentId: 'grp-sg' },
+
+    // Secondary Loop
+    { id: 'grp-secondary', type: 'group', label: 'Secondary Loop (Non-Radioactive)', style: { color: '#3b82f6' } },
+    { id: 'hp-turbine', label: 'HP Turbine', icon: 'turbine', description: 'High pressure stage.',
+      status: 'online', progress: 94, parentId: 'grp-secondary' },
+    { id: 'lp-turbine', label: 'LP Turbine', icon: 'turbine', description: 'Low pressure stage (x3).',
+      status: 'online', progress: 91, parentId: 'grp-secondary' },
+    { id: 'generator', label: 'Generator', icon: 'generator', description: '1200 MWe turbo-generator.',
+      status: 'online', flowRate: '1200 MWe', progress: 96, parentId: 'grp-secondary',
+      style: { color: '#22c55e' } },
+    { id: 'condenser', label: 'Condenser', icon: 'condenser', description: 'Steam to water conversion.',
+      status: 'online', parentId: 'grp-secondary' },
+    { id: 'feedpump', label: 'Feed Pump', icon: 'pump', description: 'Main feedwater pump.',
+      status: 'online', parentId: 'grp-secondary' },
+    { id: 'msv', label: 'Main Steam Valve', icon: 'valve', status: 'online', parentId: 'grp-secondary' },
+
+    // Cooling
+    { id: 'grp-cooling', type: 'group', label: 'Ultimate Heat Sink', style: { color: '#06b6d4' } },
+    { id: 'cooling-tower-1', label: 'Cooling Tower 1', icon: 'cooling-tower', status: 'online', progress: 72, parentId: 'grp-cooling' },
+    { id: 'cooling-tower-2', label: 'Cooling Tower 2', icon: 'cooling-tower', status: 'online', progress: 68, parentId: 'grp-cooling' },
+    { id: 'circ-pump', label: 'Circ. Pump', icon: 'pump', status: 'online', parentId: 'grp-cooling' },
+
+    // Safety Systems
+    { id: 'grp-safety', type: 'group', label: 'Safety Systems', style: { color: '#8b5cf6' } },
+    { id: 'eccs', label: 'ECCS', icon: 'valve', description: 'Emergency Core Cooling System.',
+      status: 'online', parentId: 'grp-safety',
+      sections: [{ heading: 'Status', content: 'Standby - all trains available' }] },
+    { id: 'containment', label: 'Containment', icon: 'containment', description: 'Pre-stressed concrete with steel liner.',
+      status: 'online', parentId: 'grp-safety',
+      sections: [{ heading: 'Pressure', content: '1.01 bar (normal)' }, { heading: 'Leak Rate', content: '<0.1%/day' }] },
+    { id: 'spray', label: 'Containment Spray', icon: 'valve', status: 'online', parentId: 'grp-safety' },
+
+    // Grid Connection
+    { id: 'xfmr-main', label: 'Main Transformer', icon: 'transformer', status: 'online', flowRate: '1200 MWe',
+      sections: [{ heading: 'Rating', content: '1400 MVA 22/400kV' }] },
+    { id: 'grid', label: 'National Grid', icon: 'zap', status: 'online', flowRate: '1200 MWe', style: { color: '#22c55e' } },
+
+    // Labels
+    { id: 'nl-rad', type: 'netlabel', label: 'RADIATION ZONE', style: { color: '#ef4444' } },
+    { id: 'nl-grid', type: 'netlabel', label: '400kV GRID', style: { color: '#22c55e' } },
+
+    // Control
+    { id: 'control-room', label: 'Main Control Room', icon: 'layout-dashboard', description: 'Licensed operators on 24/7.',
+      status: 'online', style: { color: '#8b5cf6', glow: true },
+      sections: [
+        { heading: 'Power Level', content: '100% FP' },
+        { heading: 'Reactor Period', content: 'Stable (infinity)' },
+        { heading: 'Keff', content: '1.0000' },
+        { heading: 'Boron', content: '850 ppm' },
+      ],
+    },
+  ],
+  edges: [
+    // Primary loop
+    { id: 'n1', source: 'reactor', target: 'sg-1', color: '#ef4444', flowAnimation: true, annotation: '325C', thickness: 4 },
+    { id: 'n2', source: 'reactor', target: 'sg-2', color: '#ef4444', flowAnimation: true, annotation: '325C', thickness: 4 },
+    { id: 'n3', source: 'sg-1', target: 'rcp-1', color: '#f97316', flowAnimation: true, annotation: '290C' },
+    { id: 'n4', source: 'sg-2', target: 'rcp-2', color: '#f97316', flowAnimation: true, annotation: '290C' },
+    { id: 'n5', source: 'rcp-1', target: 'reactor', color: '#f97316', flowAnimation: true, thickness: 3 },
+    { id: 'n6', source: 'rcp-2', target: 'reactor', color: '#f97316', flowAnimation: true, thickness: 3 },
+    { id: 'n7', source: 'pressurizer', target: 'reactor', color: '#ef4444', type: 'dashed', annotation: '155 bar' },
+    { id: 'n8', source: 'ctrl-rods', target: 'reactor', color: '#94a3b8', type: 'dashed' },
+
+    // Steam side
+    { id: 'n9', source: 'sg-1', target: 'msv', color: '#3b82f6', flowAnimation: true, annotation: 'Steam 280C' },
+    { id: 'n10', source: 'sg-2', target: 'msv', color: '#3b82f6', flowAnimation: true, showJunction: true },
+    { id: 'n11', source: 'msv', target: 'hp-turbine', color: '#3b82f6', flowAnimation: true, thickness: 3 },
+    { id: 'n12', source: 'hp-turbine', target: 'lp-turbine', color: '#3b82f6', flowAnimation: true, thickness: 3 },
+    { id: 'n13', source: 'lp-turbine', target: 'generator', color: '#22c55e', flowAnimation: true, annotation: '1200 MWe', thickness: 4 },
+    { id: 'n14', source: 'lp-turbine', target: 'condenser', color: '#06b6d4', flowAnimation: true, annotation: 'Exhaust' },
+    { id: 'n15', source: 'condenser', target: 'feedpump', color: '#06b6d4', flowAnimation: true },
+    { id: 'n16', source: 'feedpump', target: 'sg-1', color: '#3b82f6', flowAnimation: true, annotation: 'Feedwater' },
+
+    // Cooling
+    { id: 'n17', source: 'condenser', target: 'circ-pump', color: '#06b6d4', flowAnimation: true },
+    { id: 'n18', source: 'circ-pump', target: 'cooling-tower-1', color: '#06b6d4', flowAnimation: true },
+    { id: 'n19', source: 'circ-pump', target: 'cooling-tower-2', color: '#06b6d4', flowAnimation: true },
+
+    // Grid
+    { id: 'n20', source: 'generator', target: 'xfmr-main', color: '#22c55e', flowAnimation: true, annotation: '22kV', thickness: 4 },
+    { id: 'n21', source: 'xfmr-main', target: 'grid', color: '#22c55e', flowAnimation: true, annotation: '400kV', thickness: 4 },
+    { id: 'n22', source: 'grid', target: 'nl-grid', color: '#22c55e', type: 'dashed' },
+
+    // Safety
+    { id: 'n23', source: 'eccs', target: 'reactor', color: '#8b5cf6', type: 'dashed', annotation: 'Emergency' },
+    { id: 'n24', source: 'containment', target: 'reactor', color: '#8b5cf6', type: 'dashed' },
+    { id: 'n25', source: 'spray', target: 'containment', color: '#8b5cf6', type: 'dashed' },
+    { id: 'n26', source: 'reactor', target: 'nl-rad', color: '#ef4444', type: 'dashed' },
+
+    // Control room monitoring
+    { id: 'n27', source: 'control-room', target: 'reactor', color: '#8b5cf6', type: 'dashed', annotation: 'Monitoring' },
+    { id: 'n28', source: 'control-room', target: 'generator', color: '#8b5cf6', type: 'dashed' },
+  ],
+};
+
 const nodeTemplates: SidebarNodeTemplate[] = [
   { type: 'default', label: 'Process', description: 'A process step' },
   { type: 'decision', label: 'Decision', description: 'A branch point' },
@@ -531,9 +679,9 @@ const nodeTemplates: SidebarNodeTemplate[] = [
 ];
 
 export function App() {
-  const [activeDemo, setActiveDemo] = React.useState<'vertical' | 'horizontal' | 'datacenter' | 'circuit' | 'hvdc' | 'showcase' | 'dc-facility'>('vertical');
+  const [activeDemo, setActiveDemo] = React.useState<'vertical' | 'horizontal' | 'datacenter' | 'circuit' | 'hvdc' | 'showcase' | 'dc-facility' | 'nuclear'>('vertical');
   const [currentDiagram, setCurrentDiagram] = useState<FlowDiagram>(sampleDiagram);
-  const demoMap: Record<string, FlowDiagram> = { vertical: sampleDiagram, horizontal: horizontalDiagram, datacenter: datacenterDiagram, circuit: circuitDiagram, hvdc: hvdcDiagram, showcase: showcaseDiagram, 'dc-facility': dcFacilityDiagram };
+  const demoMap: Record<string, FlowDiagram> = { vertical: sampleDiagram, horizontal: horizontalDiagram, datacenter: datacenterDiagram, circuit: circuitDiagram, hvdc: hvdcDiagram, showcase: showcaseDiagram, 'dc-facility': dcFacilityDiagram, nuclear: nuclearDiagram };
   const baseDiagram = demoMap[activeDemo] || sampleDiagram;
   const diagram = (activeDemo === 'vertical' || activeDemo === 'showcase') ? currentDiagram : baseDiagram;
   const canvasRef = useRef<FlowCanvasRef>(null);
@@ -545,7 +693,7 @@ export function App() {
     }));
   };
 
-  const handleDemoChange = (demo: 'vertical' | 'horizontal' | 'datacenter' | 'circuit' | 'hvdc' | 'showcase' | 'dc-facility') => {
+  const handleDemoChange = (demo: 'vertical' | 'horizontal' | 'datacenter' | 'circuit' | 'hvdc' | 'showcase' | 'dc-facility' | 'nuclear') => {
     setActiveDemo(demo);
     if (demo === 'vertical') setCurrentDiagram(sampleDiagram);
     if (demo === 'showcase') setCurrentDiagram(showcaseDiagram);
@@ -695,6 +843,22 @@ export function App() {
           }}
         >
           DC Facility
+        </button>
+        <button
+          onClick={() => handleDemoChange('nuclear')}
+          style={{
+            padding: '6px 12px',
+            borderRadius: 6,
+            border: '1px solid rgba(255,255,255,0.15)',
+            background: activeDemo === 'nuclear' ? '#e2e8f0' : 'rgba(22,33,62,0.85)',
+            color: activeDemo === 'nuclear' ? '#1a1a1a' : '#e2e8f0',
+            cursor: 'pointer',
+            fontSize: 12,
+            fontWeight: 600,
+            backdropFilter: 'blur(4px)',
+          }}
+        >
+          Nuclear
         </button>
       </div>
       <FlowCanvas

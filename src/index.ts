@@ -39,3 +39,5 @@ export { KeyValueTable } from './detail/KeyValueTable';
 export { MiniChart } from './detail/MiniChart';
 export { Timeline } from './detail/Timeline';
 export type { NodeDetail, DetailSection } from './types';
+export { applyRadiationZones, reactorStatusSections } from './utils/nuclearUtils';
+export type { ReactorStatus } from './utils/nuclearUtils';

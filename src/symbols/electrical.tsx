@@ -571,6 +571,161 @@ export function UPSUnit({ size = 24, color = 'currentColor' }: SymbolProps) {
   );
 }
 
+// Reactor Vessel
+export function ReactorVessel({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <ellipse cx="12" cy="12" rx="7" ry="10" />
+      <line x1="5" y1="8" x2="19" y2="8" />
+      <line x1="5" y1="16" x2="19" y2="16" />
+      <circle cx="12" cy="12" r="2" fill={color} />
+      <line x1="12" y1="2" x2="12" y2="0" />
+      <line x1="12" y1="22" x2="12" y2="24" />
+    </svg>
+  );
+}
+
+// Steam Generator
+export function SteamGenerator({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <path d="M7 22 L7 8 Q7 2 12 2 Q17 2 17 8 L17 22" />
+      <line x1="7" y1="22" x2="17" y2="22" />
+      <line x1="7" y1="14" x2="17" y2="14" />
+      <path d="M10 10 C10 10 11 8 12 10 C13 12 14 10 14 10" />
+      <line x1="4" y1="18" x2="7" y2="18" />
+      <line x1="17" y1="18" x2="20" y2="18" />
+    </svg>
+  );
+}
+
+// Turbine
+export function Turbine({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="4,4 20,10 20,14 4,20" />
+      <line x1="20" y1="12" x2="24" y2="12" />
+      <line x1="0" y1="8" x2="4" y2="8" />
+      <line x1="0" y1="16" x2="4" y2="16" />
+    </svg>
+  );
+}
+
+// Condenser
+export function Condenser({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <rect x="4" y="4" width="16" height="16" rx="2" />
+      <path d="M8 8 L8 16 M12 8 L12 16 M16 8 L16 16" strokeDasharray="2 2" />
+      <line x1="0" y1="8" x2="4" y2="8" />
+      <line x1="0" y1="16" x2="4" y2="16" />
+      <line x1="20" y1="12" x2="24" y2="12" />
+    </svg>
+  );
+}
+
+// Cooling Tower
+export function CoolingTower({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <path d="M6 22 L4 10 Q4 2 12 2 Q20 2 20 10 L18 22" />
+      <line x1="6" y1="22" x2="18" y2="22" />
+      <path d="M10 6 C10 4 14 4 14 6" strokeWidth="1" />
+      <path d="M9 8 C9 6 15 6 15 8" strokeWidth="1" />
+    </svg>
+  );
+}
+
+// Control Rod
+export function ControlRod({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <rect x="9" y="4" width="6" height="16" rx="1" />
+      <line x1="12" y1="0" x2="12" y2="4" />
+      <line x1="9" y1="8" x2="15" y2="8" />
+      <line x1="9" y1="12" x2="15" y2="12" />
+      <line x1="9" y1="16" x2="15" y2="16" />
+      <polygon points="10,20 14,20 12,24" fill={color} stroke="none" />
+    </svg>
+  );
+}
+
+// Pump
+export function Pump({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <circle cx="12" cy="12" r="8" />
+      <polygon points="8,8 16,12 8,16" fill="none" />
+      <line x1="0" y1="12" x2="4" y2="12" />
+      <line x1="20" y1="12" x2="24" y2="12" />
+    </svg>
+  );
+}
+
+// Valve
+export function Valve({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size * 0.6} viewBox="0 0 32 16" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <line x1="0" y1="8" x2="8" y2="8" />
+      <polygon points="8,2 16,8 8,14" fill="none" />
+      <polygon points="24,2 16,8 24,14" fill="none" />
+      <line x1="24" y1="8" x2="32" y2="8" />
+      <line x1="16" y1="8" x2="16" y2="2" />
+    </svg>
+  );
+}
+
+// Containment Building
+export function Containment({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <path d="M4 22 L4 10 Q4 2 12 2 Q20 2 20 10 L20 22" />
+      <line x1="4" y1="22" x2="20" y2="22" />
+      <circle cx="12" cy="14" r="4" strokeDasharray="3 2" />
+      <circle cx="12" cy="14" r="1" fill={color} />
+    </svg>
+  );
+}
+
+// Radiation Symbol
+export function Radiation({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5">
+      <circle cx="12" cy="12" r="3" fill={color} />
+      <path d="M12 9 L12 3 A9 9 0 0 1 19.8 7.5 L14.5 10.5" fill="none" />
+      <path d="M14.5 13.5 L19.8 16.5 A9 9 0 0 1 12 21 L12 15" fill="none" />
+      <path d="M9.5 10.5 L4.2 7.5 A9 9 0 0 1 12 3 L12 9" fill="none" />
+    </svg>
+  );
+}
+
+// Pressurizer
+export function Pressurizer({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <path d="M8 20 L8 6 Q8 2 12 2 Q16 2 16 6 L16 20" />
+      <line x1="8" y1="20" x2="16" y2="20" />
+      <line x1="8" y1="14" x2="16" y2="14" />
+      <path d="M10 8 L10 6 M12 9 L12 6 M14 8 L14 6" strokeWidth="1" />
+      <line x1="4" y1="17" x2="8" y2="17" />
+    </svg>
+  );
+}
+
+// Heat Exchanger
+export function HeatExchanger({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <circle cx="12" cy="12" r="8" />
+      <path d="M6 8 L18 8 M6 12 L18 12 M6 16 L18 16" strokeDasharray="3 2" />
+      <line x1="0" y1="8" x2="4" y2="8" />
+      <line x1="20" y1="8" x2="24" y2="8" />
+      <line x1="0" y1="16" x2="4" y2="16" />
+      <line x1="20" y1="16" x2="24" y2="16" />
+    </svg>
+  );
+}
+
 // Export a map of all symbols for easy lookup by name
 export const electricalSymbols: Record<string, React.ComponentType<SymbolProps>> = {
   resistor: Resistor,
@@ -616,4 +771,16 @@ export const electricalSymbols: Record<string, React.ComponentType<SymbolProps>>
   'pdu-rack': PDURack,
   crah: CRAH,
   'ups-unit': UPSUnit,
+  'reactor-vessel': ReactorVessel,
+  'steam-generator': SteamGenerator,
+  turbine: Turbine,
+  condenser: Condenser,
+  'cooling-tower': CoolingTower,
+  'control-rod': ControlRod,
+  pump: Pump,
+  valve: Valve,
+  containment: Containment,
+  radiation: Radiation,
+  pressurizer: Pressurizer,
+  'heat-exchanger': HeatExchanger,
 };
