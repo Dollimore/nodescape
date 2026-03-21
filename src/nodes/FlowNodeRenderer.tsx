@@ -43,8 +43,6 @@ export const FlowNodeRenderer = React.forwardRef<HTMLDivElement, FlowNodeRendere
         width: size.width,
         ...(node.type === 'group' ? { height: size.height } : { minHeight: size.height }),
       } : {}),
-      ...(isSelected ? { boxShadow: 'inset 0 0 0 2px #3b82f6' } : {}),
-      ...(isOverlapping && !isSelected ? { boxShadow: 'inset 0 0 0 2px #ef4444' } : {}),
     };
 
     const handleMouseDown = (e: React.MouseEvent) => {
@@ -84,7 +82,7 @@ export const FlowNodeRenderer = React.forwardRef<HTMLDivElement, FlowNodeRendere
       }
     };
 
-    const nodeContent = <NodeComponent node={node} editable={editable} onCollapseToggle={onRelayout ? () => onRelayout() : undefined} onHandleDrag={onHandleDrag} {...(NodeComponent === DefaultNode ? { onLabelChange, detailLevel } : {})} />;
+    const nodeContent = <NodeComponent node={node} editable={editable} onCollapseToggle={onRelayout ? () => onRelayout() : undefined} onHandleDrag={onHandleDrag} {...(NodeComponent === DefaultNode ? { onLabelChange, detailLevel, isSelected, isOverlapping } : {})} />;
 
     return (
       <div ref={ref} style={style} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onContextMenu={handleContextMenu} data-node-draggable={editable || undefined} data-node-id={node.id}>

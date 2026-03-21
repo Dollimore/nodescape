@@ -27,9 +27,11 @@ interface DefaultNodeProps {
   onHandleDrag?: (nodeId: string, side: string, e: React.MouseEvent) => void;
   onLabelChange?: (nodeId: string, newLabel: string) => void;
   detailLevel?: 'minimal' | 'compact' | 'full';
+  isSelected?: boolean;
+  isOverlapping?: boolean;
 }
 
-export function DefaultNode({ node, editable, onCollapseToggle, onHandleDrag, onLabelChange, detailLevel = 'full' }: DefaultNodeProps) {
+export function DefaultNode({ node, editable, onCollapseToggle, onHandleDrag, onLabelChange, detailLevel = 'full', isSelected, isOverlapping }: DefaultNodeProps) {
   const [isCollapsed, setIsCollapsed] = useState(node.collapsed ?? false);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -46,6 +48,20 @@ export function DefaultNode({ node, editable, onCollapseToggle, onHandleDrag, on
   } else if (variant === 'ghost') {
     nodeStyle.border = 'none';
     nodeStyle.boxShadow = 'none';
+  }
+
+  // Selection: lighten existing border color, or use blue if no custom color
+  if (isSelected) {
+    if (customColor) {
+      nodeStyle.borderColor = customColor;
+      nodeStyle.borderWidth = '2px';
+    } else {
+      nodeStyle.borderColor = '#3b82f6';
+      nodeStyle.borderWidth = '2px';
+    }
+  } else if (isOverlapping) {
+    nodeStyle.borderColor = '#ef4444';
+    nodeStyle.borderWidth = '2px';
   }
 
   const hasSections = node.sections && node.sections.length > 0;
