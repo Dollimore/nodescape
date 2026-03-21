@@ -90,26 +90,122 @@ const datacenterDiagram: FlowDiagram = {
 };
 
 const circuitDiagram: FlowDiagram = {
-  title: 'Simple Power Circuit',
-  layout: { direction: 'TB', routing: 'orthogonal', cornerRadius: 8 },
+  title: 'Audio Amplifier Circuit',
+  layout: { direction: 'LR', routing: 'orthogonal', cornerRadius: 12 },
   nodes: [
-    { id: 'source', label: 'AC Supply', icon: 'voltage-source', description: '240V AC mains.' },
-    { id: 'breaker', label: 'Circuit Breaker', icon: 'switch', description: '32A rated.' },
-    { id: 'xfmr', label: 'Transformer', icon: 'transformer', description: '240V to 24V step-down.' },
-    { id: 'rect', label: 'Rectifier', icon: 'diode', description: 'Full bridge rectifier.' },
-    { id: 'cap', label: 'Filter Cap', icon: 'capacitor', description: '1000uF smoothing.', flowRate: '1000uF' },
-    { id: 'reg', label: 'Voltage Regulator', icon: 'resistor', description: '24V to 12V regulation.' },
-    { id: 'load', label: 'Load', icon: 'motor', description: '12V DC motor.', status: 'online', flowRate: '2.4A' },
-    { id: 'gnd', label: 'Ground', icon: 'ground' },
+    // Power supply section
+    { id: 'vcc', type: 'netlabel', label: 'VCC +9V', style: { color: '#ef4444' } },
+    { id: 'gnd1', type: 'netlabel', label: 'GND', style: { color: '#94a3b8' } },
+
+    // Input stage
+    { id: 'input', label: 'Audio Input', icon: 'connector', description: '3.5mm jack.' },
+    { id: 'c1', label: 'C1', icon: 'capacitor', description: 'Coupling capacitor.', flowRate: '10uF' },
+    { id: 'r1', label: 'R1', icon: 'resistor', description: 'Bias resistor.', flowRate: '10K' },
+    { id: 'r2', label: 'R2', icon: 'resistor', description: 'Bias resistor.', flowRate: '47K' },
+
+    // Amplifier
+    { id: 'q1', label: 'Q1', icon: 'transistor-npn', description: 'NPN amplifier stage.',
+      ports: [
+        { id: 'B', label: 'B', side: 'left', position: 0.5 },
+        { id: 'C', label: 'C', side: 'top', position: 0.5 },
+        { id: 'E', label: 'E', side: 'bottom', position: 0.5 },
+      ]
+    },
+    { id: 'r3', label: 'R3', icon: 'resistor', description: 'Collector resistor.', flowRate: '4.7K' },
+    { id: 'r4', label: 'R4', icon: 'resistor', description: 'Emitter resistor.', flowRate: '1K' },
+
+    // Output
+    { id: 'c2', label: 'C2', icon: 'capacitor', description: 'Output coupling.', flowRate: '100uF' },
+    { id: 'speaker', label: 'Speaker', icon: 'speaker', description: '8 ohm speaker.', status: 'online' },
+    { id: 'gnd2', type: 'netlabel', label: 'GND', style: { color: '#94a3b8' } },
   ],
   edges: [
-    { id: 'c1', source: 'source', target: 'breaker', color: '#ef4444', flowAnimation: true, annotation: '240V AC' },
-    { id: 'c2', source: 'breaker', target: 'xfmr', color: '#ef4444', flowAnimation: true },
-    { id: 'c3', source: 'xfmr', target: 'rect', color: '#f59e0b', flowAnimation: true, annotation: '24V AC' },
-    { id: 'c4', source: 'rect', target: 'cap', color: '#3b82f6', flowAnimation: true, showJunction: true },
-    { id: 'c5', source: 'cap', target: 'reg', color: '#3b82f6', flowAnimation: true },
-    { id: 'c6', source: 'reg', target: 'load', label: '12V DC', color: '#22c55e', flowAnimation: true, annotation: '2.4A' },
-    { id: 'c7', source: 'load', target: 'gnd', color: '#94a3b8' },
+    // Signal path
+    { id: 'a1', source: 'input', target: 'c1', color: '#3b82f6', flowAnimation: true, annotation: 'Audio in' },
+    { id: 'a2', source: 'c1', target: 'q1', targetPort: 'B', color: '#3b82f6', flowAnimation: true },
+    { id: 'a3', source: 'r1', target: 'q1', targetPort: 'B', color: '#94a3b8', showJunction: true },
+    { id: 'a4', source: 'r2', target: 'q1', targetPort: 'B', color: '#94a3b8', showJunction: true },
+
+    // Collector path
+    { id: 'a5', source: 'vcc', target: 'r3', color: '#ef4444', annotation: '+9V' },
+    { id: 'a6', source: 'r3', target: 'q1', targetPort: 'C', color: '#ef4444', flowAnimation: true },
+
+    // Emitter path
+    { id: 'a7', source: 'q1', sourcePort: 'E', target: 'r4', color: '#f59e0b' },
+    { id: 'a8', source: 'r4', target: 'gnd1', color: '#94a3b8' },
+
+    // Output path
+    { id: 'a9', source: 'q1', sourcePort: 'C', target: 'c2', color: '#22c55e', flowAnimation: true, showJunction: true },
+    { id: 'a10', source: 'c2', target: 'speaker', color: '#22c55e', flowAnimation: true, annotation: 'Amplified' },
+    { id: 'a11', source: 'speaker', target: 'gnd2', color: '#94a3b8' },
+  ],
+};
+
+const hvdcDiagram: FlowDiagram = {
+  title: 'HVDC Transmission System',
+  layout: { direction: 'LR', routing: 'orthogonal', cornerRadius: 16 },
+  nodes: [
+    // Sending end
+    { id: 'gen', label: 'Power Station', icon: 'generator', description: 'Coal/gas generation plant.', status: 'online', flowRate: '2000 MW',
+      style: { color: '#22c55e' } },
+    { id: 'ac-bus-s', label: 'AC Bus (Send)', icon: 'zap', description: '400kV AC collection bus.' },
+    { id: 'xfmr-s', label: 'Converter Transformer', icon: 'transformer', description: '400kV/200kV step-down.',
+      sections: [
+        { heading: 'Rating', content: '2200 MVA' },
+        { heading: 'Cooling', content: 'ONAN/ONAF' },
+      ]
+    },
+    { id: 'conv-s', label: 'Rectifier Station', icon: 'diode', description: 'AC to DC conversion.',
+      status: 'online', progress: 82, flowRate: '1840 MW',
+      sections: [
+        { heading: 'Type', content: 'Thyristor 12-pulse' },
+        { heading: 'Voltage', content: '+/-500 kV DC' },
+      ]
+    },
+
+    // DC Transmission
+    { id: 'dc-line-p', label: 'DC Line (+)', description: 'Positive pole XLPE cable.', flowRate: '+500 kV',
+      style: { color: '#ef4444' } },
+    { id: 'dc-line-n', label: 'DC Line (-)', description: 'Negative pole XLPE cable.', flowRate: '-500 kV',
+      style: { color: '#3b82f6' } },
+
+    // Receiving end
+    { id: 'conv-r', label: 'Inverter Station', icon: 'diode', description: 'DC to AC conversion.',
+      status: 'online', progress: 78, flowRate: '1760 MW',
+      sections: [
+        { heading: 'Type', content: 'VSC MMC' },
+        { heading: 'Output', content: '400 kV AC' },
+      ]
+    },
+    { id: 'xfmr-r', label: 'Grid Transformer', icon: 'transformer', description: '200kV/400kV step-up.' },
+    { id: 'ac-bus-r', label: 'AC Bus (Receive)', icon: 'zap', description: '400kV AC grid connection.' },
+    { id: 'grid', label: 'National Grid', icon: 'zap', description: 'Connected load centers.',
+      status: 'online', style: { color: '#3b82f6' } },
+
+    // Protection
+    { id: 'gnd-s', type: 'netlabel', label: 'Earth (Send)', style: { color: '#94a3b8' } },
+    { id: 'gnd-r', type: 'netlabel', label: 'Earth (Recv)', style: { color: '#94a3b8' } },
+  ],
+  edges: [
+    // AC side - sending
+    { id: 'h1', source: 'gen', target: 'ac-bus-s', color: '#22c55e', flowAnimation: true, annotation: '400kV AC', thickness: 3 },
+    { id: 'h2', source: 'ac-bus-s', target: 'xfmr-s', color: '#22c55e', flowAnimation: true, thickness: 3 },
+    { id: 'h3', source: 'xfmr-s', target: 'conv-s', color: '#f59e0b', flowAnimation: true, annotation: '200kV AC' },
+
+    // DC transmission
+    { id: 'h4', source: 'conv-s', target: 'dc-line-p', color: '#ef4444', flowAnimation: true, annotation: '+500kV DC', thickness: 4 },
+    { id: 'h5', source: 'conv-s', target: 'dc-line-n', color: '#3b82f6', flowAnimation: true, annotation: '-500kV DC', thickness: 4 },
+    { id: 'h6', source: 'dc-line-p', target: 'conv-r', color: '#ef4444', flowAnimation: true, thickness: 4 },
+    { id: 'h7', source: 'dc-line-n', target: 'conv-r', color: '#3b82f6', flowAnimation: true, thickness: 4 },
+
+    // AC side - receiving
+    { id: 'h8', source: 'conv-r', target: 'xfmr-r', color: '#f59e0b', flowAnimation: true, annotation: '200kV AC' },
+    { id: 'h9', source: 'xfmr-r', target: 'ac-bus-r', color: '#22c55e', flowAnimation: true, annotation: '400kV AC', thickness: 3 },
+    { id: 'h10', source: 'ac-bus-r', target: 'grid', color: '#22c55e', flowAnimation: true, thickness: 3 },
+
+    // Grounding
+    { id: 'h11', source: 'conv-s', target: 'gnd-s', color: '#94a3b8', type: 'dashed' },
+    { id: 'h12', source: 'conv-r', target: 'gnd-r', color: '#94a3b8', type: 'dashed' },
   ],
 };
 
@@ -121,9 +217,10 @@ const nodeTemplates: SidebarNodeTemplate[] = [
 ];
 
 export function App() {
-  const [activeDemo, setActiveDemo] = React.useState<'vertical' | 'horizontal' | 'datacenter' | 'circuit'>('vertical');
+  const [activeDemo, setActiveDemo] = React.useState<'vertical' | 'horizontal' | 'datacenter' | 'circuit' | 'hvdc'>('vertical');
   const [currentDiagram, setCurrentDiagram] = useState<FlowDiagram>(sampleDiagram);
-  const baseDiagram = activeDemo === 'vertical' ? sampleDiagram : activeDemo === 'horizontal' ? horizontalDiagram : activeDemo === 'datacenter' ? datacenterDiagram : circuitDiagram;
+  const demoMap: Record<string, FlowDiagram> = { vertical: sampleDiagram, horizontal: horizontalDiagram, datacenter: datacenterDiagram, circuit: circuitDiagram, hvdc: hvdcDiagram };
+  const baseDiagram = demoMap[activeDemo] || sampleDiagram;
   const diagram = activeDemo === 'vertical' ? currentDiagram : baseDiagram;
   const canvasRef = useRef<FlowCanvasRef>(null);
 
@@ -134,7 +231,7 @@ export function App() {
     }));
   };
 
-  const handleDemoChange = (demo: 'vertical' | 'horizontal' | 'datacenter' | 'circuit') => {
+  const handleDemoChange = (demo: 'vertical' | 'horizontal' | 'datacenter' | 'circuit' | 'hvdc') => {
     setActiveDemo(demo);
     if (demo === 'vertical') setCurrentDiagram(sampleDiagram);
   };
@@ -235,6 +332,22 @@ export function App() {
           }}
         >
           Circuit
+        </button>
+        <button
+          onClick={() => handleDemoChange('hvdc')}
+          style={{
+            padding: '6px 12px',
+            borderRadius: 6,
+            border: '1px solid rgba(255,255,255,0.15)',
+            background: activeDemo === 'hvdc' ? '#e2e8f0' : 'rgba(22,33,62,0.85)',
+            color: activeDemo === 'hvdc' ? '#1a1a1a' : '#e2e8f0',
+            cursor: 'pointer',
+            fontSize: 12,
+            fontWeight: 600,
+            backdropFilter: 'blur(4px)',
+          }}
+        >
+          HVDC
         </button>
       </div>
       <FlowCanvas
