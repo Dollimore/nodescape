@@ -45,8 +45,25 @@ export function usePanZoom(fitViewTransform?: PanZoomState) {
 
   const onWheel = useCallback((e: WheelEvent) => {
     e.preventDefault();
+
+    // Figma-style controls:
+    // - Two-finger scroll (trackpad) = pan (no ctrlKey)
+    // - Pinch (trackpad) = zoom (ctrlKey is true during pinch on Mac)
+    // - Ctrl/Cmd + scroll wheel = zoom
+    const isZoom = e.ctrlKey || e.metaKey;
+
+    if (!isZoom) {
+      // Pan — two-finger scroll moves the canvas
+      setTransform((prev) => ({
+        ...prev,
+        x: prev.x - e.deltaX,
+        y: prev.y - e.deltaY,
+      }));
+      return;
+    }
+
+    // Zoom — pinch or Ctrl+scroll
     const delta = -e.deltaY * ZOOM_SENSITIVITY;
-    // Capture rect before entering state updater (synthetic event gets nullified)
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
     const clientX = e.clientX;
     const clientY = e.clientY;
