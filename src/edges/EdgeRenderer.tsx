@@ -109,18 +109,17 @@ export function EdgeRenderer({ edges, layoutEdges, defaultRouting = 'curved', co
         const layout = layoutMap.get(edge.id);
         if (!layout || layout.points.length < 2) return null;
 
-        const pos = edge.annotationPosition ?? 0.5;
-        const idx = Math.floor((layout.points.length - 1) * pos);
+        const pos = edge.annotationPosition ?? 0.3;
+        const idx = Math.min(Math.floor((layout.points.length - 1) * pos), layout.points.length - 2);
         const point = layout.points[idx] || getMidpoint(layout.points);
 
-        // Offset the annotation slightly from the edge
+        // Offset the annotation perpendicular to the edge direction
         const nextPt = layout.points[idx + 1] || layout.points[idx];
         const dx = nextPt.x - point.x;
         const dy = nextPt.y - point.y;
-        // Perpendicular offset
         const len = Math.sqrt(dx * dx + dy * dy) || 1;
-        const offsetX = (-dy / len) * 14;
-        const offsetY = (dx / len) * 14;
+        const offsetX = (-dy / len) * 20;
+        const offsetY = (dx / len) * 20;
 
         return (
           <div
