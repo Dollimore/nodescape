@@ -21,9 +21,8 @@ export function Minimap({ nodes, viewportWidth, viewportHeight, transform, layou
   const scaleY = (minimapHeight - padding * 2) / (layoutHeight || 1);
   const minimapScale = Math.min(scaleX, scaleY);
 
-  // The canvas inner div is offset by 10000px so that content at layout (0,0) appears at
-  // canvasInner coordinate (10000, 10000). Subtract that offset to align with node coordinates.
-  const CANVAS_ORIGIN_OFFSET = 10000;
+  // Must match the offset in CanvasView (9984 = 312 * 32, grid-aligned)
+  const CANVAS_ORIGIN_OFFSET = 9984;
   const vpX = ((-transform.x / transform.scale) - CANVAS_ORIGIN_OFFSET) * minimapScale + padding;
   const vpY = ((-transform.y / transform.scale) - CANVAS_ORIGIN_OFFSET) * minimapScale + padding;
   const vpW = (viewportWidth / transform.scale) * minimapScale;

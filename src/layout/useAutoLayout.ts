@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import * as dagre from 'dagre';
 import type { FlowDiagram, LayoutResult, LayoutNode, LayoutEdge } from '../types';
 
-const DEFAULT_NODE_WIDTH = 240; // 10 * 24
-const DEFAULT_NODE_HEIGHT = 72;  // 3 * 24
+const DEFAULT_NODE_WIDTH = 192; // 6 * 32
+const DEFAULT_NODE_HEIGHT = 64;  // 2 * 32
 
 export function useAutoLayout(
   diagram: FlowDiagram,
@@ -32,18 +32,19 @@ export function computeLayout(
   g.setDefaultEdgeLabel(() => ({}));
 
   const direction = diagram.layout?.direction || 'TB';
-  const nodeSpacing = diagram.layout?.nodeSpacing ?? 72;  // 3 * 24
-  const rankSpacing = diagram.layout?.rankSpacing ?? 96;  // 4 * 24
+  const nodeSpacing = diagram.layout?.nodeSpacing ?? 64;  // 2 * 32
+  const rankSpacing = diagram.layout?.rankSpacing ?? 96;  // 3 * 32
 
   g.setGraph({
     rankdir: direction,
     nodesep: nodeSpacing,
     ranksep: rankSpacing,
-    marginx: 48,  // 2 * 24
-    marginy: 48,
+    marginx: 32,
+    marginy: 32,
   });
 
-  const GRID = 24;
+  // Visual grid lines are every 32px. Node edges must land ON these lines.
+  const GRID = 32;
   const snapUp = (v: number) => Math.ceil(v / GRID) * GRID;
 
   for (const node of diagram.nodes) {
@@ -83,12 +84,12 @@ export function computeLayout(
     const childLayouts = layoutNodes.filter(ln => children.some(c => c.id === ln.id));
 
     if (childLayouts.length === 0) {
-      layoutNodes.push({ id: node.id, x: 0, y: 0, width: 192, height: 96 }); // 8*24, 4*24
+      layoutNodes.push({ id: node.id, x: 0, y: 0, width: 192, height: 96 }); // 6*32, 3*32
       continue;
     }
 
     const padding = GRID;
-    const headerHeight = GRID + GRID / 2; // 36px
+    const headerHeight = GRID; // one grid unit for header
     const minX = snapTo(Math.min(...childLayouts.map(c => c.x)) - padding);
     const minY = snapTo(Math.min(...childLayouts.map(c => c.y)) - padding - headerHeight);
     const maxX = Math.max(...childLayouts.map(c => c.x + c.width)) + padding;

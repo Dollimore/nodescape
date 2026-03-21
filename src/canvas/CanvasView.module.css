@@ -12,7 +12,7 @@
 }
 
 .canvasInner {
-  transform-origin: 10000px 10000px;
+  transform-origin: 9984px 9984px;
   position: absolute;
   top: -10000px;
   left: -10000px;
@@ -22,18 +22,18 @@
 
 .dotGrid {
   background-image:
-    linear-gradient(var(--fc-grid-line, rgba(0,0,0,0.03)) 1px, transparent 1px),
-    linear-gradient(90deg, var(--fc-grid-line, rgba(0,0,0,0.03)) 1px, transparent 1px),
-    radial-gradient(circle, var(--fc-dot) 1px, transparent 1px);
-  background-size: 24px 24px;
+    linear-gradient(var(--fc-grid-line, rgba(0,0,0,0.06)) 1px, transparent 1px),
+    linear-gradient(90deg, var(--fc-grid-line, rgba(0,0,0,0.06)) 1px, transparent 1px),
+    radial-gradient(circle, var(--fc-dot) 1.5px, transparent 1.5px);
+  background-size: 32px 32px;
 }
 
 .isometricDots {
   background-image:
-    linear-gradient(var(--fc-grid-line, rgba(0,0,0,0.03)) 1px, transparent 1px),
-    linear-gradient(90deg, var(--fc-grid-line, rgba(0,0,0,0.03)) 1px, transparent 1px),
-    radial-gradient(circle, var(--fc-dot) 1px, transparent 1px);
-  background-size: 24px 24px;
+    linear-gradient(var(--fc-grid-line, rgba(0,0,0,0.06)) 1px, transparent 1px),
+    linear-gradient(90deg, var(--fc-grid-line, rgba(0,0,0,0.06)) 1px, transparent 1px),
+    radial-gradient(circle, var(--fc-dot) 1.5px, transparent 1.5px);
+  background-size: 32px 32px;
 }
 
 .plain {

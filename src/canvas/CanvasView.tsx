@@ -118,8 +118,8 @@ export function CanvasView({
           transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})`,
         }}
       >
-        {/* Offset children back to the origin point within the oversized background */}
-        <div ref={contentRef} style={{ position: 'absolute', top: 10000, left: 10000 }}>
+        {/* Offset must be a multiple of grid visual size (32px) so grid lines align with content */}
+        <div ref={contentRef} style={{ position: 'absolute', top: 9984, left: 9984 }}>
           {children}
         </div>
       </div>
