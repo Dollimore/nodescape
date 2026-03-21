@@ -265,6 +265,69 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
     );
   }, [diagram.edges, positions, layout?.nodes, layoutPositions, diagram.layout?.direction, diagram.layout?.routing]);
 
+  // Compute alignment helper lines when dragging in edit mode
+  const helperLines = useMemo(() => {
+    if (!isDragging || !layout) return [];
+
+    const nodeSizes = new Map(layout.nodes.map((n) => [n.id, { width: n.width, height: n.height }]));
+
+    // Identify the node being dragged: its position deviates from the layout position
+    let draggingId: string | null = null;
+    for (const id of Object.keys(positions)) {
+      const lp = layoutPositions[id];
+      const cp = positions[id];
+      if (lp && cp && (Math.abs(cp.x - lp.x) > 0.5 || Math.abs(cp.y - lp.y) > 0.5)) {
+        draggingId = id;
+        break;
+      }
+    }
+    if (!draggingId) return [];
+
+    const dragPos = positions[draggingId];
+    const dragSize = nodeSizes.get(draggingId);
+    if (!dragPos || !dragSize) return [];
+
+    const lines: { type: 'horizontal' | 'vertical'; position: number }[] = [];
+    const dragCenterX = dragPos.x + dragSize.width / 2;
+    const dragCenterY = dragPos.y + dragSize.height / 2;
+    const dragRight = dragPos.x + dragSize.width;
+    const dragBottom = dragPos.y + dragSize.height;
+
+    for (const id of Object.keys(positions)) {
+      if (id === draggingId) continue;
+      const other = positions[id];
+      const otherSize = nodeSizes.get(id);
+      if (!other || !otherSize) continue;
+
+      const otherCenterX = other.x + otherSize.width / 2;
+      const otherCenterY = other.y + otherSize.height / 2;
+      const otherRight = other.x + otherSize.width;
+      const otherBottom = other.y + otherSize.height;
+
+      const THRESHOLD = 8;
+
+      // Vertical guide lines (X alignment)
+      if (Math.abs(dragPos.x - other.x) < THRESHOLD) {
+        lines.push({ type: 'vertical', position: other.x });
+      } else if (Math.abs(dragCenterX - otherCenterX) < THRESHOLD) {
+        lines.push({ type: 'vertical', position: otherCenterX });
+      } else if (Math.abs(dragRight - otherRight) < THRESHOLD) {
+        lines.push({ type: 'vertical', position: otherRight });
+      }
+
+      // Horizontal guide lines (Y alignment)
+      if (Math.abs(dragPos.y - other.y) < THRESHOLD) {
+        lines.push({ type: 'horizontal', position: other.y });
+      } else if (Math.abs(dragCenterY - otherCenterY) < THRESHOLD) {
+        lines.push({ type: 'horizontal', position: otherCenterY });
+      } else if (Math.abs(dragBottom - otherBottom) < THRESHOLD) {
+        lines.push({ type: 'horizontal', position: otherBottom });
+      }
+    }
+
+    return lines;
+  }, [isDragging, positions, layout, layoutPositions]);
+
   return (
     <div className={`${styles.root} ${theme === 'dark' ? styles.dark : ''}`}>
     <CanvasView
@@ -290,6 +353,7 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
           cornerRadius={diagram.layout?.cornerRadius}
         />
       )}
+      {editable && <HelperLines lines={helperLines} />}
       {diagram.nodes.map((node) => (
         <FlowNodeRenderer
           key={node.id}
