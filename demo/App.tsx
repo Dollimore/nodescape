@@ -142,70 +142,153 @@ const circuitDiagram: FlowDiagram = {
 };
 
 const hvdcDiagram: FlowDiagram = {
-  title: 'HVDC Transmission System',
-  layout: { direction: 'LR', routing: 'orthogonal', cornerRadius: 16 },
+  title: 'Multi-Terminal HVDC Super Grid',
+  layout: { direction: 'TB', routing: 'orthogonal', cornerRadius: 16 },
   nodes: [
-    // Sending end
-    { id: 'gen', label: 'Power Station', icon: 'generator', description: 'Coal/gas generation plant.', status: 'online', flowRate: '2000 MW',
-      style: { color: '#22c55e' } },
-    { id: 'ac-bus-s', label: 'AC Bus (Send)', icon: 'zap', description: '400kV AC collection bus.' },
-    { id: 'xfmr-s', label: 'Converter Transformer', icon: 'transformer', description: '400kV/200kV step-down.',
+    // ===== NORTH-WEST REGION — Offshore Wind =====
+    { id: 'nw-group', type: 'group', label: 'North-West — Offshore Wind Farm' },
+    { id: 'nw-wind1', label: 'Wind Array A', icon: 'zap', description: '120 turbines, 8MW each.', status: 'online', flowRate: '960 MW', parentId: 'nw-group' },
+    { id: 'nw-wind2', label: 'Wind Array B', icon: 'zap', description: '80 turbines, 10MW each.', status: 'online', flowRate: '800 MW', parentId: 'nw-group' },
+    { id: 'nw-collect', label: 'Collection Bus', icon: 'zap', description: '66kV AC offshore platform.', parentId: 'nw-group' },
+    { id: 'nw-xfmr', label: 'Offshore Transformer', icon: 'transformer', description: '66kV / 320kV step-up.',
+      sections: [{ heading: 'Rating', content: '1800 MVA' }, { heading: 'Type', content: 'ONAN subsea' }], parentId: 'nw-group' },
+    { id: 'nw-conv', label: 'Offshore Converter', icon: 'diode', description: 'VSC-MMC AC/DC conversion.',
+      status: 'online', progress: 88, flowRate: '1600 MW',
+      sections: [{ heading: 'Topology', content: 'Half-bridge MMC' }, { heading: 'DC Voltage', content: '+/-320 kV' }], parentId: 'nw-group' },
+
+    // ===== NORTH-EAST REGION — Nuclear + Hydro =====
+    { id: 'ne-group', type: 'group', label: 'North-East — Nuclear & Hydro Generation' },
+    { id: 'ne-nuclear', label: 'Nuclear Plant', icon: 'generator', description: '2x EPR reactors.',
+      status: 'online', flowRate: '3200 MW', style: { color: '#8b5cf6' }, parentId: 'ne-group' },
+    { id: 'ne-hydro', label: 'Pumped Hydro', icon: 'generator', description: 'Reversible pump-turbine.',
+      status: 'online', flowRate: '1200 MW', style: { color: '#06b6d4' }, parentId: 'ne-group' },
+    { id: 'ne-bus', label: 'AC Bus 400kV', icon: 'zap', description: 'Double busbar arrangement.', parentId: 'ne-group' },
+    { id: 'ne-xfmr1', label: 'Converter Xfmr 1', icon: 'transformer', description: '400/200kV YNd11.',
+      sections: [{ heading: 'Rating', content: '2400 MVA' }], parentId: 'ne-group' },
+    { id: 'ne-xfmr2', label: 'Converter Xfmr 2', icon: 'transformer', description: '400/200kV YNd11.',
+      sections: [{ heading: 'Rating', content: '1400 MVA' }], parentId: 'ne-group' },
+    { id: 'ne-conv1', label: 'Rectifier Station 1', icon: 'diode', description: 'Thyristor LCC 12-pulse.',
+      status: 'online', progress: 92, flowRate: '3000 MW',
+      sections: [{ heading: 'Type', content: 'LCC Thyristor' }, { heading: 'DC', content: '+/-800 kV' }], parentId: 'ne-group' },
+    { id: 'ne-conv2', label: 'Rectifier Station 2', icon: 'diode', description: 'VSC-MMC bi-directional.',
+      status: 'online', progress: 67, flowRate: '1200 MW',
+      sections: [{ heading: 'Type', content: 'FB-MMC VSC' }, { heading: 'DC', content: '+/-500 kV' }], parentId: 'ne-group' },
+
+    // ===== DC TRANSMISSION CORRIDORS =====
+    { id: 'dc-corridor1-p', label: 'HVDC Link 1 (+800kV)', description: '1200km overhead line.', flowRate: '+800 kV', style: { color: '#ef4444' } },
+    { id: 'dc-corridor1-n', label: 'HVDC Link 1 (-800kV)', description: '1200km overhead line.', flowRate: '-800 kV', style: { color: '#3b82f6' } },
+    { id: 'dc-corridor2', label: 'HVDC Link 2 (+/-500kV)', description: '450km subsea XLPE cable.', flowRate: '+/-500 kV', style: { color: '#f59e0b' } },
+    { id: 'dc-corridor3', label: 'HVDC Link 3 (+/-320kV)', description: '280km subsea cable from offshore.', flowRate: '+/-320 kV', style: { color: '#22c55e' } },
+
+    // ===== CENTRAL DC HUB =====
+    { id: 'dc-hub-group', type: 'group', label: 'Central DC Switching Hub' },
+    { id: 'dc-breaker1', label: 'DC Breaker 1', icon: 'switch', description: 'Hybrid HVDC circuit breaker.',
+      status: 'online', sections: [{ heading: 'Rating', content: '800kV / 5kA' }, { heading: 'Op Time', content: '<2ms' }], parentId: 'dc-hub-group' },
+    { id: 'dc-breaker2', label: 'DC Breaker 2', icon: 'switch', description: 'Hybrid HVDC circuit breaker.',
+      status: 'online', sections: [{ heading: 'Rating', content: '500kV / 3kA' }], parentId: 'dc-hub-group' },
+    { id: 'dc-breaker3', label: 'DC Breaker 3', icon: 'switch', description: 'Hybrid HVDC circuit breaker.',
+      status: 'warning', sections: [{ heading: 'Rating', content: '320kV / 2kA' }, { heading: 'Alert', content: 'Maintenance due' }], parentId: 'dc-hub-group' },
+
+    // ===== SOUTH-WEST REGION — Industrial Load =====
+    { id: 'sw-group', type: 'group', label: 'South-West — Industrial Load Center' },
+    { id: 'sw-conv', label: 'Inverter Station SW', icon: 'diode', description: 'VSC-MMC DC/AC inversion.',
+      status: 'online', progress: 71, flowRate: '2800 MW',
+      sections: [{ heading: 'Type', content: 'FB-MMC VSC' }, { heading: 'Output', content: '400 kV AC' }], parentId: 'sw-group' },
+    { id: 'sw-xfmr', label: 'Grid Transformer SW', icon: 'transformer', description: '200/400kV step-up.',
+      sections: [{ heading: 'Rating', content: '3200 MVA' }], parentId: 'sw-group' },
+    { id: 'sw-bus', label: 'SW 400kV Bus', icon: 'zap', description: 'GIS switchgear.', parentId: 'sw-group' },
+    { id: 'sw-smelter', label: 'Aluminium Smelter', icon: 'motor', description: 'Continuous 1200MW load.',
+      status: 'online', flowRate: '1200 MW', progress: 95, parentId: 'sw-group' },
+    { id: 'sw-city', label: 'Metro Distribution', icon: 'zap', description: 'City grid connection.',
+      status: 'online', flowRate: '1600 MW', parentId: 'sw-group' },
+
+    // ===== SOUTH-EAST REGION — Solar + BESS =====
+    { id: 'se-group', type: 'group', label: 'South-East — Solar & Battery Storage' },
+    { id: 'se-solar', label: 'Solar Farm', icon: 'zap', description: '2GW utility-scale PV.',
+      status: 'online', flowRate: '1400 MW', progress: 70, style: { color: '#f59e0b' }, parentId: 'se-group' },
+    { id: 'se-bess', label: 'BESS', icon: 'battery', description: '500MW / 2000MWh Li-ion.',
+      status: 'online', flowRate: '300 MW', progress: 62,
+      sections: [{ heading: 'Capacity', content: '2000 MWh' }, { heading: 'SoC', content: '62%' }], parentId: 'se-group' },
+    { id: 'se-bus', label: 'SE AC Bus 220kV', icon: 'zap', parentId: 'se-group' },
+    { id: 'se-conv', label: 'Converter Station SE', icon: 'diode', description: 'Bi-directional VSC.',
+      status: 'online', progress: 45, flowRate: '1100 MW',
+      sections: [{ heading: 'Type', content: 'FB-MMC' }, { heading: 'DC', content: '+/-500 kV' }], parentId: 'se-group' },
+
+    // ===== PROTECTION & MONITORING =====
+    { id: 'gnd-ne', type: 'netlabel', label: 'Earth Electrode NE', style: { color: '#94a3b8' } },
+    { id: 'gnd-sw', type: 'netlabel', label: 'Earth Electrode SW', style: { color: '#94a3b8' } },
+    { id: 'gnd-se', type: 'netlabel', label: 'Earth Electrode SE', style: { color: '#94a3b8' } },
+    { id: 'gnd-nw', type: 'netlabel', label: 'Earth Electrode NW', style: { color: '#94a3b8' } },
+
+    // Control center
+    { id: 'scada', label: 'SCADA Control Center', icon: 'layout-dashboard', description: 'Central monitoring and dispatch.',
+      status: 'online', style: { color: '#8b5cf6', glow: true },
       sections: [
-        { heading: 'Rating', content: '2200 MVA' },
-        { heading: 'Cooling', content: 'ONAN/ONAF' },
+        { heading: 'Total Generation', content: '7360 MW' },
+        { heading: 'Total Load', content: '6700 MW' },
+        { heading: 'DC Losses', content: '~2.1%' },
+        { heading: 'System Freq', content: '50.02 Hz' },
       ]
     },
-    { id: 'conv-s', label: 'Rectifier Station', icon: 'diode', description: 'AC to DC conversion.',
-      status: 'online', progress: 82, flowRate: '1840 MW',
-      sections: [
-        { heading: 'Type', content: 'Thyristor 12-pulse' },
-        { heading: 'Voltage', content: '+/-500 kV DC' },
-      ]
-    },
-
-    // DC Transmission
-    { id: 'dc-line-p', label: 'DC Line (+)', description: 'Positive pole XLPE cable.', flowRate: '+500 kV',
-      style: { color: '#ef4444' } },
-    { id: 'dc-line-n', label: 'DC Line (-)', description: 'Negative pole XLPE cable.', flowRate: '-500 kV',
-      style: { color: '#3b82f6' } },
-
-    // Receiving end
-    { id: 'conv-r', label: 'Inverter Station', icon: 'diode', description: 'DC to AC conversion.',
-      status: 'online', progress: 78, flowRate: '1760 MW',
-      sections: [
-        { heading: 'Type', content: 'VSC MMC' },
-        { heading: 'Output', content: '400 kV AC' },
-      ]
-    },
-    { id: 'xfmr-r', label: 'Grid Transformer', icon: 'transformer', description: '200kV/400kV step-up.' },
-    { id: 'ac-bus-r', label: 'AC Bus (Receive)', icon: 'zap', description: '400kV AC grid connection.' },
-    { id: 'grid', label: 'National Grid', icon: 'zap', description: 'Connected load centers.',
-      status: 'online', style: { color: '#3b82f6' } },
-
-    // Protection
-    { id: 'gnd-s', type: 'netlabel', label: 'Earth (Send)', style: { color: '#94a3b8' } },
-    { id: 'gnd-r', type: 'netlabel', label: 'Earth (Recv)', style: { color: '#94a3b8' } },
   ],
   edges: [
-    // AC side - sending
-    { id: 'h1', source: 'gen', target: 'ac-bus-s', color: '#22c55e', flowAnimation: true, annotation: '400kV AC', thickness: 3 },
-    { id: 'h2', source: 'ac-bus-s', target: 'xfmr-s', color: '#22c55e', flowAnimation: true, thickness: 3 },
-    { id: 'h3', source: 'xfmr-s', target: 'conv-s', color: '#f59e0b', flowAnimation: true, annotation: '200kV AC' },
+    // NW Wind Farm internal
+    { id: 'nw1', source: 'nw-wind1', target: 'nw-collect', color: '#22c55e', flowAnimation: true, annotation: '960 MW' },
+    { id: 'nw2', source: 'nw-wind2', target: 'nw-collect', color: '#22c55e', flowAnimation: true, annotation: '800 MW' },
+    { id: 'nw3', source: 'nw-collect', target: 'nw-xfmr', color: '#22c55e', flowAnimation: true, thickness: 3 },
+    { id: 'nw4', source: 'nw-xfmr', target: 'nw-conv', color: '#f59e0b', flowAnimation: true, annotation: '320kV AC' },
 
-    // DC transmission
-    { id: 'h4', source: 'conv-s', target: 'dc-line-p', color: '#ef4444', flowAnimation: true, annotation: '+500kV DC', thickness: 4 },
-    { id: 'h5', source: 'conv-s', target: 'dc-line-n', color: '#3b82f6', flowAnimation: true, annotation: '-500kV DC', thickness: 4 },
-    { id: 'h6', source: 'dc-line-p', target: 'conv-r', color: '#ef4444', flowAnimation: true, thickness: 4 },
-    { id: 'h7', source: 'dc-line-n', target: 'conv-r', color: '#3b82f6', flowAnimation: true, thickness: 4 },
+    // NE Generation internal
+    { id: 'ne1', source: 'ne-nuclear', target: 'ne-bus', color: '#8b5cf6', flowAnimation: true, annotation: '3200 MW', thickness: 4 },
+    { id: 'ne2', source: 'ne-hydro', target: 'ne-bus', color: '#06b6d4', flowAnimation: true, annotation: '1200 MW', thickness: 3 },
+    { id: 'ne3', source: 'ne-bus', target: 'ne-xfmr1', color: '#22c55e', flowAnimation: true, thickness: 3, showJunction: true },
+    { id: 'ne4', source: 'ne-bus', target: 'ne-xfmr2', color: '#22c55e', flowAnimation: true, thickness: 2, showJunction: true },
+    { id: 'ne5', source: 'ne-xfmr1', target: 'ne-conv1', color: '#f59e0b', flowAnimation: true, annotation: '200kV AC' },
+    { id: 'ne6', source: 'ne-xfmr2', target: 'ne-conv2', color: '#f59e0b', flowAnimation: true, annotation: '200kV AC' },
 
-    // AC side - receiving
-    { id: 'h8', source: 'conv-r', target: 'xfmr-r', color: '#f59e0b', flowAnimation: true, annotation: '200kV AC' },
-    { id: 'h9', source: 'xfmr-r', target: 'ac-bus-r', color: '#22c55e', flowAnimation: true, annotation: '400kV AC', thickness: 3 },
-    { id: 'h10', source: 'ac-bus-r', target: 'grid', color: '#22c55e', flowAnimation: true, thickness: 3 },
+    // DC Corridors — NE to Hub
+    { id: 'dc1a', source: 'ne-conv1', target: 'dc-corridor1-p', color: '#ef4444', flowAnimation: true, annotation: '+800kV', thickness: 5 },
+    { id: 'dc1b', source: 'ne-conv1', target: 'dc-corridor1-n', color: '#3b82f6', flowAnimation: true, annotation: '-800kV', thickness: 5 },
+    { id: 'dc1c', source: 'dc-corridor1-p', target: 'dc-breaker1', color: '#ef4444', flowAnimation: true, thickness: 5 },
+    { id: 'dc1d', source: 'dc-corridor1-n', target: 'dc-breaker1', color: '#3b82f6', flowAnimation: true, thickness: 5 },
 
-    // Grounding
-    { id: 'h11', source: 'conv-s', target: 'gnd-s', color: '#94a3b8', type: 'dashed' },
-    { id: 'h12', source: 'conv-r', target: 'gnd-r', color: '#94a3b8', type: 'dashed' },
+    // DC Corridor — NE Conv2 to Hub
+    { id: 'dc2a', source: 'ne-conv2', target: 'dc-corridor2', color: '#f59e0b', flowAnimation: true, annotation: '+/-500kV', thickness: 3 },
+    { id: 'dc2b', source: 'dc-corridor2', target: 'dc-breaker2', color: '#f59e0b', flowAnimation: true, thickness: 3 },
+
+    // DC Corridor — NW Offshore to Hub
+    { id: 'dc3a', source: 'nw-conv', target: 'dc-corridor3', color: '#22c55e', flowAnimation: true, annotation: '+/-320kV', thickness: 3 },
+    { id: 'dc3b', source: 'dc-corridor3', target: 'dc-breaker3', color: '#22c55e', flowAnimation: true, thickness: 3 },
+
+    // Hub to SW
+    { id: 'hub-sw1', source: 'dc-breaker1', target: 'sw-conv', color: '#ef4444', flowAnimation: true, thickness: 4, annotation: '800kV DC' },
+    { id: 'hub-sw2', source: 'dc-breaker2', target: 'sw-conv', color: '#f59e0b', flowAnimation: true, thickness: 3, showJunction: true },
+
+    // Hub to SE
+    { id: 'hub-se1', source: 'dc-breaker3', target: 'se-conv', color: '#22c55e', flowAnimation: true, thickness: 3 },
+    { id: 'hub-se2', source: 'dc-breaker2', target: 'se-conv', color: '#f59e0b', flowAnimation: true, thickness: 2, showJunction: true },
+
+    // SW internal
+    { id: 'sw1', source: 'sw-conv', target: 'sw-xfmr', color: '#f59e0b', flowAnimation: true, annotation: '200kV AC' },
+    { id: 'sw2', source: 'sw-xfmr', target: 'sw-bus', color: '#22c55e', flowAnimation: true, annotation: '400kV AC', thickness: 3 },
+    { id: 'sw3', source: 'sw-bus', target: 'sw-smelter', color: '#ef4444', flowAnimation: true, annotation: '1200 MW', thickness: 3 },
+    { id: 'sw4', source: 'sw-bus', target: 'sw-city', color: '#3b82f6', flowAnimation: true, annotation: '1600 MW', thickness: 3 },
+
+    // SE internal
+    { id: 'se1', source: 'se-solar', target: 'se-bus', color: '#f59e0b', flowAnimation: true, annotation: '1400 MW', thickness: 3 },
+    { id: 'se2', source: 'se-bess', target: 'se-bus', color: '#8b5cf6', flowAnimation: true, annotation: '300 MW' },
+    { id: 'se3', source: 'se-bus', target: 'se-conv', color: '#22c55e', flowAnimation: true, thickness: 2 },
+
+    // Earth electrodes
+    { id: 'gnd1', source: 'ne-conv1', target: 'gnd-ne', color: '#94a3b8', type: 'dashed' },
+    { id: 'gnd2', source: 'sw-conv', target: 'gnd-sw', color: '#94a3b8', type: 'dashed' },
+    { id: 'gnd3', source: 'se-conv', target: 'gnd-se', color: '#94a3b8', type: 'dashed' },
+    { id: 'gnd4', source: 'nw-conv', target: 'gnd-nw', color: '#94a3b8', type: 'dashed' },
+
+    // SCADA monitoring links
+    { id: 'scada1', source: 'scada', target: 'dc-breaker1', color: '#8b5cf6', type: 'dashed', annotation: 'IEC 61850' },
+    { id: 'scada2', source: 'scada', target: 'dc-breaker2', color: '#8b5cf6', type: 'dashed' },
+    { id: 'scada3', source: 'scada', target: 'dc-breaker3', color: '#8b5cf6', type: 'dashed' },
   ],
 };
 
