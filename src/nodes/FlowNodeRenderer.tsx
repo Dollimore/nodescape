@@ -16,13 +16,16 @@ interface FlowNodeRendererProps {
   onDragStart?: (nodeId: string, e: React.MouseEvent) => void;
   isDragging?: boolean;
   onClick?: () => void;
+  onNodeSelect?: (nodeId: string, e: React.MouseEvent) => void;
+  isSelected?: boolean;
   customRenderers?: Record<string, ComponentType<CustomNodeProps>>;
   onNodeContextMenu?: (nodeId: string, e: React.MouseEvent) => void;
   onRelayout?: () => void;
+  onHandleDrag?: (nodeId: string, side: string, e: React.MouseEvent) => void;
 }
 
 export const FlowNodeRenderer = React.forwardRef<HTMLDivElement, FlowNodeRendererProps>(
-  function FlowNodeRenderer({ node, editable, position, size, onDragStart, isDragging, onClick, customRenderers, onNodeContextMenu, onRelayout }, ref) {
+  function FlowNodeRenderer({ node, editable, position, size, onDragStart, isDragging, onClick, onNodeSelect, isSelected, customRenderers, onNodeContextMenu, onRelayout, onHandleDrag }, ref) {
     const startPos = useRef<{ x: number; y: number } | null>(null);
 
     const style: React.CSSProperties = {
@@ -35,6 +38,7 @@ export const FlowNodeRenderer = React.forwardRef<HTMLDivElement, FlowNodeRendere
         width: size.width,
         ...(node.type === 'group' ? { height: size.height } : { minHeight: size.height }),
       } : {}),
+      ...(isSelected ? { outline: '2px solid #3b82f6', outlineOffset: '2px' } : {}),
     };
 
     const handleMouseDown = (e: React.MouseEvent) => {
@@ -45,12 +49,17 @@ export const FlowNodeRenderer = React.forwardRef<HTMLDivElement, FlowNodeRendere
     };
 
     const handleMouseUp = (e: React.MouseEvent) => {
-      if (startPos.current && onClick) {
+      if (startPos.current) {
         const dx = Math.abs(e.clientX - startPos.current.x);
         const dy = Math.abs(e.clientY - startPos.current.y);
-        // Only fire click if mouse didn't move (not a drag)
+        // Only fire click/select if mouse didn't move (not a drag)
         if (dx < 5 && dy < 5) {
-          onClick();
+          if (onNodeSelect) {
+            onNodeSelect(node.id, e);
+          }
+          if (onClick) {
+            onClick();
+          }
         }
       }
       startPos.current = null;
@@ -66,7 +75,7 @@ export const FlowNodeRenderer = React.forwardRef<HTMLDivElement, FlowNodeRendere
       }
     };
 
-    const nodeContent = <NodeComponent node={node} editable={editable} onCollapseToggle={onRelayout ? () => onRelayout() : undefined} />;
+    const nodeContent = <NodeComponent node={node} editable={editable} onCollapseToggle={onRelayout ? () => onRelayout() : undefined} onHandleDrag={onHandleDrag} />;
 
     return (
       <div ref={ref} style={style} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onContextMenu={handleContextMenu} data-node-draggable={editable || undefined}>

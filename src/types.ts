@@ -1,4 +1,4 @@
-import type { ComponentType } from 'react';
+import type { ComponentType, MouseEvent } from 'react';
 
 export type EdgeRouting = 'curved' | 'orthogonal' | 'straight';
 
@@ -76,6 +76,8 @@ export type CanvasBackground = 'dots' | 'isometric' | 'plain';
 export interface CustomNodeProps {
   node: FlowNode;
   editable: boolean;
+  onCollapseToggle?: (nodeId: string, collapsed: boolean) => void;
+  onHandleDrag?: (nodeId: string, side: string, e: MouseEvent) => void;
 }
 
 export interface ContextMenuItem {

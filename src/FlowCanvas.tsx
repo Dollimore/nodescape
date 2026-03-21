@@ -286,6 +286,8 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
       onRedo={onRedo}
       canUndo={canUndo}
       canRedo={canRedo}
+      onBackgroundClick={() => setSelectedNodeIds(new Set())}
+      onDelete={editable ? handleDelete : undefined}
     >
       {layout && (
         <EdgeRenderer
@@ -312,6 +314,19 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
           onDragStart={editable ? onDragStart : undefined}
           isDragging={isDragging}
           onClick={onNodeClick ? () => onNodeClick(node.id, node) : undefined}
+          onNodeSelect={(nodeId, e) => {
+            if (e.shiftKey) {
+              setSelectedNodeIds(prev => {
+                const next = new Set(prev);
+                if (next.has(nodeId)) next.delete(nodeId);
+                else next.add(nodeId);
+                return next;
+              });
+            } else {
+              setSelectedNodeIds(new Set([nodeId]));
+            }
+          }}
+          isSelected={selectedNodeIds.has(node.id)}
           customRenderers={nodeRenderers}
           onRelayout={triggerRelayout}
           ref={(el) => setNodeRef(node.id, el)}

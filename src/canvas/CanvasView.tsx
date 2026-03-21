@@ -30,6 +30,7 @@ interface CanvasViewProps {
   canUndo?: boolean;
   canRedo?: boolean;
   onBackgroundClick?: () => void;
+  onDelete?: () => void;
 }
 
 const bgClassMap: Record<CanvasBackground, string> = {
@@ -59,6 +60,8 @@ export function CanvasView({
   onRedo,
   canUndo,
   canRedo,
+  onBackgroundClick,
+  onDelete,
 }: CanvasViewProps) {
   const { transform, onMouseDown, onMouseMove, onMouseUp, attachWheelListener, setFitView, zoomIn, zoomOut, resetZoom } = usePanZoom();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -107,6 +110,7 @@ export function CanvasView({
     onResetZoom: resetZoom,
     onUndo,
     onRedo,
+    onDelete,
   });
 
   const handleMouseMove = (e: React.MouseEvent) => {
@@ -119,12 +123,24 @@ export function CanvasView({
     if (onDragEnd) onDragEnd();
   };
 
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    onMouseDown(e);
+    if (onBackgroundClick) {
+      const target = e.target as HTMLElement;
+      // Fire if click is directly on the canvas container or the background inner div
+      // (not on a node or its children)
+      if (!target.closest('[data-node-draggable]') && !target.closest('[data-node-id]')) {
+        onBackgroundClick();
+      }
+    }
+  };
+
   return (
     <div
       ref={containerRef}
       data-testid="flow-canvas"
       className={`${styles.canvas} ${className || ''}`}
-      onMouseDown={onMouseDown}
+      onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
