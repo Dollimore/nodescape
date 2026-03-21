@@ -1,4 +1,5 @@
 import type { ComponentType } from 'react';
+import type { SidebarNodeTemplate } from './sidebar/DragDropSidebar';
 
 export type EdgeRouting = 'curved' | 'orthogonal' | 'straight';
 
@@ -19,9 +20,10 @@ export interface FlowDiagram {
 
 export interface FlowNode {
   id: string;
-  type?: 'default' | 'decision' | 'start' | 'end';
+  type?: 'default' | 'decision' | 'start' | 'end' | 'group';
   label: string;
   description?: string;
+  parentId?: string; // ID of the group node this node belongs to
   sections?: NodeSection[];
   icon?: string | ComponentType<{ size?: number; color?: string }>;
   collapsed?: boolean;
@@ -34,6 +36,7 @@ export interface FlowNode {
   status?: 'online' | 'offline' | 'warning' | 'error' | 'idle';
   progress?: number; // 0-100, renders a progress bar
   flowRate?: string; // e.g., "1.2 MW", "340 Gbps" — displayed as a badge
+  branchCollapsed?: boolean; // if true, hide all downstream nodes
 }
 
 export interface NodeSection {
@@ -79,6 +82,9 @@ export interface FlowCanvasProps {
   contextMenu?: boolean | {
     items?: ContextMenuItem[];
   };
+  onNodeCollapse?: (nodeId: string, collapsed: boolean) => void;
+  sidebar?: SidebarNodeTemplate[];
+  onNodeDrop?: (template: SidebarNodeTemplate, position: { x: number; y: number }) => void;
 }
 
 export interface LayoutNode {

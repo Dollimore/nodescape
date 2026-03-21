@@ -1,5 +1,5 @@
 import React, { useRef, useCallback, useEffect, useMemo, useImperativeHandle, useState } from 'react';
-import type { FlowCanvasProps, FlowDiagram, FlowNode, LayoutEdge, LayoutNode } from './types';
+import type { FlowCanvasProps, FlowDiagram, FlowNode, FlowEdge, LayoutEdge, LayoutNode } from './types';
 import { ContextMenu } from './contextmenu/ContextMenu';
 import { FlowNodeRenderer } from './nodes/FlowNodeRenderer';
 import { EdgeRenderer } from './edges/EdgeRenderer';
@@ -10,12 +10,45 @@ import { exportDiagram, exportAndDownload } from './export/exportUtils';
 import type { ExportOptions } from './export/exportUtils';
 import styles from './FlowCanvas.module.css';
 import { HelperLines } from './helpers/HelperLines';
+import { DragDropSidebar } from './sidebar/DragDropSidebar';
 
 export interface FlowCanvasRef {
   exportPng: (options?: ExportOptions) => Promise<string>;
   exportSvg: (options?: ExportOptions) => Promise<string>;
   downloadPng: (options?: ExportOptions) => Promise<void>;
   downloadSvg: (options?: ExportOptions) => Promise<void>;
+}
+
+/** Filter out nodes and edges that are downstream of a collapsed node */
+function getVisibleNodesAndEdges(diagram: FlowDiagram): { nodes: FlowNode[]; edges: FlowEdge[] } {
+  const collapsedNodeIds = new Set(
+    diagram.nodes.filter(n => n.branchCollapsed).map(n => n.id)
+  );
+
+  if (collapsedNodeIds.size === 0) {
+    return { nodes: diagram.nodes, edges: diagram.edges };
+  }
+
+  // Find all nodes downstream of collapsed nodes
+  const hiddenNodeIds = new Set<string>();
+
+  function hideDownstream(nodeId: string) {
+    for (const edge of diagram.edges) {
+      if (edge.source === nodeId && !collapsedNodeIds.has(edge.target)) {
+        hiddenNodeIds.add(edge.target);
+        hideDownstream(edge.target);
+      }
+    }
+  }
+
+  for (const nodeId of collapsedNodeIds) {
+    hideDownstream(nodeId);
+  }
+
+  const visibleNodes = diagram.nodes.filter(n => !hiddenNodeIds.has(n.id));
+  const visibleEdges = diagram.edges.filter(e => !hiddenNodeIds.has(e.source) && !hiddenNodeIds.has(e.target));
+
+  return { nodes: visibleNodes, edges: visibleEdges };
 }
 
 /** Get the fixed handle position for a node edge connection */
@@ -198,7 +231,7 @@ function computeDynamicEdges(
 }
 
 export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
-  function FlowCanvas({ diagram, mode = 'view', className, onDiagramChange, background, minimap, theme, onNodeClick, nodeRenderers, onContextMenu, contextMenu }: FlowCanvasProps, ref) {
+  function FlowCanvas({ diagram, mode = 'view', className, onDiagramChange, background, minimap, theme, onNodeClick, nodeRenderers, onContextMenu, contextMenu, onNodeCollapse, sidebar, onNodeDrop }: FlowCanvasProps, ref) {
   const editable = mode === 'edit';
 
   const [contextMenuState, setContextMenuState] = useState<{
@@ -222,7 +255,18 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
     nodeRefs.current.set(id, el);
   }, []);
 
-  const layout = useAutoLayout(diagram, nodeRefs.current);
+  // Filter nodes/edges based on collapsed branches before passing to layout
+  const { nodes: visibleNodes, edges: visibleEdges } = useMemo(
+    () => getVisibleNodesAndEdges(diagram),
+    [diagram]
+  );
+
+  const visibleDiagram = useMemo(
+    () => ({ ...diagram, nodes: visibleNodes, edges: visibleEdges }),
+    [diagram, visibleNodes, visibleEdges]
+  );
+
+  const layout = useAutoLayout(visibleDiagram, nodeRefs.current);
 
   const layoutPositions: { [id: string]: { x: number; y: number } } = {};
   for (const n of layout?.nodes || []) {
@@ -256,14 +300,14 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
   const dynamicEdges = useMemo(() => {
     if (!layout) return [];
     return computeDynamicEdges(
-      diagram.edges,
+      visibleEdges,
       positions,
       layout.nodes,
       layoutPositions,
       diagram.layout?.direction || 'TB',
       diagram.layout?.routing || 'curved'
     );
-  }, [diagram.edges, positions, layout?.nodes, layoutPositions, diagram.layout?.direction, diagram.layout?.routing]);
+  }, [visibleEdges, positions, layout?.nodes, layoutPositions, diagram.layout?.direction, diagram.layout?.routing]);
 
   // Compute alignment helper lines when dragging in edit mode
   const helperLines = useMemo(() => {
@@ -328,6 +372,24 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
     return lines;
   }, [isDragging, positions, layout, layoutPositions]);
 
+  // Build a set of node IDs that have outgoing edges (used for collapse menu items)
+  const nodesWithOutgoingEdges = useMemo(() => {
+    const set = new Set<string>();
+    for (const edge of diagram.edges) {
+      set.add(edge.source);
+    }
+    return set;
+  }, [diagram.edges]);
+
+  const handleCanvasDrop = useCallback((e: React.DragEvent) => {
+    const data = e.dataTransfer.getData('application/drawing-mvp-node');
+    if (!data || !onNodeDrop) return;
+    e.preventDefault();
+    const template = JSON.parse(data);
+    const rect = e.currentTarget.getBoundingClientRect();
+    onNodeDrop(template, { x: e.clientX - rect.left, y: e.clientY - rect.top });
+  }, [onNodeDrop]);
+
   return (
     <div className={`${styles.root} ${theme === 'dark' ? styles.dark : ''}`}>
     <CanvasView
@@ -344,17 +406,24 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
       layoutWidth={layout?.width}
       layoutHeight={layout?.height}
       contentRef={contentRef}
+      onDrop={handleCanvasDrop}
+      onDragOver={(e) => e.preventDefault()}
     >
       {layout && (
         <EdgeRenderer
-          edges={diagram.edges}
+          edges={visibleEdges}
           layoutEdges={dynamicEdges}
           defaultRouting={diagram.layout?.routing || 'curved'}
           cornerRadius={diagram.layout?.cornerRadius}
         />
       )}
       {editable && <HelperLines lines={helperLines} />}
-      {diagram.nodes.map((node) => (
+      {[...visibleNodes].sort((a, b) => {
+        // Render group nodes first so they appear behind child nodes
+        if (a.type === 'group' && b.type !== 'group') return -1;
+        if (a.type !== 'group' && b.type === 'group') return 1;
+        return 0;
+      }).map((node) => (
         <FlowNodeRenderer
           key={node.id}
           node={node}
@@ -382,6 +451,9 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
         />
       ))}
     </CanvasView>
+    {sidebar && sidebar.length > 0 && (
+      <DragDropSidebar templates={sidebar} />
+    )}
     {contextMenuState && (
       <ContextMenu
         x={contextMenuState.x}
@@ -410,6 +482,18 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
             defaultItems.push({
               label: node.collapsed ? 'Expand' : 'Collapse',
               onClick: () => console.log(node.collapsed ? 'Expand' : 'Collapse', 'node:', nodeId, node),
+            });
+          }
+          // Collapse / Expand Branch — only for nodes that have outgoing edges
+          if (nodesWithOutgoingEdges.has(nodeId)) {
+            defaultItems.push({
+              label: node.branchCollapsed ? 'Expand Branch' : 'Collapse Branch',
+              onClick: () => {
+                if (onNodeCollapse) {
+                  onNodeCollapse(nodeId, !node.branchCollapsed);
+                }
+                setContextMenuState(null);
+              },
             });
           }
           return defaultItems;

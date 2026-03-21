@@ -91,9 +91,9 @@ test.describe('FlowCanvas rendering', () => {
   test('full diagram renders with all node types, edges, and labels', async ({ page }) => {
     await page.goto('/');
 
-    // All 7 nodes visible
+    // All 8 nodes visible (7 original + 1 auth-group)
     const nodes = page.locator('[data-testid^="node-"]');
-    await expect(nodes).toHaveCount(7);
+    await expect(nodes).toHaveCount(8);
 
     // All 6 edges rendered
     const edges = page.locator('g[data-testid^="edge-"]');

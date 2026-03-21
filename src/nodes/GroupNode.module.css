@@ -1,0 +1,23 @@
+.group {
+  background: var(--fc-node-bg, #fff);
+  border: 2px dashed var(--fc-node-border, #e0e0e0);
+  border-radius: 12px;
+  padding: 12px 16px;
+  min-width: 200px;
+  min-height: 100px;
+  opacity: 0.7;
+}
+
+.groupLabel {
+  font-weight: 600;
+  font-size: 11px;
+  color: var(--fc-node-desc, #888);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.groupDescription {
+  font-size: 11px;
+  color: var(--fc-node-desc, #888);
+}

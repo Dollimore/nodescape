@@ -9,24 +9,27 @@ const sampleDiagram: FlowDiagram = {
   nodes: [
     { id: 'start', type: 'start', label: 'User visits login page', icon: 'log-in' },
     { id: 'input', label: 'Enter credentials', description: 'User provides **email** and `password`.', icon: 'key-round' },
+    { id: 'auth-group', type: 'group', label: 'Authentication' },
     {
       id: 'validate',
       type: 'decision',
       label: 'Valid credentials?',
       description: 'Check against *stored hash*.',
       icon: 'shield-check',
+      parentId: 'auth-group',
     },
     {
       id: 'grant',
       label: 'Grant access',
       description: 'Create session and redirect to dashboard.',
       icon: 'check-circle',
+      parentId: 'auth-group',
       sections: [
         { heading: 'Session', content: 'JWT token with **24h** expiry.' },
         { heading: 'Redirect', content: 'Send to `/dashboard`.' },
       ],
     },
-    { id: 'deny', label: 'Show error', description: 'Display invalid credentials message.', icon: 'x-circle' },
+    { id: 'deny', label: 'Show error', description: 'Display invalid credentials message.', icon: 'x-circle', parentId: 'auth-group' },
     { id: 'end-success', type: 'end', label: 'Dashboard', icon: 'layout-dashboard' },
     { id: 'end-fail', type: 'end', label: 'Login page (retry)', icon: 'rotate-ccw' },
   ],

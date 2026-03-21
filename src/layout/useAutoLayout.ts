@@ -44,6 +44,7 @@ export function computeLayout(
   });
 
   for (const node of diagram.nodes) {
+    if (node.type === 'group') continue; // groups are positioned after layout
     const el = nodeRefs.get(node.id);
     const width = el ? el.offsetWidth : DEFAULT_NODE_WIDTH;
     const height = el ? el.offsetHeight : DEFAULT_NODE_HEIGHT;
@@ -56,16 +57,45 @@ export function computeLayout(
 
   dagre.layout(g);
 
-  const layoutNodes: LayoutNode[] = diagram.nodes.map((node) => {
-    const dagreNode = g.node(node.id);
-    return {
+  const layoutNodes: LayoutNode[] = diagram.nodes
+    .filter((node) => node.type !== 'group')
+    .map((node) => {
+      const dagreNode = g.node(node.id);
+      return {
+        id: node.id,
+        x: dagreNode.x - dagreNode.width / 2,
+        y: dagreNode.y - dagreNode.height / 2,
+        width: dagreNode.width,
+        height: dagreNode.height,
+      };
+    });
+
+  // Compute group node positions from children bounding boxes
+  for (const node of diagram.nodes) {
+    if (node.type !== 'group') continue;
+    const children = diagram.nodes.filter(n => n.parentId === node.id);
+    const childLayouts = layoutNodes.filter(ln => children.some(c => c.id === ln.id));
+
+    if (childLayouts.length === 0) {
+      layoutNodes.push({ id: node.id, x: 0, y: 0, width: 200, height: 100 });
+      continue;
+    }
+
+    const padding = 24;
+    const headerHeight = 36;
+    const minX = Math.min(...childLayouts.map(c => c.x)) - padding;
+    const minY = Math.min(...childLayouts.map(c => c.y)) - padding - headerHeight;
+    const maxX = Math.max(...childLayouts.map(c => c.x + c.width)) + padding;
+    const maxY = Math.max(...childLayouts.map(c => c.y + c.height)) + padding;
+
+    layoutNodes.push({
       id: node.id,
-      x: dagreNode.x - dagreNode.width / 2,
-      y: dagreNode.y - dagreNode.height / 2,
-      width: dagreNode.width,
-      height: dagreNode.height,
-    };
-  });
+      x: minX,
+      y: minY,
+      width: maxX - minX,
+      height: maxY - minY,
+    });
+  }
 
   const layoutEdges: LayoutEdge[] = diagram.edges.map((edge) => {
     const dagreEdge = g.edge(edge.source, edge.target);
