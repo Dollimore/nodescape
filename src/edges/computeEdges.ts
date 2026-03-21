@@ -174,12 +174,35 @@ export function computeDynamicEdges(
 
       if (srcIsVertical && tgtIsVertical) {
         // Both vertical (e.g., bottom->top in TB layout)
-        // Path: start -> stubOut -> (stubOut.x, midY) -> (stubIn.x, midY) -> stubIn -> end
-        const midY = (stubOut.y + stubIn.y) / 2;
-        if (Math.abs(start.x - end.x) < 1) {
-          // Aligned — straight line
+        const goingDown = sourceSide === 'bottom';
+        const goingUp = sourceSide === 'top';
+        const targetIsAbove = end.y < start.y;
+        const targetIsBelow = end.y > start.y;
+        const needsWrapAround = (goingDown && targetIsAbove) || (goingUp && targetIsBelow);
+
+        if (Math.abs(start.x - end.x) < 1 && !needsWrapAround) {
+          // Aligned and going in the right direction — straight line
           points = [start, end];
+        } else if (needsWrapAround) {
+          // Edge goes "backwards" — route around the source node
+          // Go out from handle, then sideways to clear the node, then up/down to target
+          const sourceRight = sourcePos.x + sourceSize.width;
+          const targetRight = targetPos.x + targetSize.width;
+          // Pick the side that gives more room (right side of whichever is wider)
+          const clearX = Math.max(sourceRight, targetRight) + STUB_LENGTH;
+
+          points = [
+            start,
+            stubOut,
+            { x: stubOut.x, y: stubOut.y },
+            { x: clearX, y: stubOut.y },
+            { x: clearX, y: stubIn.y },
+            { x: stubIn.x, y: stubIn.y },
+            stubIn,
+            end,
+          ];
         } else {
+          const midY = (stubOut.y + stubIn.y) / 2;
           points = [
             start,
             stubOut,
@@ -191,10 +214,29 @@ export function computeDynamicEdges(
         }
       } else if (!srcIsVertical && !tgtIsVertical) {
         // Both horizontal (e.g., right->left in LR layout)
-        const midX = (stubOut.x + stubIn.x) / 2;
-        if (Math.abs(start.y - end.y) < 1) {
+        const goingRight = sourceSide === 'right';
+        const goingLeft = sourceSide === 'left';
+        const targetIsLeft = end.x < start.x;
+        const targetIsRight = end.x > start.x;
+        const needsWrapAround = (goingRight && targetIsLeft) || (goingLeft && targetIsRight);
+
+        if (Math.abs(start.y - end.y) < 1 && !needsWrapAround) {
           points = [start, end];
+        } else if (needsWrapAround) {
+          const sourceBottom = sourcePos.y + sourceSize.height;
+          const targetBottom = targetPos.y + targetSize.height;
+          const clearY = Math.max(sourceBottom, targetBottom) + STUB_LENGTH;
+
+          points = [
+            start,
+            stubOut,
+            { x: stubOut.x, y: clearY },
+            { x: stubIn.x, y: clearY },
+            stubIn,
+            end,
+          ];
         } else {
+          const midX = (stubOut.x + stubIn.x) / 2;
           points = [
             start,
             stubOut,
