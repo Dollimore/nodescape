@@ -206,3 +206,26 @@
   width: calc(100% + 8px);
   font-family: inherit;
 }
+
+@media (pointer: coarse) {
+  .handle {
+    width: 16px;
+    height: 16px;
+  }
+
+  .handleTop {
+    top: -9px;
+  }
+
+  .handleBottom {
+    bottom: -9px;
+  }
+
+  .handleLeft {
+    left: -9px;
+  }
+
+  .handleRight {
+    right: -9px;
+  }
+}

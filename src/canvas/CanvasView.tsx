@@ -35,6 +35,8 @@ interface CanvasViewProps {
   onPaste?: () => void;
   onConnectionMouseMove?: (e: React.MouseEvent) => void;
   onConnectionMouseUp?: (e: React.MouseEvent) => void;
+  onLassoSelect?: (nodeIds: string[]) => void;
+  onZoomChange?: (scale: number) => void;
 }
 
 const bgClassMap: Record<CanvasBackground, string> = {
@@ -70,16 +72,30 @@ export function CanvasView({
   onPaste,
   onConnectionMouseMove,
   onConnectionMouseUp,
+  onLassoSelect,
+  onZoomChange,
 }: CanvasViewProps) {
-  const { transform, onMouseDown, onMouseMove, onMouseUp, attachWheelListener, setFitView, zoomIn, zoomOut, resetZoom } = usePanZoom();
+  const { transform, onMouseDown, onMouseMove, onMouseUp, attachWheelListener, attachTouchListeners, setFitView, zoomIn, zoomOut, resetZoom } = usePanZoom();
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
 
-  // Attach native wheel listener with { passive: false } for preventDefault
+  const [lassoState, setLassoState] = useState<{
+    startX: number;
+    startY: number;
+    currentX: number;
+    currentY: number;
+  } | null>(null);
+  const transformRef = useRef(transform);
+
+  // Attach native wheel and touch listeners with { passive: false } for preventDefault
   useEffect(() => {
     attachWheelListener(containerRef.current);
-    return () => attachWheelListener(null);
-  }, [attachWheelListener]);
+    attachTouchListeners(containerRef.current);
+    return () => {
+      attachWheelListener(null);
+      attachTouchListeners(null);
+    };
+  }, [attachWheelListener, attachTouchListeners]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -93,6 +109,16 @@ export function CanvasView({
     observer.observe(containerRef.current);
     return () => observer.disconnect();
   }, []);
+
+  // Keep transformRef up-to-date so lasso selection can read latest transform
+  useEffect(() => {
+    transformRef.current = transform;
+  }, [transform]);
+
+  // Notify parent when zoom scale changes
+  useEffect(() => {
+    if (onZoomChange) onZoomChange(transform.scale);
+  }, [transform.scale, onZoomChange]);
 
   const applyFitView = useCallback(() => {
     if (!contentWidth || !contentHeight || !containerRef.current) return;
@@ -124,24 +150,70 @@ export function CanvasView({
   });
 
   const handleMouseMove = (e: React.MouseEvent) => {
+    if (lassoState) {
+      setLassoState(prev => prev ? { ...prev, currentX: e.clientX, currentY: e.clientY } : null);
+      return;
+    }
     onMouseMove(e);
     if (onDragMove) onDragMove(e);
     if (onConnectionMouseMove) onConnectionMouseMove(e);
   };
 
   const handleMouseUp = (e: React.MouseEvent) => {
+    if (lassoState) {
+      // Determine selected nodes by checking which node DOM elements intersect the lasso rect
+      if (onLassoSelect && containerRef.current) {
+        const lassoRect = {
+          left: Math.min(lassoState.startX, lassoState.currentX),
+          top: Math.min(lassoState.startY, lassoState.currentY),
+          right: Math.max(lassoState.startX, lassoState.currentX),
+          bottom: Math.max(lassoState.startY, lassoState.currentY),
+        };
+
+        const nodeEls = containerRef.current.querySelectorAll<HTMLElement>('[data-node-id]');
+        const selectedIds: string[] = [];
+        nodeEls.forEach(el => {
+          const nodeId = el.getAttribute('data-node-id');
+          if (!nodeId) return;
+          const r = el.getBoundingClientRect();
+          if (
+            r.left < lassoRect.right &&
+            r.right > lassoRect.left &&
+            r.top < lassoRect.bottom &&
+            r.bottom > lassoRect.top
+          ) {
+            selectedIds.push(nodeId);
+          }
+        });
+
+        if (selectedIds.length > 0) {
+          onLassoSelect(selectedIds);
+        }
+      }
+      setLassoState(null);
+      return;
+    }
     onMouseUp();
     if (onDragEnd) onDragEnd();
     if (onConnectionMouseUp) onConnectionMouseUp(e);
   };
 
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement;
+    const isOnNode = target.closest('[data-node-draggable]') || target.closest('[data-node-id]');
+
+    // Alt + drag on background = lasso select
+    if (e.altKey && !isOnNode) {
+      e.preventDefault();
+      setLassoState({ startX: e.clientX, startY: e.clientY, currentX: e.clientX, currentY: e.clientY });
+      return;
+    }
+
     onMouseDown(e);
     if (onBackgroundClick) {
-      const target = e.target as HTMLElement;
       // Fire if click is directly on the canvas container or the background inner div
       // (not on a node or its children)
-      if (!target.closest('[data-node-draggable]') && !target.closest('[data-node-id]')) {
+      if (!isOnNode) {
         onBackgroundClick();
       }
     }
@@ -170,6 +242,21 @@ export function CanvasView({
           {children}
         </div>
       </div>
+      {lassoState && (
+        <div
+          style={{
+            position: 'fixed',
+            left: Math.min(lassoState.startX, lassoState.currentX),
+            top: Math.min(lassoState.startY, lassoState.currentY),
+            width: Math.abs(lassoState.currentX - lassoState.startX),
+            height: Math.abs(lassoState.currentY - lassoState.startY),
+            border: '1px solid #3b82f6',
+            background: 'rgba(59, 130, 246, 0.08)',
+            pointerEvents: 'none',
+            zIndex: 9999,
+          }}
+        />
+      )}
       {minimapEnabled && layoutNodes && layoutNodes.length > 0 && (
         <Minimap
           nodes={layoutNodes}

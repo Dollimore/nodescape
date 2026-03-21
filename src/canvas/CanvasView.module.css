@@ -5,6 +5,8 @@
   position: relative;
   background-color: var(--fc-bg);
   cursor: grab;
+  touch-action: none;
+  -webkit-touch-callout: none;
 }
 
 .canvas:active {
