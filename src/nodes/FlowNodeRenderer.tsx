@@ -7,6 +7,7 @@ import { StartEndNode } from './StartEndNode';
 import { GroupNode } from './GroupNode';
 import { BusNode } from './BusNode';
 import { NetLabelNode } from './NetLabelNode';
+import { SingleLineNode } from './SingleLineNode';
 
 interface FlowNodeRendererProps {
   node: FlowNode;
@@ -25,10 +26,11 @@ interface FlowNodeRendererProps {
   onLabelChange?: (nodeId: string, newLabel: string) => void;
   isOverlapping?: boolean;
   detailLevel?: 'minimal' | 'compact' | 'full';
+  displayMode?: 'standard' | 'single-line';
 }
 
 export const FlowNodeRenderer = React.forwardRef<HTMLDivElement, FlowNodeRendererProps>(
-  function FlowNodeRenderer({ node, editable, position, size, onDragStart, isDragging, onClick, onNodeSelect, isSelected, isOverlapping, customRenderers, onNodeContextMenu, onRelayout, onHandleDrag, onLabelChange, detailLevel = 'full' }, ref) {
+  function FlowNodeRenderer({ node, editable, position, size, onDragStart, isDragging, onClick, onNodeSelect, isSelected, isOverlapping, customRenderers, onNodeContextMenu, onRelayout, onHandleDrag, onLabelChange, detailLevel = 'full', displayMode = 'standard' }, ref) {
     const startPos = useRef<{ x: number; y: number } | null>(null);
 
     const style: React.CSSProperties = {
@@ -70,7 +72,10 @@ export const FlowNodeRenderer = React.forwardRef<HTMLDivElement, FlowNodeRendere
     };
 
     const NodeComponent =
-      (node.type && customRenderers?.[node.type]) || getNodeComponent(node.type);
+      (node.type && customRenderers?.[node.type]) ||
+      (displayMode === 'single-line' && node.type !== 'group' && node.type !== 'netlabel' && node.type !== 'bus'
+        ? SingleLineNode
+        : getNodeComponent(node.type));
 
     const handleContextMenu = (e: React.MouseEvent) => {
       if (onNodeContextMenu) {

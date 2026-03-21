@@ -281,6 +281,131 @@ export function Relay({ size = 24, color = 'currentColor' }: SymbolProps) {
   );
 }
 
+// Voltmeter — circle with V
+export function Voltmeter({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
+      <circle cx="12" cy="12" r="8" />
+      <text x="12" y="16" textAnchor="middle" fontSize="10" fill={color} stroke="none" fontWeight="bold" fontFamily="system-ui">V</text>
+      <line x1="12" y1="2" x2="12" y2="0" />
+      <line x1="12" y1="24" x2="12" y2="22" />
+    </svg>
+  );
+}
+
+// Ammeter — circle with A
+export function Ammeter({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
+      <circle cx="12" cy="12" r="8" />
+      <text x="12" y="16" textAnchor="middle" fontSize="10" fill={color} stroke="none" fontWeight="bold" fontFamily="system-ui">A</text>
+      <line x1="12" y1="2" x2="12" y2="0" />
+      <line x1="12" y1="24" x2="12" y2="22" />
+    </svg>
+  );
+}
+
+// Wattmeter — circle with W
+export function Wattmeter({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
+      <circle cx="12" cy="12" r="8" />
+      <text x="12" y="16" textAnchor="middle" fontSize="10" fill={color} stroke="none" fontWeight="bold" fontFamily="system-ui">W</text>
+      <line x1="12" y1="2" x2="12" y2="0" />
+      <line x1="12" y1="24" x2="12" y2="22" />
+    </svg>
+  );
+}
+
+// Frequency meter — circle with Hz
+export function FrequencyMeter({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
+      <circle cx="12" cy="12" r="8" />
+      <text x="12" y="15" textAnchor="middle" fontSize="8" fill={color} stroke="none" fontWeight="bold" fontFamily="system-ui">Hz</text>
+      <line x1="12" y1="2" x2="12" y2="0" />
+      <line x1="12" y1="24" x2="12" y2="22" />
+    </svg>
+  );
+}
+
+// Current Transformer (CT) — two circles
+export function CurrentTransformer({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
+      <circle cx="10" cy="12" r="6" />
+      <circle cx="14" cy="12" r="6" />
+      <line x1="0" y1="12" x2="4" y2="12" />
+      <line x1="20" y1="12" x2="24" y2="12" />
+    </svg>
+  );
+}
+
+// Potential Transformer (PT/VT) — two circles with dots
+export function PotentialTransformer({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
+      <circle cx="10" cy="12" r="6" />
+      <circle cx="14" cy="12" r="6" />
+      <circle cx="8" cy="10" r="1" fill={color} />
+      <circle cx="16" cy="10" r="1" fill={color} />
+      <line x1="10" y1="2" x2="10" y2="6" />
+      <line x1="14" y1="18" x2="14" y2="22" />
+    </svg>
+  );
+}
+
+// Protection Relay
+export function ProtectionRelay({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round">
+      <rect x="4" y="4" width="16" height="16" rx="2" />
+      <text x="12" y="15" textAnchor="middle" fontSize="7" fill={color} stroke="none" fontWeight="bold" fontFamily="system-ui">87</text>
+      <line x1="12" y1="0" x2="12" y2="4" />
+      <line x1="12" y1="20" x2="12" y2="24" />
+    </svg>
+  );
+}
+
+// Surge Arrester / Lightning Arrester
+export function SurgeArrester({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="12" y1="0" x2="12" y2="6" />
+      <polyline points="6,6 12,14 18,6" />
+      <line x1="6" y1="18" x2="18" y2="18" />
+      <line x1="8" y1="21" x2="16" y2="21" />
+      <line x1="12" y1="14" x2="12" y2="18" />
+    </svg>
+  );
+}
+
+// Circuit Breaker (standard IEC symbol)
+export function CircuitBreaker({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size * 0.6} viewBox="0 0 40 20" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round">
+      <line x1="0" y1="10" x2="12" y2="10" />
+      <circle cx="14" cy="10" r="2" fill={color} />
+      <line x1="14" y1="10" x2="26" y2="2" />
+      <circle cx="28" cy="10" r="2" fill={color} />
+      <line x1="30" y1="10" x2="40" y2="10" />
+      <line x1="20" y1="6" x2="20" y2="0" />
+    </svg>
+  );
+}
+
+// Isolator/Disconnector
+export function Disconnector({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size * 0.5} viewBox="0 0 40 16" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round">
+      <line x1="0" y1="12" x2="12" y2="12" />
+      <circle cx="14" cy="12" r="2" />
+      <line x1="14" y1="12" x2="28" y2="2" />
+      <line x1="30" y1="12" x2="40" y2="12" />
+    </svg>
+  );
+}
+
 // Export a map of all symbols for easy lookup by name
 export const electricalSymbols: Record<string, React.ComponentType<SymbolProps>> = {
   resistor: Resistor,
@@ -304,4 +429,14 @@ export const electricalSymbols: Record<string, React.ComponentType<SymbolProps>>
   crystal: Crystal,
   connector: Connector,
   relay: Relay,
+  voltmeter: Voltmeter,
+  ammeter: Ammeter,
+  wattmeter: Wattmeter,
+  'frequency-meter': FrequencyMeter,
+  'current-transformer': CurrentTransformer,
+  'potential-transformer': PotentialTransformer,
+  'protection-relay': ProtectionRelay,
+  'surge-arrester': SurgeArrester,
+  'circuit-breaker': CircuitBreaker,
+  disconnector: Disconnector,
 };

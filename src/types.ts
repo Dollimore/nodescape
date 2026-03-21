@@ -126,6 +126,7 @@ export interface FlowCanvasProps {
   onEdgeCreate?: (source: string, target: string) => void;
   onNodeLabelChange?: (nodeId: string, newLabel: string) => void;
   contextualZoom?: boolean;
+  displayMode?: 'standard' | 'single-line';
 }
 
 export interface LayoutNode {
