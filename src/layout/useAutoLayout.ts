@@ -7,7 +7,8 @@ const DEFAULT_NODE_HEIGHT = 64;  // 8 * 8
 
 export function useAutoLayout(
   diagram: FlowDiagram,
-  nodeRefs: Map<string, HTMLElement | null>
+  nodeRefs: Map<string, HTMLElement | null>,
+  layoutVersion: number = 0
 ): LayoutResult | null {
   const [layout, setLayout] = useState<LayoutResult | null>(null);
   const computedRef = useRef(false);
@@ -19,7 +20,7 @@ export function useAutoLayout(
       computedRef.current = true;
     });
     return () => cancelAnimationFrame(rafId);
-  }, [diagram, nodeRefs]);
+  }, [diagram, nodeRefs, layoutVersion]);
 
   return layout;
 }

@@ -7,9 +7,10 @@ import { SimpleMarkdown } from './SimpleMarkdown';
 interface DefaultNodeProps {
   node: FlowNode;
   editable: boolean;
+  onCollapseToggle?: (nodeId: string, collapsed: boolean) => void;
 }
 
-export function DefaultNode({ node, editable }: DefaultNodeProps) {
+export function DefaultNode({ node, editable, onCollapseToggle }: DefaultNodeProps) {
   const [isCollapsed, setIsCollapsed] = useState(node.collapsed ?? false);
 
   const customColor = node.style?.color;
@@ -57,7 +58,12 @@ export function DefaultNode({ node, editable }: DefaultNodeProps) {
             className={styles.collapseToggle}
             onClick={(e) => {
               e.stopPropagation();
-              setIsCollapsed(!isCollapsed);
+              const next = !isCollapsed;
+              setIsCollapsed(next);
+              // Trigger re-layout after DOM updates with new height
+              if (onCollapseToggle) {
+                requestAnimationFrame(() => onCollapseToggle(node.id, next));
+              }
             }}
             aria-label={isCollapsed ? 'Expand sections' : 'Collapse sections'}
           >

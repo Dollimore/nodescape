@@ -279,7 +279,12 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
     [diagram, visibleNodes, visibleEdges]
   );
 
-  const layout = useAutoLayout(visibleDiagram, nodeRefs.current);
+  const [layoutVersion, setLayoutVersion] = useState(0);
+  const triggerRelayout = useCallback(() => {
+    setLayoutVersion(v => v + 1);
+  }, []);
+
+  const layout = useAutoLayout(visibleDiagram, nodeRefs.current, layoutVersion);
 
   const layoutPositions: { [id: string]: { x: number; y: number } } = {};
   const nodeSizesMap = new Map<string, { width: number; height: number }>();
@@ -450,6 +455,7 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
           isDragging={isDragging}
           onClick={onNodeClick ? () => onNodeClick(node.id, node) : undefined}
           customRenderers={nodeRenderers}
+          onRelayout={triggerRelayout}
           ref={(el) => setNodeRef(node.id, el)}
           onNodeContextMenu={(nodeId, e) => {
             e.preventDefault();

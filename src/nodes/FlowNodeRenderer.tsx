@@ -16,10 +16,11 @@ interface FlowNodeRendererProps {
   onClick?: () => void;
   customRenderers?: Record<string, ComponentType<CustomNodeProps>>;
   onNodeContextMenu?: (nodeId: string, e: React.MouseEvent) => void;
+  onRelayout?: () => void;
 }
 
 export const FlowNodeRenderer = React.forwardRef<HTMLDivElement, FlowNodeRendererProps>(
-  function FlowNodeRenderer({ node, editable, position, size, onDragStart, isDragging, onClick, customRenderers, onNodeContextMenu }, ref) {
+  function FlowNodeRenderer({ node, editable, position, size, onDragStart, isDragging, onClick, customRenderers, onNodeContextMenu, onRelayout }, ref) {
     const startPos = useRef<{ x: number; y: number } | null>(null);
 
     const style: React.CSSProperties = {
@@ -27,8 +28,8 @@ export const FlowNodeRenderer = React.forwardRef<HTMLDivElement, FlowNodeRendere
       transform: `translate(${position.x}px, ${position.y}px)`,
       transition: isDragging ? undefined : 'transform 0.3s ease',
       cursor: onClick && !editable ? 'pointer' : undefined,
-      // Force grid-snapped dimensions so nodes align with the background grid
-      ...(size ? { width: size.width, height: size.height } : {}),
+      // Force grid-snapped width; height is min-height so collapse can shrink
+      ...(size ? { width: size.width, minHeight: size.height } : {}),
     };
 
     const handleMouseDown = (e: React.MouseEvent) => {
@@ -62,7 +63,7 @@ export const FlowNodeRenderer = React.forwardRef<HTMLDivElement, FlowNodeRendere
 
     return (
       <div ref={ref} style={style} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onContextMenu={handleContextMenu} data-node-draggable={editable || undefined}>
-        <NodeComponent node={node} editable={editable} />
+        <NodeComponent node={node} editable={editable} onCollapseToggle={onRelayout ? () => onRelayout() : undefined} />
       </div>
     );
   }
