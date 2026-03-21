@@ -9,6 +9,7 @@
   max-width: 320px;
   user-select: none;
   transition: box-shadow 0.2s ease, transform 0.2s ease;
+  color: var(--fc-node-desc);
 }
 
 .node[data-editable="true"]:hover {

@@ -64,13 +64,13 @@
 .edgeLabelSuccess {
   background: var(--fc-edge-label-bg);
   color: #16a34a;
-  border-color: #bbf7d0;
+  border-color: var(--fc-edge-label-success-border, #bbf7d0);
 }
 
 .edgeLabelFailure {
   background: var(--fc-edge-label-bg);
   color: #dc2626;
-  border-color: #fecaca;
+  border-color: var(--fc-edge-label-failure-border, #fecaca);
 }
 
 .edgeLabelDashed {

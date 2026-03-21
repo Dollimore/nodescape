@@ -8,7 +8,7 @@ interface NodeIconProps {
   color?: string;
 }
 
-export function NodeIcon({ icon, size = 16, color = '#666' }: NodeIconProps) {
+export function NodeIcon({ icon, size = 16, color = 'currentColor' }: NodeIconProps) {
   if (typeof icon !== 'string') {
     const CustomIcon = icon;
     return <CustomIcon size={size} color={color} />;

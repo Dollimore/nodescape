@@ -20,6 +20,9 @@
   --fc-edge-label-bg: #fff;
   --fc-edge-label-color: #475569;
   --fc-edge-label-border: rgba(0, 0, 0, 0.06);
+  --fc-edge-label-success-border: #bbf7d0;
+  --fc-edge-label-failure-border: #fecaca;
+  --fc-icon-color: #666;
 }
 
 .dark {
@@ -40,6 +43,9 @@
   --fc-edge-label-bg: #16213e;
   --fc-edge-label-color: #94a3b8;
   --fc-edge-label-border: #2a2a4a;
+  --fc-edge-label-success-border: #166534;
+  --fc-edge-label-failure-border: #991b1b;
+  --fc-icon-color: #94a3b8;
 }
 
 .root * {

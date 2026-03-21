@@ -1,7 +1,7 @@
 import { useCallback, useRef, useState } from 'react';
 import React from 'react';
 
-const GRID_SIZE = 20;
+const GRID_SIZE = 24;
 
 function snapToGrid(value: number, gridSize: number): number {
   return Math.round(value / gridSize) * gridSize;
