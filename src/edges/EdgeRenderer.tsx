@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import type { FlowEdge, EdgeRouting } from '../types';
 import type { LayoutEdge } from '../types';
 import { buildPath, getMidpoint, getArrowheadPoints } from './pathUtils';
+import { detectCrossovers } from './crossoverDetection';
 import styles from './Edge.module.css';
 
 interface EdgeRendererProps {
@@ -14,6 +15,17 @@ interface EdgeRendererProps {
 
 export function EdgeRenderer({ edges, layoutEdges, defaultRouting = 'curved', cornerRadius = 12, isDragging }: EdgeRendererProps) {
   const layoutMap = new Map(layoutEdges.map((le) => [le.id, le]));
+
+  const crossovers = useMemo(() => {
+    const edgeData = edges.map(edge => ({
+      id: edge.id,
+      points: layoutMap.get(edge.id)?.points || [],
+      showHops: edge.showHops,
+    }));
+    return detectCrossovers(edgeData);
+  // layoutEdges is the stable dep — layoutMap is rebuilt each render from it
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [edges, layoutEdges]);
 
   return (
     <>
@@ -65,6 +77,23 @@ export function EdgeRenderer({ edges, layoutEdges, defaultRouting = 'curved', co
                   <circle cx={end.x} cy={end.y} r={3} className={styles.junction} style={edgeColor ? { fill: edgeColor } : undefined} />
                 </>
               )}
+            </g>
+          );
+        })}
+        {crossovers.map((co, i) => {
+          const s = 6;
+          // White gap on the underlying (crossed) line
+          const gapPath = co.orientation === 'horizontal'
+            ? `M ${co.x} ${co.y - s} L ${co.x} ${co.y + s}`
+            : `M ${co.x - s} ${co.y} L ${co.x + s} ${co.y}`;
+          // Hop arc on the hopping edge
+          const hopPath = co.orientation === 'horizontal'
+            ? `M ${co.x - s} ${co.y} A ${s} ${s} 0 0 1 ${co.x + s} ${co.y}`
+            : `M ${co.x} ${co.y - s} A ${s} ${s} 0 0 1 ${co.x} ${co.y + s}`;
+          return (
+            <g key={`crossover-${i}`} data-testid={`crossover-${i}`}>
+              <path d={gapPath} fill="none" stroke="var(--fc-bg, #fafafa)" strokeWidth={5} />
+              <path d={hopPath} fill="none" stroke="var(--fc-edge, #d0d0d0)" strokeWidth={1.5} />
             </g>
           );
         })}
