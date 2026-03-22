@@ -3579,36 +3579,6 @@ export function App() {
     <div style={{ width: '100%', height: '100vh', display: 'flex' }}>
       <Sidebar activeDemo={activeDemo} onDemoChange={handleDemoChange} />
       <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
-      <div style={{ position: 'absolute', top: 16, right: 16, display: 'flex', gap: 8, zIndex: 20 }}>
-        <button
-          onClick={() => canvasRef.current?.downloadPng()}
-          style={{
-            padding: '6px 12px',
-            borderRadius: 6,
-            border: '1px solid #e0e0e0',
-            background: '#fff',
-            cursor: 'pointer',
-            fontSize: 12,
-            fontWeight: 600,
-          }}
-        >
-          Export PNG
-        </button>
-        <button
-          onClick={() => canvasRef.current?.downloadSvg()}
-          style={{
-            padding: '6px 12px',
-            borderRadius: 6,
-            border: '1px solid #e0e0e0',
-            background: '#fff',
-            cursor: 'pointer',
-            fontSize: 12,
-            fontWeight: 600,
-          }}
-        >
-          Export SVG
-        </button>
-      </div>
       {activeDemo === 'project' ? (
         <div style={{ width: '100%', height: '100%' }}>
           <ProjectView
@@ -3619,6 +3589,11 @@ export function App() {
           />
         </div>
       ) : (
+      <>
+      <div style={{ position: 'absolute', top: 12, right: 12, display: 'flex', gap: 8, zIndex: 20 }}>
+        <button onClick={() => canvasRef.current?.downloadPng()} style={{ padding: '5px 10px', borderRadius: 6, border: '1px solid #e0e0e0', background: '#fff', cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>Export PNG</button>
+        <button onClick={() => canvasRef.current?.downloadSvg()} style={{ padding: '5px 10px', borderRadius: 6, border: '1px solid #e0e0e0', background: '#fff', cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>Export SVG</button>
+      </div>
       <FlowCanvas
         ref={canvasRef}
         diagram={diagram}
@@ -3650,6 +3625,7 @@ export function App() {
           ],
         } : undefined}
       />
+      </>
       )}
       </div>
     </div>
