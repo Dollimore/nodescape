@@ -1,5 +1,6 @@
 /* ============================================================
    GanttChart  --  CSS Module
+   Premium polish -- Attio-level refinement
    All colors reference the theme's CSS custom properties so that
    both light and dark modes work out of the box.
    ============================================================ */
@@ -13,24 +14,26 @@
   overflow: hidden;
   background: var(--fc-bg, #fafafa);
   border: 1px solid var(--fc-node-border, #e0e0e0);
-  border-radius: 8px;
-  font-family: system-ui, -apple-system, sans-serif;
+  border-radius: 10px;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
   position: relative;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 /* ---- toolbar / scale toggle bar ---- */
 .toolbar {
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 8px 12px;
+  gap: 2px;
+  padding: 6px 8px;
   background: var(--fc-node-bg, #fff);
-  border-bottom: 1px solid var(--fc-node-border, #e0e0e0);
+  border-bottom: 1px solid var(--fc-node-section-border, #f0f0f0);
+  border-left: 1px solid var(--fc-node-section-border, #f0f0f0);
   position: absolute;
   top: 0;
   right: 0;
   z-index: 6;
-  border-radius: 0 8px 0 8px;
+  border-radius: 0 10px 0 10px;
 }
 
 .scaleToggle {
@@ -38,25 +41,24 @@
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.02em;
-  border: 1px solid var(--fc-node-border, #e0e0e0);
-  border-radius: 4px;
-  background: var(--fc-bg, #fafafa);
+  border: none;
+  border-radius: 6px;
+  background: transparent;
   color: var(--fc-node-desc, #888);
   cursor: pointer;
   transition: all 0.15s ease;
   font-family: inherit;
+  line-height: 1.4;
 }
 
 .scaleToggle:hover {
-  background: var(--fc-node-bg, #fff);
+  background: var(--fc-node-section-bg, rgba(0, 0, 0, 0.03));
   color: var(--fc-node-label, #1a1a1a);
-  border-color: var(--fc-node-label, #1a1a1a);
 }
 
 .scaleToggleActive {
   background: var(--fc-node-label, #1a1a1a);
   color: var(--fc-bg, #fafafa);
-  border-color: var(--fc-node-label, #1a1a1a);
 }
 
 .scaleToggleActive:hover {
@@ -66,25 +68,29 @@
 
 /* ---- left: task list panel ---- */
 .taskList {
-  width: 280px;
-  min-width: 280px;
+  width: 300px;
+  min-width: 300px;
   flex-shrink: 0;
   overflow-y: auto;
+  overflow-x: hidden;
   border-right: 1px solid var(--fc-node-border, #e0e0e0);
   background: var(--fc-node-bg, #fff);
   z-index: 3;
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
 }
 
+.taskList:hover {
+  scrollbar-color: var(--fc-node-border, #e0e0e0) transparent;
+}
+
+/* ---- task list column headers ---- */
 .taskListHeader {
   display: flex;
   align-items: center;
-  height: 60px;
-  padding: 0 16px;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--fc-node-desc, #888);
+  height: 58px;
+  padding: 0 14px;
+  gap: 8px;
   background: var(--fc-node-bg, #fff);
   border-bottom: 1px solid var(--fc-node-border, #e0e0e0);
   position: sticky;
@@ -92,15 +98,44 @@
   z-index: 4;
 }
 
+.colHeader {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--fc-node-desc, #888);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.colHeaderTask {
+  flex: 1;
+  min-width: 0;
+}
+
+.colHeaderAssignee {
+  width: 28px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.colHeaderStart,
+.colHeaderEnd {
+  width: 56px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* ---- task rows ---- */
 .taskRow {
   display: flex;
   align-items: center;
-  height: 40px;
-  padding: 0 16px;
-  border-bottom: 1px solid var(--fc-node-section-border, #f0f0f0);
+  height: 36px;
+  padding: 0 14px;
   cursor: pointer;
   transition: background 0.12s ease;
   gap: 8px;
+  border-bottom: 1px solid transparent;
 }
 
 .taskRow:hover {
@@ -108,33 +143,73 @@
 }
 
 .taskRowAlt {
-  background: var(--fc-grid-line, rgba(0, 0, 0, 0.01));
+  background: var(--fc-grid-line, rgba(0, 0, 0, 0.012));
+}
+
+.taskRowAlt:hover {
+  background: var(--fc-node-section-bg, rgba(0, 0, 0, 0.02));
 }
 
 .taskRowSelected {
-  background: var(--fc-grid-line-major, rgba(0, 0, 0, 0.05));
+  background: rgba(59, 130, 246, 0.06);
 }
 
 .taskRowSelected:hover {
-  background: var(--fc-grid-line-major, rgba(0, 0, 0, 0.05));
+  background: rgba(59, 130, 246, 0.08);
 }
 
-.taskIcon {
-  width: 8px;
-  height: 8px;
+/* ---- task row content ---- */
+.taskRowLeft {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  gap: 6px;
+}
+
+.chevron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: var(--fc-node-desc, #888);
+  transition: transform 0.15s ease;
+  cursor: pointer;
+}
+
+.chevron svg {
+  width: 10px;
+  height: 10px;
+}
+
+.chevronExpanded {
+  transform: rotate(90deg);
+}
+
+.chevronPlaceholder {
+  width: 14px;
+  flex-shrink: 0;
+}
+
+.statusDot {
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   flex-shrink: 0;
 }
 
 .taskName {
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--fc-node-label, #1a1a1a);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   flex: 1;
   min-width: 0;
+  line-height: 1.3;
 }
 
 .taskNameGroup {
@@ -143,23 +218,34 @@
 
 .taskNameMilestone {
   font-style: italic;
+  font-weight: 500;
 }
 
-.taskAssignee {
-  font-size: 10px;
+/* ---- initials avatar ---- */
+.initialsAvatar {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+/* ---- task dates (small, monospace) ---- */
+.taskDate {
+  font-size: 11px;
+  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
   color: var(--fc-node-desc, #888);
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 60px;
   flex-shrink: 0;
-}
-
-.taskDates {
-  font-size: 9px;
-  color: var(--fc-node-section-heading, #666);
-  white-space: nowrap;
-  flex-shrink: 0;
+  width: 56px;
+  text-align: right;
 }
 
 /* ---- right: timeline panel ---- */
@@ -168,6 +254,8 @@
   overflow-x: auto;
   overflow-y: auto;
   position: relative;
+  scrollbar-width: thin;
+  scrollbar-color: var(--fc-node-border, #e0e0e0) transparent;
 }
 
 /* ---- time header (dual row) ---- */
@@ -196,13 +284,13 @@
   justify-content: center;
   font-size: 11px;
   font-weight: 600;
-  color: var(--fc-node-desc, #888);
-  border-right: 1px solid var(--fc-node-section-border, #f0f0f0);
+  color: var(--fc-node-label, #1a1a1a);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   padding: 0 4px;
   flex-shrink: 0;
+  letter-spacing: 0.01em;
 }
 
 .headerSecondaryCell {
@@ -211,14 +299,14 @@
   justify-content: center;
   font-size: 10px;
   font-weight: 500;
-  color: var(--fc-node-section-heading, #666);
-  border-right: 1px solid var(--fc-node-section-border, #f0f0f0);
+  color: var(--fc-node-desc, #888);
   flex-shrink: 0;
+  letter-spacing: 0.01em;
 }
 
 .headerSecondaryCellWeekend {
   color: var(--fc-node-desc, #888);
-  opacity: 0.6;
+  opacity: 0.5;
 }
 
 /* ---- chart body ---- */
@@ -229,27 +317,34 @@
 /* ---- grid / weekend columns ---- */
 .gridLine {
   stroke: var(--fc-node-section-border, #f0f0f0);
-  stroke-width: 1;
+  stroke-width: 0.5;
+  opacity: 0.4;
   shape-rendering: crispEdges;
 }
 
 .weekend {
-  fill: var(--fc-grid-line, rgba(0, 0, 0, 0.02));
+  fill: var(--fc-grid-line, rgba(0, 0, 0, 0.015));
 }
 
 /* ---- today line ---- */
 .todayLine {
-  stroke: #e74c3c;
+  stroke: #f87171;
   stroke-width: 1.5;
   shape-rendering: crispEdges;
   animation: todayPulse 3s ease-in-out infinite;
 }
 
-.todayLabel {
+.todayChip {
   font-size: 9px;
-  font-weight: 700;
-  fill: #e74c3c;
-  text-anchor: middle;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  fill: #fff;
+}
+
+.todayChipBg {
+  fill: #f87171;
+  rx: 4;
+  ry: 4;
 }
 
 @keyframes todayPulse {
@@ -258,26 +353,38 @@
     opacity: 1;
   }
   50% {
-    opacity: 0.45;
+    opacity: 0.7;
   }
 }
 
 /* ---- task bars ---- */
-.taskBar {
+.taskBarGroup {
   cursor: pointer;
-  transition: filter 0.15s ease;
-  rx: 4;
-  ry: 4;
+  transition: filter 0.15s ease, opacity 0.15s ease;
 }
 
-.taskBar:hover {
-  filter: brightness(1.08);
+.taskBarGroup:hover .taskBarRect {
+  filter: brightness(1.06);
+}
+
+.taskBarGroup:hover .taskBarShadow {
+  opacity: 0.12;
+}
+
+.taskBarRect {
+  transition: filter 0.15s ease;
+}
+
+.taskBarShadow {
+  transition: opacity 0.15s ease;
+}
+
+.taskBarSelected {
+  /* Ring highlight for selected bars */
 }
 
 .progressFill {
   pointer-events: none;
-  rx: 4;
-  ry: 4;
 }
 
 .barLabel {
@@ -285,7 +392,15 @@
   font-weight: 600;
   fill: #fff;
   pointer-events: none;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  opacity: 0.95;
+}
+
+.barProgress {
+  font-size: 8px;
+  font-weight: 700;
+  fill: #fff;
+  pointer-events: none;
+  opacity: 0.6;
 }
 
 /* ---- milestone diamond ---- */
@@ -295,7 +410,7 @@
 }
 
 .milestone:hover {
-  filter: brightness(1.12);
+  filter: brightness(1.1);
 }
 
 /* ---- group / summary bar ---- */
@@ -311,19 +426,13 @@
 /* ---- baseline bar ---- */
 .baselineBar {
   pointer-events: none;
-  rx: 2;
-  ry: 2;
-  opacity: 0.3;
+  opacity: 0.25;
 }
 
 /* ---- dependency arrows ---- */
 .dependency {
   fill: none;
-  stroke-width: 1.5;
-  pointer-events: none;
-}
-
-.dependencyArrow {
+  stroke-width: 1;
   pointer-events: none;
 }
 
@@ -332,14 +441,26 @@
   position: fixed;
   z-index: 1000;
   pointer-events: none;
+  animation: tooltipFadeIn 0.12s ease;
+}
+
+@keyframes tooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .tooltip {
   background: var(--fc-node-bg, #fff);
-  border: 1px solid var(--fc-node-border, #e0e0e0);
-  border-radius: 8px;
-  padding: 10px 14px;
-  box-shadow: 0 8px 24px var(--fc-node-shadow, rgba(0, 0, 0, 0.12));
+  border: 1px solid var(--fc-node-section-border, #f0f0f0);
+  border-radius: 10px;
+  padding: 12px 14px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04);
   min-width: 180px;
   max-width: 260px;
 }
@@ -348,10 +469,11 @@
   font-size: 12px;
   font-weight: 700;
   color: var(--fc-node-label, #1a1a1a);
-  margin-bottom: 6px;
+  margin-bottom: 8px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  line-height: 1.3;
 }
 
 .tooltipRow {
@@ -364,21 +486,23 @@
 }
 
 .tooltipLabel {
+  font-size: 11px;
   font-weight: 500;
-  color: var(--fc-node-section-heading, #666);
+  color: var(--fc-node-desc, #888);
 }
 
 .tooltipValue {
+  font-size: 11px;
   font-weight: 600;
   color: var(--fc-node-label, #1a1a1a);
 }
 
 .tooltipProgress {
   width: 100%;
-  height: 4px;
+  height: 3px;
   background: var(--fc-node-section-border, #f0f0f0);
   border-radius: 2px;
-  margin-top: 6px;
+  margin-top: 8px;
   overflow: hidden;
 }
 
@@ -396,28 +520,29 @@
   text-transform: uppercase;
   letter-spacing: 0.04em;
   padding: 1px 5px;
-  border-radius: 3px;
+  border-radius: 4px;
 }
 
 /* ---- row highlight lines in SVG ---- */
 .rowLine {
   stroke: var(--fc-node-section-border, #f0f0f0);
-  stroke-width: 1;
+  stroke-width: 0.5;
+  opacity: 0.6;
   shape-rendering: crispEdges;
 }
 
 .rowBgAlt {
-  fill: var(--fc-grid-line, rgba(0, 0, 0, 0.02));
+  fill: var(--fc-grid-line, rgba(0, 0, 0, 0.012));
 }
 
 .rowBgSelected {
-  fill: var(--fc-grid-line-major, rgba(0, 0, 0, 0.05));
+  fill: rgba(59, 130, 246, 0.06);
 }
 
 /* ---- scrollbar styling ---- */
 .timeline::-webkit-scrollbar {
-  height: 8px;
-  width: 8px;
+  height: 6px;
+  width: 6px;
 }
 
 .timeline::-webkit-scrollbar-track {
@@ -426,7 +551,7 @@
 
 .timeline::-webkit-scrollbar-thumb {
   background: var(--fc-node-border, #e0e0e0);
-  border-radius: 4px;
+  border-radius: 3px;
 }
 
 .timeline::-webkit-scrollbar-thumb:hover {
@@ -434,7 +559,7 @@
 }
 
 .taskList::-webkit-scrollbar {
-  width: 4px;
+  width: 3px;
 }
 
 .taskList::-webkit-scrollbar-track {
@@ -442,6 +567,10 @@
 }
 
 .taskList::-webkit-scrollbar-thumb {
-  background: var(--fc-node-border, #e0e0e0);
+  background: transparent;
   border-radius: 2px;
+}
+
+.taskList:hover::-webkit-scrollbar-thumb {
+  background: var(--fc-node-border, #e0e0e0);
 }

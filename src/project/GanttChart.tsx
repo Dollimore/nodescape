@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState, useCallback } from 'react';
+import React, { useMemo, useRef, useState, useCallback, useEffect } from 'react';
 import type { ProjectData, ProjectTask, TimeScale, DependencyType } from './types';
 import {
   getDateRange,
@@ -43,12 +43,14 @@ interface TooltipData {
 /*  Constants                                                          */
 /* ------------------------------------------------------------------ */
 
-const ROW_HEIGHT = 40;
-const BAR_HEIGHT = 22;
+const ROW_HEIGHT = 36;
+const BAR_HEIGHT = 20;
 const BAR_Y_OFFSET = (ROW_HEIGHT - BAR_HEIGHT) / 2;
-const GROUP_BAR_HEIGHT = 8;
-const MILESTONE_SIZE = 14;
-const HEADER_HEIGHT = 60;
+const GROUP_BAR_HEIGHT = 4;
+const MILESTONE_SIZE = 10;
+const HEADER_HEIGHT = 58;
+const INDENT_PX = 16;
+const TOOLTIP_DELAY = 200;
 
 const DEFAULT_COLORS: Record<string, string> = {
   backlog: '#94a3b8',
@@ -69,6 +71,14 @@ const PRIORITY_COLORS: Record<string, string> = {
 /*  Helpers                                                            */
 /* ------------------------------------------------------------------ */
 
+function lighten(hex: string, amount: number): string {
+  const c = hex.replace('#', '');
+  const r = Math.min(255, parseInt(c.substring(0, 2), 16) + amount);
+  const g = Math.min(255, parseInt(c.substring(2, 4), 16) + amount);
+  const b = Math.min(255, parseInt(c.substring(4, 6), 16) + amount);
+  return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+}
+
 function darken(hex: string, amount: number): string {
   const c = hex.replace('#', '');
   const r = Math.max(0, parseInt(c.substring(0, 2), 16) - amount);
@@ -79,6 +89,49 @@ function darken(hex: string, amount: number): string {
 
 function getTaskColor(task: ProjectTask): string {
   return task.color ?? DEFAULT_COLORS[task.status] ?? '#3b82f6';
+}
+
+function getInitials(name: string): string {
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+  return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+}
+
+/** Simple stable hash for assigning avatar colors */
+function hashStr(s: string): number {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) {
+    h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+  }
+  return Math.abs(h);
+}
+
+const AVATAR_PALETTE = [
+  '#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#f97316',
+  '#eab308', '#22c55e', '#14b8a6', '#06b6d4', '#3b82f6',
+];
+
+function getAvatarColor(name: string): string {
+  return AVATAR_PALETTE[hashStr(name) % AVATAR_PALETTE.length];
+}
+
+/** Format a short date like "Mar 5" for the task list */
+function shortDate(dateStr: string): string {
+  const d = new Date(dateStr);
+  return d.toLocaleDateString('default', { month: 'short', day: 'numeric' });
+}
+
+/** Calculate indent level for a task based on its groupId chain */
+function getIndentLevel(task: ProjectTask, taskMap: Map<string, ProjectTask>): number {
+  let level = 0;
+  let current = task;
+  while (current.groupId) {
+    level++;
+    const parent = taskMap.get(current.groupId);
+    if (!parent) break;
+    current = parent;
+  }
+  return level;
 }
 
 /* ------------------------------------------------------------------ */
@@ -102,6 +155,8 @@ export function GanttChart({
   const [internalScale, setInternalScale] = useState<TimeScale>('week');
   const scale = controlledScale ?? internalScale;
   const [tooltip, setTooltip] = useState<TooltipData | null>(null);
+  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
+  const tooltipTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [dragState, setDragState] = useState<{
     taskId: string;
     startMouseX: number;
@@ -111,11 +166,28 @@ export function GanttChart({
   const timelineRef = useRef<HTMLDivElement>(null);
   const taskListRef = useRef<HTMLDivElement>(null);
 
-  const tasks = data.tasks;
+  const allTasks = data.tasks;
   const colWidth = getColumnWidth(scale);
 
+  /* -- task map for quick lookup -- */
+  const taskMap = useMemo(() => new Map(allTasks.map(t => [t.id, t])), [allTasks]);
+
+  /* -- visible tasks (respecting collapsed groups) -- */
+  const tasks = useMemo(() => {
+    return allTasks.filter(task => {
+      let current = task;
+      while (current.groupId) {
+        if (collapsedGroups.has(current.groupId)) return false;
+        const parent = taskMap.get(current.groupId);
+        if (!parent) break;
+        current = parent;
+      }
+      return true;
+    });
+  }, [allTasks, collapsedGroups, taskMap]);
+
   /* -- date range & headers -- */
-  const { start: chartStart, end: chartEnd } = useMemo(() => getDateRange(tasks), [tasks]);
+  const { start: chartStart, end: chartEnd } = useMemo(() => getDateRange(allTasks), [allTasks]);
   const headers = useMemo(
     () => generateTimeHeaders(chartStart, chartEnd, scale),
     [chartStart, chartEnd, scale],
@@ -125,9 +197,6 @@ export function GanttChart({
   const totalWidth = useMemo(() => {
     return headers.secondary.reduce((sum, h) => sum + h.width, 0);
   }, [headers.secondary]);
-
-  /* -- task map for quick lookup -- */
-  const taskMap = useMemo(() => new Map(tasks.map(t => [t.id, t])), [tasks]);
 
   /* -- task rectangles (positions) -- */
   const taskRects = useMemo<Map<string, TaskRect>>(() => {
@@ -177,22 +246,42 @@ export function GanttChart({
     [onTimeScaleChange],
   );
 
-  /* -- tooltip handlers -- */
+  /* -- collapse/expand handler -- */
+  const handleToggleCollapse = useCallback((taskId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCollapsedGroups(prev => {
+      const next = new Set(prev);
+      if (next.has(taskId)) {
+        next.delete(taskId);
+      } else {
+        next.add(taskId);
+      }
+      return next;
+    });
+  }, []);
+
+  /* -- tooltip handlers with delay -- */
   const handleBarMouseEnter = useCallback(
     (task: ProjectTask, e: React.MouseEvent) => {
-      setTooltip({ task, x: e.clientX + 12, y: e.clientY - 8 });
+      if (tooltipTimer.current) clearTimeout(tooltipTimer.current);
+      tooltipTimer.current = setTimeout(() => {
+        setTooltip({ task, x: e.clientX, y: e.clientY });
+      }, TOOLTIP_DELAY);
     },
     [],
   );
 
   const handleBarMouseMove = useCallback(
     (task: ProjectTask, e: React.MouseEvent) => {
-      setTooltip({ task, x: e.clientX + 12, y: e.clientY - 8 });
+      if (tooltip) {
+        setTooltip({ task, x: e.clientX, y: e.clientY });
+      }
     },
-    [],
+    [tooltip],
   );
 
   const handleBarMouseLeave = useCallback(() => {
+    if (tooltipTimer.current) clearTimeout(tooltipTimer.current);
     setTooltip(null);
   }, []);
 
@@ -247,6 +336,19 @@ export function GanttChart({
     }
   }, []);
 
+  const handleTaskListScroll = useCallback(() => {
+    if (taskListRef.current && timelineRef.current) {
+      timelineRef.current.scrollTop = taskListRef.current.scrollTop;
+    }
+  }, []);
+
+  /* -- cleanup tooltip timer -- */
+  useEffect(() => {
+    return () => {
+      if (tooltipTimer.current) clearTimeout(tooltipTimer.current);
+    };
+  }, []);
+
   /* ---------------------------------------------------------------- */
   /*  Render                                                           */
   /* ---------------------------------------------------------------- */
@@ -272,43 +374,87 @@ export function GanttChart({
       </div>
 
       {/* -- Left: Task list panel -- */}
-      <div className={styles.taskList} ref={taskListRef}>
-        <div className={styles.taskListHeader}>Task Name</div>
-        {tasks.map((task, i) => (
-          <div
-            key={task.id}
-            className={[
-              styles.taskRow,
-              i % 2 === 1 ? styles.taskRowAlt : '',
-              selectedTaskId === task.id ? styles.taskRowSelected : '',
-            ]
-              .filter(Boolean)
-              .join(' ')}
-            onClick={() => handleTaskClick(task.id)}
-          >
+      <div className={styles.taskList} ref={taskListRef} onScroll={handleTaskListScroll}>
+        <div className={styles.taskListHeader}>
+          <span className={`${styles.colHeader} ${styles.colHeaderTask}`}>Task</span>
+          <span className={`${styles.colHeader} ${styles.colHeaderAssignee}`}></span>
+          <span className={`${styles.colHeader} ${styles.colHeaderStart}`}>Start</span>
+          <span className={`${styles.colHeader} ${styles.colHeaderEnd}`}>End</span>
+        </div>
+        {tasks.map((task, i) => {
+          const indent = getIndentLevel(task, taskMap);
+          const isGroup = task.isGroup;
+          const isCollapsed = collapsedGroups.has(task.id);
+          return (
             <div
-              className={styles.taskIcon}
-              style={{ background: getTaskColor(task) }}
-            />
-            <div
+              key={task.id}
               className={[
-                styles.taskName,
-                task.isGroup ? styles.taskNameGroup : '',
-                task.isMilestone ? styles.taskNameMilestone : '',
+                styles.taskRow,
+                i % 2 === 1 ? styles.taskRowAlt : '',
+                selectedTaskId === task.id ? styles.taskRowSelected : '',
               ]
                 .filter(Boolean)
                 .join(' ')}
-              title={task.title}
+              onClick={() => handleTaskClick(task.id)}
             >
-              {task.title}
-            </div>
-            {task.assignee && (
-              <div className={styles.taskAssignee} title={task.assignee}>
-                {task.assignee}
+              <div
+                className={styles.taskRowLeft}
+                style={{ paddingLeft: indent * INDENT_PX }}
+              >
+                {/* Chevron for groups, placeholder for leaves */}
+                {isGroup ? (
+                  <div
+                    className={`${styles.chevron}${isCollapsed ? '' : ` ${styles.chevronExpanded}`}`}
+                    onClick={(e) => handleToggleCollapse(task.id, e)}
+                  >
+                    <svg viewBox="0 0 16 16" fill="currentColor">
+                      <path d="M6 3l5 5-5 5V3z" />
+                    </svg>
+                  </div>
+                ) : (
+                  <div className={styles.chevronPlaceholder} />
+                )}
+
+                {/* Status dot */}
+                <div
+                  className={styles.statusDot}
+                  style={{ background: getTaskColor(task) }}
+                />
+
+                {/* Task name */}
+                <div
+                  className={[
+                    styles.taskName,
+                    isGroup ? styles.taskNameGroup : '',
+                    task.isMilestone ? styles.taskNameMilestone : '',
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}
+                  title={task.title}
+                >
+                  {task.title}
+                </div>
               </div>
-            )}
-          </div>
-        ))}
+
+              {/* Initials avatar */}
+              {task.assignee ? (
+                <div
+                  className={styles.initialsAvatar}
+                  title={task.assignee}
+                  style={{ background: getAvatarColor(task.assignee) }}
+                >
+                  {getInitials(task.assignee)}
+                </div>
+              ) : (
+                <div style={{ width: 18, flexShrink: 0 }} />
+              )}
+
+              {/* Start / End dates */}
+              <div className={styles.taskDate}>{shortDate(task.startDate)}</div>
+              <div className={styles.taskDate}>{shortDate(task.endDate)}</div>
+            </div>
+          );
+        })}
       </div>
 
       {/* -- Right: Timeline panel -- */}
@@ -359,7 +505,7 @@ export function GanttChart({
           style={{ display: 'block' }}
         >
           <defs>
-            {/* Gradient definitions per task */}
+            {/* Subtle gradient definitions per task (5% lighter at top) */}
             {tasks.map(task => {
               const color = getTaskColor(task);
               return (
@@ -371,22 +517,33 @@ export function GanttChart({
                   x2="0"
                   y2="1"
                 >
-                  <stop offset="0%" stopColor={color} />
-                  <stop offset="100%" stopColor={darken(color, 30)} />
+                  <stop offset="0%" stopColor={lighten(color, 12)} />
+                  <stop offset="100%" stopColor={color} />
                 </linearGradient>
               );
             })}
-            {/* Arrow marker */}
+            {/* Drop shadow filter for bars */}
+            <filter id="gantt-bar-shadow" x="-4%" y="-20%" width="108%" height="150%">
+              <feDropShadow dx="0" dy="1" stdDeviation="1" floodOpacity="0.06" />
+            </filter>
+            <filter id="gantt-bar-shadow-hover" x="-4%" y="-20%" width="108%" height="150%">
+              <feDropShadow dx="0" dy="2" stdDeviation="2" floodOpacity="0.1" />
+            </filter>
+            {/* Selected ring filter */}
+            <filter id="gantt-bar-selected" x="-8%" y="-30%" width="116%" height="160%">
+              <feDropShadow dx="0" dy="0" stdDeviation="2" floodColor="#3b82f6" floodOpacity="0.35" />
+            </filter>
+            {/* Arrow marker -- small, 5px filled */}
             <marker
               id="gantt-arrow"
-              viewBox="0 0 10 10"
-              refX="9"
-              refY="5"
-              markerWidth="8"
-              markerHeight="8"
+              viewBox="0 0 8 8"
+              refX="7"
+              refY="4"
+              markerWidth="5"
+              markerHeight="5"
               orient="auto-start-reverse"
             >
-              <path d="M 0 1 L 9 5 L 0 9 Z" fill="var(--fc-node-desc, #888)" />
+              <path d="M 0 1 L 7 4 L 0 7 Z" fill="var(--fc-edge, #d0d0d0)" opacity="0.4" />
             </marker>
           </defs>
 
@@ -466,9 +623,11 @@ export function GanttChart({
                   x={bsX}
                   y={rect.y + BAR_HEIGHT + 2}
                   width={bW}
-                  height={4}
+                  height={3}
+                  rx={1.5}
+                  ry={1.5}
                   className={styles.baselineBar}
-                  fill={getTaskColor(task)}
+                  fill="#94a3b8"
                 />
               );
             })}
@@ -480,19 +639,16 @@ export function GanttChart({
                 const fromRect = taskRects.get(dep.taskId);
                 const toRect = taskRects.get(task.id);
                 if (!fromRect || !toRect) return null;
-                const fromTask = taskMap.get(dep.taskId);
-                const color = fromTask ? getTaskColor(fromTask) : '#888';
                 const pathD = getDependencyPath(fromRect, toRect, dep.type);
                 return (
-                  <g key={`dep-${dep.taskId}-${task.id}`}>
-                    <path
-                      d={pathD}
-                      className={styles.dependency}
-                      stroke={color}
-                      opacity={0.45}
-                      markerEnd="url(#gantt-arrow)"
-                    />
-                  </g>
+                  <path
+                    key={`dep-${dep.taskId}-${task.id}`}
+                    d={pathD}
+                    className={styles.dependency}
+                    stroke="var(--fc-edge, #d0d0d0)"
+                    opacity={0.3}
+                    markerEnd="url(#gantt-arrow)"
+                  />
                 );
               }),
             )}
@@ -502,6 +658,7 @@ export function GanttChart({
             const rect = taskRects.get(task.id);
             if (!rect) return null;
             const color = getTaskColor(task);
+            const isSelected = selectedTaskId === task.id;
 
             // Milestone: diamond
             if (task.isMilestone) {
@@ -516,21 +673,20 @@ export function GanttChart({
                   onMouseEnter={e => handleBarMouseEnter(task, e)}
                   onMouseMove={e => handleBarMouseMove(task, e)}
                   onMouseLeave={handleBarMouseLeave}
+                  filter={isSelected ? 'url(#gantt-bar-selected)' : undefined}
                 >
                   <polygon
                     points={`${cx},${cy - s} ${cx + s},${cy} ${cx},${cy + s} ${cx - s},${cy}`}
-                    fill={`url(#bar-grad-${task.id})`}
-                    stroke={darken(color, 40)}
-                    strokeWidth={1}
+                    fill={color}
                   />
                 </g>
               );
             }
 
-            // Group/summary bar: thin bar with triangles
+            // Group/summary bar: thin 4px bar at 40% opacity with triangles
             if (task.isGroup) {
               const y = rect.y + (BAR_HEIGHT - GROUP_BAR_HEIGHT) / 2;
-              const triSize = 6;
+              const triSize = 4;
               return (
                 <g
                   key={`grp-${task.id}`}
@@ -546,19 +702,22 @@ export function GanttChart({
                     y={y}
                     width={rect.width}
                     height={GROUP_BAR_HEIGHT}
-                    fill={`url(#bar-grad-${task.id})`}
-                    rx={2}
-                    ry={2}
+                    fill={color}
+                    opacity={0.4}
+                    rx={1}
+                    ry={1}
                   />
-                  {/* Left triangle */}
+                  {/* Left downward triangle */}
                   <polygon
                     points={`${rect.x},${y} ${rect.x + triSize},${y} ${rect.x},${y + GROUP_BAR_HEIGHT + triSize}`}
                     fill={color}
+                    opacity={0.4}
                   />
-                  {/* Right triangle */}
+                  {/* Right downward triangle */}
                   <polygon
                     points={`${rect.x + rect.width},${y} ${rect.x + rect.width - triSize},${y} ${rect.x + rect.width},${y + GROUP_BAR_HEIGHT + triSize}`}
                     fill={color}
+                    opacity={0.4}
                   />
                 </g>
               );
@@ -568,33 +727,27 @@ export function GanttChart({
             return (
               <g
                 key={`bar-${task.id}`}
+                className={styles.taskBarGroup}
                 onClick={() => handleTaskClick(task.id)}
                 onMouseEnter={e => handleBarMouseEnter(task, e)}
                 onMouseMove={e => handleBarMouseMove(task, e)}
                 onMouseLeave={handleBarMouseLeave}
                 onMouseDown={e => handleBarMouseDown(task, e)}
+                filter={isSelected ? 'url(#gantt-bar-selected)' : 'url(#gantt-bar-shadow)'}
               >
-                {/* Bar shadow */}
-                <rect
-                  x={rect.x + 1}
-                  y={rect.y + 2}
-                  width={rect.width}
-                  height={BAR_HEIGHT}
-                  rx={4}
-                  ry={4}
-                  fill="var(--fc-node-shadow, rgba(0,0,0,0.04))"
-                  opacity={0.5}
-                />
                 {/* Main bar */}
                 <rect
+                  className={styles.taskBarRect}
                   x={rect.x}
                   y={rect.y}
                   width={rect.width}
                   height={BAR_HEIGHT}
                   fill={`url(#bar-grad-${task.id})`}
-                  className={styles.taskBar}
-                  stroke={darken(color, 25)}
+                  rx={6}
+                  ry={6}
+                  stroke={color}
                   strokeWidth={0.5}
+                  strokeOpacity={0.1}
                 />
                 {/* Progress fill */}
                 {showProgress && task.progress > 0 && (
@@ -603,35 +756,31 @@ export function GanttChart({
                     y={rect.y}
                     width={Math.max(0, (rect.width * Math.min(task.progress, 100)) / 100)}
                     height={BAR_HEIGHT}
-                    fill={darken(color, 20)}
+                    fill="rgba(0,0,0,0.15)"
                     className={styles.progressFill}
-                    opacity={0.35}
+                    rx={6}
+                    ry={6}
                   />
                 )}
                 {/* Bar label (if wide enough) */}
                 {rect.width > 60 && (
                   <text
                     x={rect.x + 8}
-                    y={rect.y + BAR_HEIGHT / 2 + 4}
+                    y={rect.y + BAR_HEIGHT / 2 + 3.5}
                     className={styles.barLabel}
-                    clipPath={`rect(${rect.x},${rect.y},${rect.width},${BAR_HEIGHT})`}
                   >
                     {task.title.length > Math.floor(rect.width / 7)
                       ? task.title.slice(0, Math.floor(rect.width / 7) - 2) + '...'
                       : task.title}
                   </text>
                 )}
-                {/* Progress percentage on right side */}
+                {/* Progress percentage */}
                 {showProgress && task.progress > 0 && rect.width > 40 && (
                   <text
                     x={rect.x + rect.width - 6}
                     y={rect.y + BAR_HEIGHT / 2 + 3}
-                    fontSize={8}
-                    fontWeight={700}
-                    fill="#fff"
+                    className={styles.barProgress}
                     textAnchor="end"
-                    opacity={0.7}
-                    style={{ pointerEvents: 'none' }}
                   >
                     {Math.round(task.progress)}%
                   </text>
@@ -643,20 +792,31 @@ export function GanttChart({
           {/* -- Today line -- */}
           {showToday && todayX !== null && (
             <g>
+              {/* Chip background */}
+              <rect
+                className={styles.todayChipBg}
+                x={todayX - 18}
+                y={0}
+                width={36}
+                height={14}
+                rx={4}
+                ry={4}
+              />
+              <text
+                x={todayX}
+                y={10}
+                className={styles.todayChip}
+                textAnchor="middle"
+              >
+                Today
+              </text>
               <line
                 x1={todayX}
-                y1={0}
+                y1={14}
                 x2={todayX}
                 y2={totalHeight}
                 className={styles.todayLine}
               />
-              <text
-                x={todayX}
-                y={-4}
-                className={styles.todayLabel}
-              >
-                Today
-              </text>
             </g>
           )}
         </svg>
@@ -666,7 +826,10 @@ export function GanttChart({
       {tooltip && (
         <div
           className={styles.tooltipOverlay}
-          style={{ left: tooltip.x, top: tooltip.y }}
+          style={{
+            left: tooltip.x + 12,
+            top: tooltip.y - 80,
+          }}
         >
           <div className={styles.tooltip}>
             <div className={styles.tooltipTitle}>{tooltip.task.title}</div>
