@@ -1,14 +1,12 @@
 /* ============================================================
-   GanttChart  --  CSS Module
-   Premium polish -- Attio-level refinement
-   All colors reference the theme's CSS custom properties so that
-   both light and dark modes work out of the box.
+   GanttChart -- Pure HTML/CSS Module
+   Attio-level polish, all colors via CSS custom properties
    ============================================================ */
 
-/* ---- outer wrapper ---- */
+/* ---- outer container ---- */
 .container {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -20,7 +18,7 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
-/* ---- toolbar / scale toggle bar ---- */
+/* ---- toolbar / scale toggle ---- */
 .toolbar {
   display: flex;
   align-items: center;
@@ -32,7 +30,7 @@
   position: absolute;
   top: 0;
   right: 0;
-  z-index: 6;
+  z-index: 12;
   border-radius: 0 10px 0 10px;
 }
 
@@ -66,6 +64,15 @@
   color: var(--fc-bg, #fafafa);
 }
 
+/* ---- main body: flex row with task list + timeline ---- */
+.body {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
 /* ---- left: task list panel ---- */
 .taskList {
   width: 300px;
@@ -84,7 +91,7 @@
   scrollbar-color: var(--fc-node-border, #e0e0e0) transparent;
 }
 
-/* ---- task list column headers ---- */
+/* ---- task list header ---- */
 .taskListHeader {
   display: flex;
   align-items: center;
@@ -126,39 +133,78 @@
   flex-shrink: 0;
 }
 
+/* ---- task list body ---- */
+.taskListBody {
+  position: relative;
+}
+
 /* ---- task rows ---- */
 .taskRow {
   display: flex;
   align-items: center;
-  height: 36px;
+  height: 40px;
   padding: 0 14px;
   cursor: pointer;
   transition: background 0.12s ease;
   gap: 8px;
-  border-bottom: 1px solid transparent;
+  border-bottom: 1px solid var(--fc-node-section-border, rgba(0, 0, 0, 0.04));
+  position: relative;
 }
 
-.taskRow:hover {
-  background: var(--fc-node-section-bg, rgba(0, 0, 0, 0.02));
-}
-
-.taskRowAlt {
+.taskRow:nth-child(even) {
   background: var(--fc-grid-line, rgba(0, 0, 0, 0.012));
 }
 
-.taskRowAlt:hover {
-  background: var(--fc-node-section-bg, rgba(0, 0, 0, 0.02));
+.taskRow:hover {
+  background: var(--fc-node-section-bg, rgba(0, 0, 0, 0.025));
 }
 
 .taskRowSelected {
-  background: rgba(59, 130, 246, 0.06);
+  background: rgba(59, 130, 246, 0.06) !important;
 }
 
 .taskRowSelected:hover {
-  background: rgba(59, 130, 246, 0.08);
+  background: rgba(59, 130, 246, 0.08) !important;
 }
 
-/* ---- task row content ---- */
+/* ---- drag handle (grip dots) ---- */
+.dragHandle {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  opacity: 0;
+  cursor: grab;
+  padding: 4px 2px;
+  flex-shrink: 0;
+  transition: opacity 0.12s ease;
+}
+
+.taskRow:hover .dragHandle {
+  opacity: 0.4;
+}
+
+.dragHandle:hover {
+  opacity: 0.7 !important;
+}
+
+.dragHandleActive {
+  cursor: grabbing;
+  opacity: 0.7 !important;
+}
+
+.gripDotRow {
+  display: flex;
+  gap: 2px;
+}
+
+.gripDot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--fc-node-desc, #888);
+}
+
+/* ---- task row left content ---- */
 .taskRowLeft {
   display: flex;
   align-items: center;
@@ -221,6 +267,36 @@
   font-weight: 500;
 }
 
+/* ---- inline edit input ---- */
+.inlineEditInput {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--fc-node-label, #1a1a1a);
+  background: var(--fc-bg, #fafafa);
+  border: 1px solid var(--fc-node-border, #3b82f6);
+  border-radius: 4px;
+  padding: 1px 4px;
+  outline: none;
+  flex: 1;
+  min-width: 0;
+  line-height: 1.3;
+  font-family: inherit;
+}
+
+.inlineDateInput {
+  font-size: 11px;
+  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  color: var(--fc-node-label, #1a1a1a);
+  background: var(--fc-bg, #fafafa);
+  border: 1px solid var(--fc-node-border, #3b82f6);
+  border-radius: 4px;
+  padding: 1px 2px;
+  outline: none;
+  width: 56px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
 /* ---- initials avatar ---- */
 .initialsAvatar {
   width: 18px;
@@ -237,7 +313,7 @@
   line-height: 1;
 }
 
-/* ---- task dates (small, monospace) ---- */
+/* ---- task dates ---- */
 .taskDate {
   font-size: 11px;
   font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
@@ -246,6 +322,20 @@
   flex-shrink: 0;
   width: 56px;
   text-align: right;
+  cursor: default;
+}
+
+/* ---- row reorder ghost ---- */
+.reorderGhost {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 40px;
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px dashed rgba(59, 130, 246, 0.3);
+  border-radius: 4px;
+  pointer-events: none;
+  z-index: 10;
 }
 
 /* ---- right: timeline panel ---- */
@@ -258,8 +348,8 @@
   scrollbar-color: var(--fc-node-border, #e0e0e0) transparent;
 }
 
-/* ---- time header (dual row) ---- */
-.header {
+/* ---- time header (dual row, sticky) ---- */
+.timelineHeader {
   position: sticky;
   top: 0;
   z-index: 5;
@@ -309,134 +399,262 @@
   opacity: 0.5;
 }
 
-/* ---- chart body ---- */
-.chartBody {
+/* ---- timeline body ---- */
+.timelineBody {
   position: relative;
+  min-height: 100%;
 }
 
-/* ---- grid / weekend columns ---- */
-.gridLine {
-  stroke: var(--fc-node-section-border, #f0f0f0);
-  stroke-width: 0.5;
-  opacity: 0.4;
-  shape-rendering: crispEdges;
+/* ---- grid background (CSS repeating gradients) ---- */
+.gridBackground {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
 }
 
-.weekend {
-  fill: var(--fc-grid-line, rgba(0, 0, 0, 0.015));
+/* ---- weekend shading columns ---- */
+.weekendColumn {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: var(--fc-grid-line, rgba(0, 0, 0, 0.02));
+  pointer-events: none;
 }
 
-/* ---- today line ---- */
+/* ---- today marker ---- */
 .todayLine {
-  stroke: #f87171;
-  stroke-width: 1.5;
-  shape-rendering: crispEdges;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1.5px;
+  background: #f87171;
+  z-index: 4;
+  pointer-events: none;
   animation: todayPulse 3s ease-in-out infinite;
 }
 
 .todayChip {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  background: #f87171;
+  color: #fff;
   font-size: 9px;
   font-weight: 600;
   letter-spacing: 0.03em;
-  fill: #fff;
-}
-
-.todayChipBg {
-  fill: #f87171;
-  rx: 4;
-  ry: 4;
+  padding: 1px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 5;
 }
 
 @keyframes todayPulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.7;
-  }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
 }
 
-/* ---- task bars ---- */
-.taskBarGroup {
-  cursor: pointer;
-  transition: filter 0.15s ease, opacity 0.15s ease;
+/* ---- task bars (div-based) ---- */
+.taskBar {
+  position: absolute;
+  height: 22px;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  cursor: grab;
+  transition: box-shadow 0.15s ease;
+  overflow: hidden;
+  user-select: none;
+  z-index: 2;
 }
 
-.taskBarGroup:hover .taskBarRect {
-  filter: brightness(1.06);
+.taskBar:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.14);
 }
 
-.taskBarGroup:hover .taskBarShadow {
-  opacity: 0.12;
-}
-
-.taskBarRect {
-  transition: filter 0.15s ease;
-}
-
-.taskBarShadow {
-  transition: opacity 0.15s ease;
+.taskBarDragging {
+  cursor: grabbing;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+  z-index: 10;
+  opacity: 0.9;
 }
 
 .taskBarSelected {
-  /* Ring highlight for selected bars */
+  outline: 2px solid #3b82f6;
+  outline-offset: 1px;
 }
 
+/* ---- progress fill inside bar ---- */
 .progressFill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 6px 0 0 6px;
   pointer-events: none;
 }
 
+/* ---- bar label ---- */
 .barLabel {
-  font-size: 10px;
+  position: absolute;
+  top: 0;
+  left: 8px;
+  right: 8px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  font-size: 11px;
   font-weight: 600;
-  fill: #fff;
+  color: #fff;
   pointer-events: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   opacity: 0.95;
+  line-height: 22px;
 }
 
-.barProgress {
-  font-size: 8px;
-  font-weight: 700;
-  fill: #fff;
-  pointer-events: none;
-  opacity: 0.6;
+/* ---- resize handles ---- */
+.resizeHandle {
+  position: absolute;
+  top: 0;
+  width: 6px;
+  height: 100%;
+  cursor: col-resize;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+  z-index: 3;
 }
 
-/* ---- milestone diamond ---- */
+.taskBar:hover .resizeHandle {
+  opacity: 1;
+}
+
+.resizeLeft {
+  left: 0;
+  border-radius: 6px 0 0 6px;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.resizeRight {
+  right: 0;
+  border-radius: 0 6px 6px 0;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* ---- milestone (diamond div) ---- */
 .milestone {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  transform: rotate(45deg);
+  border-radius: 2px;
   cursor: pointer;
-  transition: filter 0.15s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  z-index: 2;
+  transition: box-shadow 0.15s ease;
 }
 
 .milestone:hover {
-  filter: brightness(1.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* ---- group / summary bar ---- */
+.milestoneSelected {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* ---- group bar ---- */
 .groupBar {
+  position: absolute;
+  height: 6px;
   cursor: pointer;
-  transition: filter 0.15s ease;
+  z-index: 2;
 }
 
-.groupBar:hover {
-  filter: brightness(1.08);
+.groupBarFill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  border-radius: 1px;
+  opacity: 0.6;
+}
+
+.groupBarTriLeft {
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 0px solid transparent;
+  border-top: 4px solid currentColor;
+  opacity: 0.6;
+}
+
+.groupBarTriRight {
+  position: absolute;
+  bottom: -4px;
+  right: 0;
+  width: 0;
+  height: 0;
+  border-left: 0px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 4px solid currentColor;
+  opacity: 0.6;
 }
 
 /* ---- baseline bar ---- */
 .baselineBar {
-  pointer-events: none;
+  position: absolute;
+  height: 3px;
+  border-radius: 1.5px;
+  background: #94a3b8;
   opacity: 0.25;
-}
-
-/* ---- dependency arrows ---- */
-.dependency {
-  fill: none;
-  stroke-width: 1;
   pointer-events: none;
+  z-index: 1;
 }
 
-/* ---- hover tooltip ---- */
+/* ---- dependency arrow SVG overlay ---- */
+.dependencyLayer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.dependencyPath {
+  fill: none;
+  stroke: var(--fc-node-desc, #999);
+  stroke-width: 1;
+  opacity: 0.3;
+}
+
+/* ---- row backgrounds in timeline ---- */
+.timelineRow {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 40px;
+  pointer-events: none;
+  border-bottom: 1px solid var(--fc-node-section-border, rgba(0, 0, 0, 0.04));
+}
+
+.timelineRowAlt {
+  background: var(--fc-grid-line, rgba(0, 0, 0, 0.012));
+}
+
+.timelineRowSelected {
+  background: rgba(59, 130, 246, 0.06);
+}
+
+/* ---- tooltip ---- */
 .tooltipOverlay {
   position: fixed;
   z-index: 1000;
@@ -445,14 +663,8 @@
 }
 
 @keyframes tooltipFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .tooltip {
@@ -460,7 +672,7 @@
   border: 1px solid var(--fc-node-section-border, #f0f0f0);
   border-radius: 10px;
   padding: 12px 14px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.04);
   min-width: 180px;
   max-width: 260px;
 }
@@ -497,6 +709,26 @@
   color: var(--fc-node-label, #1a1a1a);
 }
 
+.tooltipAssigneeRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 0;
+}
+
+.tooltipAvatar {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 7px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+
 .tooltipProgress {
   width: 100%;
   height: 3px;
@@ -512,7 +744,6 @@
   transition: width 0.2s ease;
 }
 
-/* ---- priority badges ---- */
 .priorityBadge {
   display: inline-block;
   font-size: 9px;
@@ -523,20 +754,55 @@
   border-radius: 4px;
 }
 
-/* ---- row highlight lines in SVG ---- */
-.rowLine {
-  stroke: var(--fc-node-section-border, #f0f0f0);
-  stroke-width: 0.5;
-  opacity: 0.6;
-  shape-rendering: crispEdges;
+/* ---- context menu ---- */
+.contextMenuBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
 }
 
-.rowBgAlt {
-  fill: var(--fc-grid-line, rgba(0, 0, 0, 0.012));
+.contextMenu {
+  position: fixed;
+  z-index: 1000;
+  background: var(--fc-node-bg, #fff);
+  border: 1px solid var(--fc-node-section-border, #f0f0f0);
+  border-radius: 8px;
+  padding: 4px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.04);
+  min-width: 160px;
+  animation: tooltipFadeIn 0.1s ease;
 }
 
-.rowBgSelected {
-  fill: rgba(59, 130, 246, 0.06);
+.contextMenuItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--fc-node-label, #1a1a1a);
+  background: none;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: background 0.1s ease;
+}
+
+.contextMenuItem:hover {
+  background: var(--fc-node-section-bg, rgba(0, 0, 0, 0.04));
+}
+
+.contextMenuDivider {
+  height: 1px;
+  background: var(--fc-node-section-border, #f0f0f0);
+  margin: 4px 0;
+}
+
+.contextMenuItemDanger {
+  color: #ef4444;
 }
 
 /* ---- scrollbar styling ---- */
