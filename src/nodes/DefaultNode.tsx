@@ -159,6 +159,9 @@ export function DefaultNode({ node, editable, onCollapseToggle, onHandleDrag, on
       {detailLevel !== 'minimal' && node.progress !== undefined && (
         <div className={styles.progressBar}>
           <div className={styles.progressFill} style={{ width: `${Math.min(100, Math.max(0, node.progress))}%` }} />
+          {node.setpoint !== undefined && (
+            <div className={styles.setpointMarker} style={{ left: `${node.setpoint}%` }} />
+          )}
         </div>
       )}
       {detailLevel === 'full' && hasSections && !isCollapsed && (

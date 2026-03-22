@@ -52,3 +52,7 @@ export type { ContingencyResult } from './utils/contingency';
 export { applyLoadFlowArrows } from './utils/loadFlowArrows';
 export { applyGridHealthOverlay } from './utils/gridHealth';
 export type { GridHealthMetrics } from './utils/gridHealth';
+export { AlarmBanner } from './scada/AlarmBanner';
+export type { Alarm } from './scada/AlarmBanner';
+export { TrendChart } from './detail/TrendChart';
+export type { TrendPoint } from './detail/TrendChart';

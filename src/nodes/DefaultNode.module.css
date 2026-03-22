@@ -154,11 +154,22 @@
 .statusBadge[data-status="idle"] { background: #d0d0d0; }
 
 .progressBar {
+  position: relative;
   margin-top: 8px;
   height: 4px;
   background: var(--fc-node-section-border);
   border-radius: 2px;
-  overflow: hidden;
+  overflow: visible;
+}
+
+.setpointMarker {
+  position: absolute;
+  top: -2px;
+  width: 2px;
+  height: 8px;
+  background: #ef4444;
+  border-radius: 1px;
+  transform: translateX(-50%);
 }
 
 .progressFill {

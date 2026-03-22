@@ -17,6 +17,8 @@ import { computeDynamicEdges } from './edges/computeEdges';
 import { useStory } from './story/useStory';
 import { StoryOverlay } from './story/StoryOverlay';
 import { Legend } from './legend/Legend';
+import { AlarmBanner } from './scada/AlarmBanner';
+import type { Alarm } from './scada/AlarmBanner';
 
 export interface FlowCanvasRef {
   exportPng: (options?: ExportOptions) => Promise<string>;
@@ -59,7 +61,7 @@ function getVisibleNodesAndEdges(diagram: FlowDiagram): { nodes: FlowNode[]; edg
 
 
 export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
-  function FlowCanvas({ diagram, mode = 'view', className, onDiagramChange, background, minimap, theme, onNodeClick, nodeRenderers, onContextMenu, contextMenu, onNodeCollapse, sidebar, onNodeDrop, themeToggle, onThemeChange, zoomControls, onUndo, onRedo, canUndo, canRedo, onSelectionChange, onNodesDelete, onNodesCopy, onNodesPaste, onEdgeCreate, onNodeLabelChange, contextualZoom, displayMode = 'standard', detailPanel, renderDetailSection, legend, story: storyConfig, onStoryStepChange }: FlowCanvasProps, ref) {
+  function FlowCanvas({ diagram, mode = 'view', className, onDiagramChange, background, minimap, theme, onNodeClick, nodeRenderers, onContextMenu, contextMenu, onNodeCollapse, sidebar, onNodeDrop, themeToggle, onThemeChange, zoomControls, onUndo, onRedo, canUndo, canRedo, onSelectionChange, onNodesDelete, onNodesCopy, onNodesPaste, onEdgeCreate, onNodeLabelChange, contextualZoom, displayMode = 'standard', detailPanel, renderDetailSection, legend, story: storyConfig, onStoryStepChange, alarms, onAlarmClick, onAlarmAcknowledge }: FlowCanvasProps, ref) {
   const editable = mode === 'edit';
 
   const [currentScale, setCurrentScale] = useState(1);
@@ -395,6 +397,13 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
 
   return (
     <div className={`${styles.root} ${activeTheme === 'dark' ? styles.dark : ''}`}>
+    {alarms && alarms.length > 0 && (
+      <AlarmBanner
+        alarms={alarms}
+        onAlarmClick={onAlarmClick}
+        onAcknowledge={onAlarmAcknowledge}
+      />
+    )}
     <CanvasView
       className={className}
       onDragMove={editable ? onDragMove : undefined}

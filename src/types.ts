@@ -1,4 +1,5 @@
 import type { ComponentType, MouseEvent, ReactNode } from 'react';
+import type { Alarm } from './scada/AlarmBanner';
 
 export type EdgeRouting = 'curved' | 'orthogonal' | 'straight';
 
@@ -44,6 +45,7 @@ export interface FlowNode {
   };
   status?: 'online' | 'offline' | 'warning' | 'error' | 'idle';
   progress?: number; // 0-100, renders a progress bar
+  setpoint?: number; // 0-100, shows target marker on progress bar
   flowRate?: string; // e.g., "1.2 MW", "340 Gbps" — displayed as a badge
   branchCollapsed?: boolean; // if true, hide all downstream nodes
   detail?: NodeDetail;
@@ -56,7 +58,7 @@ export interface NodeDetail {
 }
 
 export interface DetailSection {
-  type: 'text' | 'keyvalue' | 'chart' | 'table' | 'timeline' | 'gallery' | 'custom';
+  type: 'text' | 'keyvalue' | 'chart' | 'table' | 'timeline' | 'gallery' | 'trend' | 'loadprofile' | 'meritorder' | 'custom';
   title?: string;
   data?: any;
 }
@@ -154,6 +156,9 @@ export interface FlowCanvasProps {
   legend?: boolean | { position?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left' };
   story?: StoryConfig;
   onStoryStepChange?: (stepIndex: number, step: StoryStep) => void;
+  alarms?: Alarm[];
+  onAlarmClick?: (alarm: Alarm) => void;
+  onAlarmAcknowledge?: (alarmId: string) => void;
 }
 
 export interface StoryStep {

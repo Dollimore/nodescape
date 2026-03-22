@@ -4,6 +4,9 @@ import { SimpleMarkdown } from '../nodes/SimpleMarkdown';
 import { KeyValueTable } from './KeyValueTable';
 import { MiniChart } from './MiniChart';
 import { Timeline } from './Timeline';
+import { TrendChart } from './TrendChart';
+import { LoadProfile } from './LoadProfile';
+import { MeritOrder } from './MeritOrder';
 import styles from './DetailPanel.module.css';
 
 interface DetailPanelProps {
@@ -87,6 +90,9 @@ export function DetailPanel({ node, onClose, width = 360, renderSection }: Detai
               {section.type === 'chart' && <MiniChart data={section.data} />}
               {section.type === 'timeline' && <Timeline data={section.data} />}
               {section.type === 'table' && <KeyValueTable data={section.data} />}
+              {section.type === 'trend' && <TrendChart data={section.data} />}
+              {section.type === 'loadprofile' && <LoadProfile data={section.data} />}
+              {section.type === 'meritorder' && <MeritOrder data={section.data} />}
             </div>
           );
         })}
