@@ -4,6 +4,7 @@ import type { FlowDiagram, SidebarNodeTemplate } from '../src';
 import type { FlowCanvasRef } from '../src/FlowCanvas';
 import { ProjectView } from '../src/project/ProjectView';
 import type { ProjectData } from '../src/project/types';
+import { Sidebar } from './Sidebar';
 
 const sampleDiagram: FlowDiagram = {
   title: 'User Authentication Flow',
@@ -3554,7 +3555,7 @@ const nodeTemplates: SidebarNodeTemplate[] = [
 ];
 
 export function App() {
-  const [activeDemo, setActiveDemo] = React.useState<'vertical' | 'wind-farm' | 'solar-plant' | 'datacenter' | 'power-supply' | 'hvdc' | 'showcase' | 'dc-facility' | 'nuclear' | 'gas-pipeline' | 'hydro-plant' | 'hydrogen' | 'smr' | 'project'>('vertical');
+  const [activeDemo, setActiveDemo] = React.useState<string>('showcase');
   const [currentDiagram, setCurrentDiagram] = useState<FlowDiagram>(sampleDiagram);
   const demoMap: Record<string, FlowDiagram> = { vertical: sampleDiagram, 'wind-farm': windFarmDiagram, 'solar-plant': solarPlantDiagram, datacenter: datacenterDiagram, 'power-supply': powerSupplyDiagram, hvdc: hvdcDiagram, showcase: showcaseDiagram, 'dc-facility': dcFacilityDiagram, nuclear: nuclearDiagram, 'gas-pipeline': gasPipelineDiagram, 'hydro-plant': hydroPlantDiagram, hydrogen: hydrogenDiagram, smr: smrDiagram };
   const baseDiagram = demoMap[activeDemo] || sampleDiagram;
@@ -3568,14 +3569,16 @@ export function App() {
     }));
   };
 
-  const handleDemoChange = (demo: 'vertical' | 'wind-farm' | 'solar-plant' | 'datacenter' | 'power-supply' | 'hvdc' | 'showcase' | 'dc-facility' | 'nuclear' | 'gas-pipeline' | 'hydro-plant' | 'hydrogen' | 'smr' | 'project') => {
+  const handleDemoChange = (demo: string) => {
     setActiveDemo(demo);
     if (demo === 'vertical') setCurrentDiagram(sampleDiagram);
     if (demo === 'showcase') setCurrentDiagram(showcaseDiagram);
   };
 
   return (
-    <div style={{ width: '100%', height: '100vh', position: 'relative' }}>
+    <div style={{ width: '100%', height: '100vh', display: 'flex' }}>
+      <Sidebar activeDemo={activeDemo} onDemoChange={handleDemoChange} />
+      <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
       <div style={{ position: 'absolute', top: 16, right: 16, display: 'flex', gap: 8, zIndex: 20 }}>
         <button
           onClick={() => canvasRef.current?.downloadPng()}
@@ -3606,234 +3609,8 @@ export function App() {
           Export SVG
         </button>
       </div>
-      <div style={{ position: 'absolute', top: 16, left: 16, display: 'flex', gap: 8, zIndex: 20, flexWrap: 'wrap' }}>
-        <button
-          onClick={() => handleDemoChange('showcase')}
-          style={{
-            padding: '6px 12px',
-            borderRadius: 6,
-            border: '1px solid rgba(255,255,255,0.15)',
-            background: activeDemo === 'showcase' ? '#e2e8f0' : 'rgba(22,33,62,0.85)',
-            color: activeDemo === 'showcase' ? '#1a1a1a' : '#e2e8f0',
-            cursor: 'pointer',
-            fontSize: 12,
-            fontWeight: 600,
-            backdropFilter: 'blur(4px)',
-          }}
-        >
-          Showcase
-        </button>
-        <button
-          onClick={() => handleDemoChange('vertical')}
-          style={{
-            padding: '6px 12px',
-            borderRadius: 6,
-            border: '1px solid rgba(255,255,255,0.15)',
-            background: activeDemo === 'vertical' ? '#e2e8f0' : 'rgba(22,33,62,0.85)',
-            color: activeDemo === 'vertical' ? '#1a1a1a' : '#e2e8f0',
-            cursor: 'pointer',
-            fontSize: 12,
-            fontWeight: 600,
-            backdropFilter: 'blur(4px)',
-          }}
-        >
-          Vertical (TB)
-        </button>
-        <button
-          onClick={() => handleDemoChange('wind-farm')}
-          style={{
-            padding: '6px 12px',
-            borderRadius: 6,
-            border: '1px solid rgba(255,255,255,0.15)',
-            background: activeDemo === 'wind-farm' ? '#e2e8f0' : 'rgba(22,33,62,0.85)',
-            color: activeDemo === 'wind-farm' ? '#1a1a1a' : '#e2e8f0',
-            cursor: 'pointer',
-            fontSize: 12,
-            fontWeight: 600,
-            backdropFilter: 'blur(4px)',
-          }}
-        >
-          Wind Farm
-        </button>
-        <button
-          onClick={() => handleDemoChange('solar-plant')}
-          style={{
-            padding: '6px 12px',
-            borderRadius: 6,
-            border: '1px solid rgba(255,255,255,0.15)',
-            background: activeDemo === 'solar-plant' ? '#e2e8f0' : 'rgba(22,33,62,0.85)',
-            color: activeDemo === 'solar-plant' ? '#1a1a1a' : '#e2e8f0',
-            cursor: 'pointer',
-            fontSize: 12,
-            fontWeight: 600,
-            backdropFilter: 'blur(4px)',
-          }}
-        >
-          Solar Plant
-        </button>
-        <button
-          onClick={() => handleDemoChange('datacenter')}
-          style={{
-            padding: '6px 12px',
-            borderRadius: 6,
-            border: '1px solid rgba(255,255,255,0.15)',
-            background: activeDemo === 'datacenter' ? '#e2e8f0' : 'rgba(22,33,62,0.85)',
-            color: activeDemo === 'datacenter' ? '#1a1a1a' : '#e2e8f0',
-            cursor: 'pointer',
-            fontSize: 12,
-            fontWeight: 600,
-            backdropFilter: 'blur(4px)',
-          }}
-        >
-          Data Center
-        </button>
-        <button
-          onClick={() => handleDemoChange('power-supply')}
-          style={{
-            padding: '6px 12px',
-            borderRadius: 6,
-            border: '1px solid rgba(255,255,255,0.15)',
-            background: activeDemo === 'power-supply' ? '#e2e8f0' : 'rgba(22,33,62,0.85)',
-            color: activeDemo === 'power-supply' ? '#1a1a1a' : '#e2e8f0',
-            cursor: 'pointer',
-            fontSize: 12,
-            fontWeight: 600,
-            backdropFilter: 'blur(4px)',
-          }}
-        >
-          Power Supply
-        </button>
-        <button
-          onClick={() => handleDemoChange('hvdc')}
-          style={{
-            padding: '6px 12px',
-            borderRadius: 6,
-            border: '1px solid rgba(255,255,255,0.15)',
-            background: activeDemo === 'hvdc' ? '#e2e8f0' : 'rgba(22,33,62,0.85)',
-            color: activeDemo === 'hvdc' ? '#1a1a1a' : '#e2e8f0',
-            cursor: 'pointer',
-            fontSize: 12,
-            fontWeight: 600,
-            backdropFilter: 'blur(4px)',
-          }}
-        >
-          HVDC
-        </button>
-        <button
-          onClick={() => handleDemoChange('dc-facility')}
-          style={{
-            padding: '6px 12px',
-            borderRadius: 6,
-            border: '1px solid rgba(255,255,255,0.15)',
-            background: activeDemo === 'dc-facility' ? '#e2e8f0' : 'rgba(22,33,62,0.85)',
-            color: activeDemo === 'dc-facility' ? '#1a1a1a' : '#e2e8f0',
-            cursor: 'pointer',
-            fontSize: 12,
-            fontWeight: 600,
-            backdropFilter: 'blur(4px)',
-          }}
-        >
-          DC Facility
-        </button>
-        <button
-          onClick={() => handleDemoChange('nuclear')}
-          style={{
-            padding: '6px 12px',
-            borderRadius: 6,
-            border: '1px solid rgba(255,255,255,0.15)',
-            background: activeDemo === 'nuclear' ? '#e2e8f0' : 'rgba(22,33,62,0.85)',
-            color: activeDemo === 'nuclear' ? '#1a1a1a' : '#e2e8f0',
-            cursor: 'pointer',
-            fontSize: 12,
-            fontWeight: 600,
-            backdropFilter: 'blur(4px)',
-          }}
-        >
-          Nuclear
-        </button>
-        <button
-          onClick={() => handleDemoChange('gas-pipeline')}
-          style={{
-            padding: '6px 12px',
-            borderRadius: 6,
-            border: '1px solid rgba(255,255,255,0.15)',
-            background: activeDemo === 'gas-pipeline' ? '#e2e8f0' : 'rgba(22,33,62,0.85)',
-            color: activeDemo === 'gas-pipeline' ? '#1a1a1a' : '#e2e8f0',
-            cursor: 'pointer',
-            fontSize: 12,
-            fontWeight: 600,
-            backdropFilter: 'blur(4px)',
-          }}
-        >
-          Gas Pipeline
-        </button>
-        <button
-          onClick={() => handleDemoChange('hydro-plant')}
-          style={{
-            padding: '6px 12px',
-            borderRadius: 6,
-            border: '1px solid rgba(255,255,255,0.15)',
-            background: activeDemo === 'hydro-plant' ? '#e2e8f0' : 'rgba(22,33,62,0.85)',
-            color: activeDemo === 'hydro-plant' ? '#1a1a1a' : '#e2e8f0',
-            cursor: 'pointer',
-            fontSize: 12,
-            fontWeight: 600,
-            backdropFilter: 'blur(4px)',
-          }}
-        >
-          Hydro Plant
-        </button>
-        <button
-          onClick={() => handleDemoChange('hydrogen')}
-          style={{
-            padding: '6px 12px',
-            borderRadius: 6,
-            border: '1px solid rgba(255,255,255,0.15)',
-            background: activeDemo === 'hydrogen' ? '#e2e8f0' : 'rgba(22,33,62,0.85)',
-            color: activeDemo === 'hydrogen' ? '#1a1a1a' : '#e2e8f0',
-            cursor: 'pointer',
-            fontSize: 12,
-            fontWeight: 600,
-            backdropFilter: 'blur(4px)',
-          }}
-        >
-          Hydrogen
-        </button>
-        <button
-          onClick={() => handleDemoChange('smr')}
-          style={{
-            padding: '6px 12px',
-            borderRadius: 6,
-            border: '1px solid rgba(255,255,255,0.15)',
-            background: activeDemo === 'smr' ? '#e2e8f0' : 'rgba(22,33,62,0.85)',
-            color: activeDemo === 'smr' ? '#1a1a1a' : '#e2e8f0',
-            cursor: 'pointer',
-            fontSize: 12,
-            fontWeight: 600,
-            backdropFilter: 'blur(4px)',
-          }}
-        >
-          SMR
-        </button>
-        <button
-          onClick={() => handleDemoChange('project')}
-          style={{
-            padding: '6px 12px',
-            borderRadius: 6,
-            border: '1px solid rgba(255,255,255,0.15)',
-            background: activeDemo === 'project' ? '#e2e8f0' : 'rgba(22,33,62,0.85)',
-            color: activeDemo === 'project' ? '#1a1a1a' : '#e2e8f0',
-            cursor: 'pointer',
-            fontSize: 12,
-            fontWeight: 600,
-            backdropFilter: 'blur(4px)',
-          }}
-        >
-          Project
-        </button>
-      </div>
       {activeDemo === 'project' ? (
-        <div style={{ width: '100%', height: 'calc(100vh - 56px)', marginTop: 56 }}>
+        <div style={{ width: '100%', height: '100%' }}>
           <ProjectView
             project={sampleProject}
             diagram={showcaseDiagram}
@@ -3874,6 +3651,7 @@ export function App() {
         } : undefined}
       />
       )}
+      </div>
     </div>
   );
 }
