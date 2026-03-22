@@ -3091,6 +3091,426 @@ const hydrogenDiagram: FlowDiagram = {
   ],
 };
 
+const smrDiagram: FlowDiagram = {
+  title: 'Small Modular Reactor (SMR) — NuScale / BWRX-300 Class',
+  layout: { direction: 'TB', routing: 'orthogonal', cornerRadius: 16 },
+  nodes: [
+    // ===== REACTOR MODULE =====
+    { id: 'grp-reactor', type: 'group', label: 'Reactor Module', style: { color: '#ef4444' } },
+
+    { id: 'smr-vessel', label: 'SMR Reactor Vessel', icon: 'smr-reactor',
+      description: 'Integral pressurized water SMR — 300 MWe class.',
+      status: 'online', progress: 97, flowRate: '900 MWt',
+      parentId: 'grp-reactor',
+      style: { color: '#ef4444' },
+      sections: [
+        { heading: 'Type', content: 'Integral PWR — iPWR' },
+        { heading: 'Thermal Power', content: '900 MWt' },
+        { heading: 'Electric Output', content: '300 MWe' },
+        { heading: 'Fuel', content: 'UO2 enriched 4.95%' },
+        { heading: 'Enrichment', content: '<5% LEU' },
+        { heading: 'Refueling Interval', content: '24 months' },
+        { heading: 'Core Inlet Temp', content: '258 C' },
+        { heading: 'Core Outlet Temp', content: '310 C' },
+        { heading: 'System Pressure', content: '127 bar' },
+      ],
+      detail: {
+        content: 'The SMR vessel integrates the reactor core, primary coolant pumps, and integral steam generators in a single compact pressure vessel. Passive safety systems provide 72-hour grace period without operator action or AC power.',
+        sections: [
+          { type: 'keyvalue', title: 'Reactor Specifications', data: {
+            'Reactor Type': 'Integral PWR (iPWR)',
+            'Thermal Power': '900 MWt',
+            'Electric Output': '300 MWe net',
+            'Fuel Type': 'UO2 ceramic pellets',
+            'Enrichment': '4.95% U-235',
+            'Fuel Assemblies': '37 assemblies',
+            'Refueling Interval': '24 months',
+            'Design Lifetime': '60 years',
+            'Seismic Design': '0.5g PGA (IBC Zone 4)',
+            'Coolant': 'Light water (pressurized)',
+            'Moderator': 'Light water + soluble boron',
+            'Control': 'CRDM + chemical shim',
+          }},
+          { type: 'chart', title: 'Load Following Capability (% rated power vs hour)', data: {
+            type: 'line',
+            values: [100, 100, 80, 60, 50, 60, 80, 100, 100, 100, 90, 75, 60, 75, 90, 100, 100, 100, 95, 80, 70, 80, 95, 100],
+            labels: ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
+            color: '#ef4444',
+          }},
+          { type: 'timeline', title: 'Commissioning Milestones', data: [
+            { time: '2026-Q1', event: 'First criticality achieved', status: 'success' },
+            { time: '2026-Q2', event: 'Power ascension testing complete', status: 'success' },
+            { time: '2026-Q3', event: 'Commercial operation declared', status: 'info' },
+            { time: '2028-Q1', event: 'First refueling outage scheduled', status: 'info' },
+          ]},
+        ],
+      },
+    },
+
+    { id: 'ctrl-rod-drive', label: 'Control Rod Drive Mechanism', icon: 'control-rod',
+      description: 'Magnetic jack CRDM — 16 assemblies.',
+      status: 'online', progress: 15, flowRate: '15% inserted',
+      parentId: 'grp-reactor',
+      sections: [
+        { heading: 'Type', content: 'Magnetic jack (bottom-mounted)' },
+        { heading: 'Assemblies', content: '16 RCCA clusters' },
+        { heading: 'Insertion', content: '15% (at power)' },
+        { heading: 'Trip Time', content: '<2.2s full insertion' },
+        { heading: 'Function', content: 'Reactivity control + shutdown' },
+      ],
+    },
+
+    { id: 'passive-safety-sys', label: 'Passive Safety Systems', icon: 'passive-safety',
+      description: 'Gravity-driven ECCS and passive decay heat removal.',
+      status: 'online',
+      parentId: 'grp-reactor',
+      sections: [
+        { heading: 'ECCS', content: 'Gravity-driven core makeup tanks' },
+        { heading: 'DHRS', content: 'Passive decay heat removal — natural circulation' },
+        { heading: 'Grace Period', content: '72 hours — no AC power or operator action' },
+        { heading: 'Containment Cooling', content: 'Passive containment cooling system (PCCS)' },
+        { heading: 'Safety Category', content: 'Safety Class 1 — seismically qualified' },
+      ],
+    },
+
+    { id: 'seismic-isolator', label: 'Seismic Isolation System', icon: 'heat-sink',
+      description: 'Lead-rubber bearing isolators beneath reactor building.',
+      status: 'online',
+      parentId: 'grp-reactor',
+      sections: [
+        { heading: 'Type', content: 'Lead-rubber bearing (LRB)' },
+        { heading: 'Design Basis', content: '0.5g PGA — SSE' },
+        { heading: 'Natural Frequency', content: '0.5 Hz (isolated)' },
+        { heading: 'Bearings', content: '64 isolator pads' },
+      ],
+    },
+
+    // ===== PRIMARY HEAT TRANSPORT =====
+    { id: 'grp-primary', type: 'group', label: 'Primary Heat Transport', style: { color: '#f59e0b' } },
+
+    { id: 'integral-sg', label: 'Integral Steam Generator', icon: 'steam-generator',
+      description: 'Helical coil once-through SG — inside reactor vessel.',
+      status: 'online', progress: 94, flowRate: '900 MWt',
+      parentId: 'grp-primary',
+      sections: [
+        { heading: 'Type', content: 'Helical coil once-through' },
+        { heading: 'Primary Inlet', content: '310 C' },
+        { heading: 'Primary Outlet', content: '258 C' },
+        { heading: 'Steam Outlet', content: '295 C / 34 bar' },
+        { heading: 'Heat Transfer', content: '900 MWt' },
+        { heading: 'Location', content: 'Inside RPV annulus' },
+      ],
+    },
+
+    { id: 'pressurizer-smr', label: 'Integral Pressurizer', icon: 'pressurizer',
+      description: 'Integrated pressurizer at top of reactor vessel.',
+      status: 'online', flowRate: '127 bar',
+      parentId: 'grp-primary',
+      sections: [
+        { heading: 'Type', content: 'Integral — top of RPV' },
+        { heading: 'Pressure', content: '127 bar operating' },
+        { heading: 'Heaters', content: '6x electric immersion heaters' },
+        { heading: 'Spray', content: 'Passive spray system' },
+      ],
+    },
+
+    { id: 'primary-pump', label: 'Primary Coolant Pumps', icon: 'pump',
+      description: 'Canned motor pumps — no seals, integrated in vessel.',
+      status: 'online', progress: 88,
+      parentId: 'grp-primary',
+      sections: [
+        { heading: 'Type', content: 'Canned motor — no shaft seals' },
+        { heading: 'Quantity', content: '4 pumps' },
+        { heading: 'Flow', content: '4,700 kg/s total' },
+        { heading: 'Head', content: '35 m' },
+        { heading: 'Power', content: '1.4 MW per pump' },
+      ],
+    },
+
+    // ===== POWER CONVERSION =====
+    { id: 'grp-power', type: 'group', label: 'Power Conversion', style: { color: '#3b82f6' } },
+
+    { id: 'steam-drum-smr', label: 'Steam Drum', icon: 'steam-drum',
+      description: 'Steam / moisture separation before turbine.',
+      status: 'online', flowRate: '34 bar',
+      parentId: 'grp-power',
+      sections: [
+        { heading: 'Steam Pressure', content: '34 bar saturated' },
+        { heading: 'Steam Temp', content: '240 C' },
+        { heading: 'Moisture', content: '<0.1% carryover' },
+        { heading: 'Flow', content: '480 kg/s' },
+      ],
+    },
+
+    { id: 'hp-turbine-smr', label: 'HP Turbine', icon: 'turbine',
+      description: 'High pressure impulse-reaction turbine stage.',
+      status: 'online', progress: 92,
+      parentId: 'grp-power',
+      sections: [
+        { heading: 'Inlet Pressure', content: '34 bar' },
+        { heading: 'Inlet Temp', content: '240 C (wet steam)' },
+        { heading: 'Outlet Pressure', content: '8 bar' },
+        { heading: 'Speed', content: '1500 rpm (50 Hz)' },
+      ],
+    },
+
+    { id: 'lp-turbine-smr', label: 'LP Turbine', icon: 'turbine',
+      description: 'Low pressure condensing turbine stage.',
+      status: 'online', progress: 90,
+      parentId: 'grp-power',
+      sections: [
+        { heading: 'Inlet Pressure', content: '8 bar' },
+        { heading: 'Exhaust Pressure', content: '0.06 bar' },
+        { heading: 'Last Stage Blade', content: '1.2 m' },
+        { heading: 'Speed', content: '1500 rpm' },
+      ],
+    },
+
+    { id: 'generator-smr', label: 'Generator', icon: 'generator',
+      description: 'Air-cooled turbo-generator — 300 MWe.',
+      status: 'online', flowRate: '300 MWe', progress: 97,
+      parentId: 'grp-power',
+      style: { color: '#22c55e' },
+      sections: [
+        { heading: 'Rated Output', content: '300 MWe' },
+        { heading: 'Terminal Voltage', content: '15 kV' },
+        { heading: 'Power Factor', content: '0.95 lagging' },
+        { heading: 'Frequency', content: '50 Hz' },
+        { heading: 'Cooling', content: 'Air cooled (TEWAC)' },
+        { heading: 'Speed', content: '1500 rpm (4-pole)' },
+      ],
+    },
+
+    { id: 'condenser-smr', label: 'Condenser', icon: 'condenser',
+      description: 'Surface condenser — air-cooled indirect cycle.',
+      status: 'online',
+      parentId: 'grp-power',
+      sections: [
+        { heading: 'Type', content: 'Surface condenser — shell and tube' },
+        { heading: 'Vacuum', content: '0.06 bar absolute' },
+        { heading: 'Condensate Temp', content: '36 C' },
+        { heading: 'Cooling', content: 'Secondary water circuit' },
+      ],
+    },
+
+    { id: 'feedwater', label: 'Feedwater System', icon: 'pump',
+      description: 'Condensate extraction, deaeration, and high-pressure feed.',
+      status: 'online',
+      parentId: 'grp-power',
+      sections: [
+        { heading: 'Condensate Flow', content: '480 kg/s' },
+        { heading: 'Deaerator', content: '3.5 bar (oxygen removal)' },
+        { heading: 'Feed Temp', content: '180 C (to SG inlet)' },
+        { heading: 'HP Heaters', content: '3 stages' },
+      ],
+    },
+
+    // ===== AUXILIARY SYSTEMS =====
+    { id: 'grp-aux', type: 'group', label: 'Auxiliary Systems', style: { color: '#8b5cf6' } },
+
+    { id: 'passive-cooling', label: 'Passive Containment Cooling', icon: 'passive-safety',
+      description: 'Natural-circulation air cooling — ultimate heat sink.',
+      status: 'online',
+      parentId: 'grp-aux',
+      sections: [
+        { heading: 'Mechanism', content: 'Natural air convection — no pumps' },
+        { heading: 'Heat Removal', content: 'Up to 15 MWt decay heat' },
+        { heading: 'Capacity', content: '72 hours autonomous operation' },
+        { heading: 'Activation', content: 'Passive — no signals required' },
+      ],
+    },
+
+    { id: 'emerg-water', label: 'Emergency Core Makeup', icon: 'heat-sink',
+      description: 'Gravity-fed borated water tanks — passive injection.',
+      status: 'online',
+      parentId: 'grp-aux',
+      sections: [
+        { heading: 'Volume', content: '2x 200 m3 tanks' },
+        { heading: 'Boron', content: '2500 ppm' },
+        { heading: 'Driving Force', content: 'Gravity (elevated tanks)' },
+        { heading: 'Injection Pressure', content: 'Differential — no pump needed' },
+        { heading: 'Coverage', content: '72 hours injection' },
+      ],
+    },
+
+    { id: 'diesel-gen-smr', label: 'Emergency Diesel Generators', icon: 'fuel',
+      description: 'Class 1E diesels for non-passive loads.',
+      status: 'idle',
+      parentId: 'grp-aux',
+      sections: [
+        { heading: 'Units', content: '2x 2 MVA (N+1)' },
+        { heading: 'Fuel Supply', content: 'Diesel — 7 days' },
+        { heading: 'Start Time', content: '<10s' },
+        { heading: 'Last Test', content: '2026-03-15 — PASS' },
+        { heading: 'Note', content: 'Non-safety loads only — passive systems require no AC' },
+      ],
+    },
+
+    { id: 'spent-fuel-pool', label: 'Spent Fuel Pool', icon: 'pressurizer',
+      description: 'Elevated pool — passive cooling by natural convection.',
+      status: 'online',
+      parentId: 'grp-aux',
+      sections: [
+        { heading: 'Capacity', content: '600 assemblies (10 years)' },
+        { heading: 'Occupancy', content: '37 assemblies (1 cycle)' },
+        { heading: 'Cooling', content: 'Passive convection — no pump needed' },
+        { heading: 'Water Depth', content: '6 m above top of fuel' },
+        { heading: 'Temp', content: '28 C' },
+        { heading: 'Boron', content: '2200 ppm' },
+      ],
+    },
+
+    // ===== COOLING TOWER =====
+    { id: 'cooling-tower-smr', label: 'Dry Cooling Towers', icon: 'cooling-tower',
+      description: 'Air-cooled heat rejection — no river or sea water required.',
+      status: 'online', progress: 70,
+      sections: [
+        { heading: 'Type', content: 'Induced-draft dry cooling (ACC)' },
+        { heading: 'Capacity', content: '620 MWt rejection' },
+        { heading: 'Water Use', content: 'Zero process water discharge' },
+        { heading: 'Fan Power', content: '8 MW total' },
+        { heading: 'Design Temp', content: '45 C ambient (max)' },
+      ],
+    },
+
+    // ===== GRID & HYDROGEN =====
+    { id: 'grp-grid', type: 'group', label: 'Grid and Hydrogen Coproduction', style: { color: '#22c55e' } },
+
+    { id: 'main-transformer', label: 'Main Step-Up Transformer', icon: 'transformer',
+      description: '15kV to 400kV generator step-up.',
+      status: 'online', flowRate: '300 MWe',
+      parentId: 'grp-grid',
+      sections: [
+        { heading: 'Rating', content: '330 MVA ONAN' },
+        { heading: 'HV', content: '400 kV' },
+        { heading: 'LV', content: '15 kV' },
+        { heading: 'Vector Group', content: 'YNd11' },
+        { heading: 'Tap Changer', content: 'OLTC +/-10%' },
+      ],
+    },
+
+    { id: 'switchyard', label: 'Switchyard — 400kV', icon: 'git-branch',
+      description: 'AIS double-busbar 400kV switchyard.',
+      status: 'online', flowRate: '300 MWe',
+      parentId: 'grp-grid',
+      sections: [
+        { heading: 'Configuration', content: 'Double busbar' },
+        { heading: 'Voltage', content: '400 kV' },
+        { heading: 'Fault Level', content: '40 kA' },
+        { heading: 'Outgoing Feeders', content: '2x 400kV circuits' },
+      ],
+    },
+
+    { id: 'grid-connection', label: 'Grid Connection Point', icon: 'zap',
+      description: '400kV point of common coupling.',
+      status: 'online', flowRate: '298 MWe',
+      style: { color: '#22c55e' },
+      parentId: 'grp-grid',
+      sections: [
+        { heading: 'Voltage', content: '400 kV' },
+        { heading: 'Export', content: '298 MW (net after auxiliaries)' },
+        { heading: 'Grid Code', content: 'GB Grid Code 2023' },
+        { heading: 'Frequency Response', content: 'FFR + DDRR capable' },
+      ],
+    },
+
+    { id: 'pem-electrolyzer-smr', label: 'PEM Electrolyzer — H2', icon: 'pem-electrolyzer',
+      description: 'Proton exchange membrane electrolyzer for hydrogen coproduction.',
+      status: 'online', progress: 65, flowRate: '50 MWe input',
+      parentId: 'grp-grid',
+      style: { color: '#22c55e' },
+      sections: [
+        { heading: 'Type', content: 'PEM — proton exchange membrane' },
+        { heading: 'Power Input', content: '50 MW electric' },
+        { heading: 'H2 Production', content: '~1000 kg/hr' },
+        { heading: 'Efficiency', content: '68% LHV (HHV 80%)' },
+        { heading: 'H2 Pressure', content: '30 bar outlet' },
+        { heading: 'H2 Purity', content: '>99.999%' },
+        { heading: 'Application', content: 'Green hydrogen for industry / fuel' },
+      ],
+    },
+
+    { id: 'h2-storage-smr', label: 'Hydrogen Storage', icon: 'h2-storage',
+      description: 'Compressed gaseous hydrogen buffer storage.',
+      status: 'online',
+      parentId: 'grp-grid',
+      sections: [
+        { heading: 'Pressure', content: '200 bar compressed gas' },
+        { heading: 'Capacity', content: '5,000 kg H2 (buffer)' },
+        { heading: 'Vessels', content: '20x pressure vessels' },
+        { heading: 'Standard', content: 'EN 13322-1' },
+      ],
+    },
+
+    // ===== CONTROL ROOM =====
+    { id: 'control-room-smr', label: 'Main Control Room', icon: 'layout-dashboard',
+      description: 'Fully digital I&C — licensed operators 24/7.',
+      status: 'online', style: { color: '#8b5cf6', glow: true },
+      sections: [
+        { heading: 'Power Level', content: '97% FP' },
+        { heading: 'Reactor Period', content: 'Stable (infinity)' },
+        { heading: 'Keff', content: '1.0000' },
+        { heading: 'Boron', content: '900 ppm' },
+        { heading: 'CRDM Position', content: '15% (all rods out — power ops)' },
+        { heading: 'Passive Safety', content: 'All trains available' },
+        { heading: 'H2 Production', content: '1,020 kg/hr' },
+      ],
+    },
+  ],
+  edges: [
+    // Reactor to steam generator (primary loop — red)
+    { id: 'smr1', source: 'smr-vessel', target: 'integral-sg', color: '#ef4444', flowAnimation: true, annotation: '310 C hot leg', thickness: 4,
+      measurements: [{ label: 'T', value: '310', unit: 'C' }, { label: 'P', value: '127', unit: 'bar' }],
+    },
+    { id: 'smr2', source: 'integral-sg', target: 'primary-pump', color: '#f97316', flowAnimation: true, annotation: '258 C cold leg', thickness: 3 },
+    { id: 'smr3', source: 'primary-pump', target: 'smr-vessel', color: '#f97316', flowAnimation: true, thickness: 3 },
+    { id: 'smr4', source: 'pressurizer-smr', target: 'smr-vessel', color: '#ef4444', type: 'dashed', annotation: '127 bar' },
+    { id: 'smr5', source: 'ctrl-rod-drive', target: 'smr-vessel', color: '#94a3b8', type: 'dashed', annotation: 'Reactivity ctrl' },
+
+    // Steam path — amber
+    { id: 'smr6', source: 'integral-sg', target: 'steam-drum-smr', color: '#f59e0b', flowAnimation: true, annotation: 'Steam 295 C', thickness: 3,
+      measurements: [{ label: 'T', value: '295', unit: 'C' }, { label: 'P', value: '34', unit: 'bar' }],
+    },
+    { id: 'smr7', source: 'steam-drum-smr', target: 'hp-turbine-smr', color: '#f59e0b', flowAnimation: true, thickness: 3, annotation: '34 bar' },
+    { id: 'smr8', source: 'hp-turbine-smr', target: 'lp-turbine-smr', color: '#3b82f6', flowAnimation: true, thickness: 3 },
+    { id: 'smr9', source: 'lp-turbine-smr', target: 'generator-smr', color: '#22c55e', flowAnimation: true, annotation: '300 MWe', thickness: 4,
+      measurements: [{ label: 'P', value: '300', unit: 'MWe' }, { label: 'f', value: '50.0', unit: 'Hz' }],
+    },
+    { id: 'smr10', source: 'lp-turbine-smr', target: 'condenser-smr', color: '#06b6d4', flowAnimation: true, annotation: 'Exhaust' },
+    { id: 'smr11', source: 'condenser-smr', target: 'feedwater', color: '#06b6d4', flowAnimation: true },
+    { id: 'smr12', source: 'feedwater', target: 'integral-sg', color: '#3b82f6', flowAnimation: true, annotation: 'Feedwater 180 C' },
+
+    // Cooling tower — cyan
+    { id: 'smr13', source: 'condenser-smr', target: 'cooling-tower-smr', color: '#06b6d4', flowAnimation: true, annotation: 'Heat rejection 620 MWt' },
+
+    // Electrical path — blue/green
+    { id: 'smr14', source: 'generator-smr', target: 'main-transformer', color: '#22c55e', flowAnimation: true, annotation: '15 kV', thickness: 4,
+      measurements: [{ label: 'P', value: '300', unit: 'MW' }, { label: 'V', value: '15', unit: 'kV' }],
+    },
+    { id: 'smr15', source: 'main-transformer', target: 'switchyard', color: '#22c55e', flowAnimation: true, annotation: '400 kV', thickness: 4 },
+    { id: 'smr16', source: 'switchyard', target: 'grid-connection', color: '#22c55e', flowAnimation: true, annotation: '298 MWe', thickness: 4, label: 'National Grid' },
+
+    // Hydrogen coproduction — green
+    { id: 'smr17', source: 'switchyard', target: 'pem-electrolyzer-smr', color: '#22c55e', flowAnimation: true, annotation: '50 MW', thickness: 2, label: 'H2 offtake' },
+    { id: 'smr18', source: 'pem-electrolyzer-smr', target: 'h2-storage-smr', color: '#22c55e', flowAnimation: true, annotation: '1000 kg/hr H2', thickness: 2 },
+
+    // Safety systems — purple
+    { id: 'smr19', source: 'passive-safety-sys', target: 'smr-vessel', color: '#8b5cf6', type: 'dashed', annotation: 'ECCS injection' },
+    { id: 'smr20', source: 'emerg-water', target: 'smr-vessel', color: '#8b5cf6', type: 'dashed', annotation: 'Gravity makeup' },
+    { id: 'smr21', source: 'passive-cooling', target: 'smr-vessel', color: '#8b5cf6', type: 'dashed', annotation: 'Decay heat removal' },
+    { id: 'smr22', source: 'seismic-isolator', target: 'smr-vessel', color: '#8b5cf6', type: 'dashed', annotation: 'Seismic isolation' },
+    { id: 'smr23', source: 'diesel-gen-smr', target: 'control-room-smr', color: '#94a3b8', type: 'dashed', annotation: 'Backup power' },
+
+    // Spent fuel
+    { id: 'smr24', source: 'spent-fuel-pool', target: 'smr-vessel', color: '#f59e0b', type: 'dashed', annotation: 'Spent fuel transfer' },
+
+    // Control room monitoring
+    { id: 'smr25', source: 'control-room-smr', target: 'smr-vessel', color: '#8b5cf6', type: 'dashed', annotation: 'I&C monitoring' },
+    { id: 'smr26', source: 'control-room-smr', target: 'generator-smr', color: '#8b5cf6', type: 'dashed' },
+    { id: 'smr27', source: 'control-room-smr', target: 'pem-electrolyzer-smr', color: '#22c55e', type: 'dashed', annotation: 'H2 dispatch' },
+  ],
+};
+
 const nodeTemplates: SidebarNodeTemplate[] = [
   { type: 'default', label: 'Process', description: 'A process step' },
   { type: 'decision', label: 'Decision', description: 'A branch point' },
@@ -3099,9 +3519,9 @@ const nodeTemplates: SidebarNodeTemplate[] = [
 ];
 
 export function App() {
-  const [activeDemo, setActiveDemo] = React.useState<'vertical' | 'wind-farm' | 'solar-plant' | 'datacenter' | 'power-supply' | 'hvdc' | 'showcase' | 'dc-facility' | 'nuclear' | 'gas-pipeline' | 'hydro-plant' | 'hydrogen'>('vertical');
+  const [activeDemo, setActiveDemo] = React.useState<'vertical' | 'wind-farm' | 'solar-plant' | 'datacenter' | 'power-supply' | 'hvdc' | 'showcase' | 'dc-facility' | 'nuclear' | 'gas-pipeline' | 'hydro-plant' | 'hydrogen' | 'smr'>('vertical');
   const [currentDiagram, setCurrentDiagram] = useState<FlowDiagram>(sampleDiagram);
-  const demoMap: Record<string, FlowDiagram> = { vertical: sampleDiagram, 'wind-farm': windFarmDiagram, 'solar-plant': solarPlantDiagram, datacenter: datacenterDiagram, 'power-supply': powerSupplyDiagram, hvdc: hvdcDiagram, showcase: showcaseDiagram, 'dc-facility': dcFacilityDiagram, nuclear: nuclearDiagram, 'gas-pipeline': gasPipelineDiagram, 'hydro-plant': hydroPlantDiagram, hydrogen: hydrogenDiagram };
+  const demoMap: Record<string, FlowDiagram> = { vertical: sampleDiagram, 'wind-farm': windFarmDiagram, 'solar-plant': solarPlantDiagram, datacenter: datacenterDiagram, 'power-supply': powerSupplyDiagram, hvdc: hvdcDiagram, showcase: showcaseDiagram, 'dc-facility': dcFacilityDiagram, nuclear: nuclearDiagram, 'gas-pipeline': gasPipelineDiagram, 'hydro-plant': hydroPlantDiagram, hydrogen: hydrogenDiagram, smr: smrDiagram };
   const baseDiagram = demoMap[activeDemo] || sampleDiagram;
   const diagram = (activeDemo === 'vertical' || activeDemo === 'showcase') ? currentDiagram : baseDiagram;
   const canvasRef = useRef<FlowCanvasRef>(null);
@@ -3113,7 +3533,7 @@ export function App() {
     }));
   };
 
-  const handleDemoChange = (demo: 'vertical' | 'wind-farm' | 'solar-plant' | 'datacenter' | 'power-supply' | 'hvdc' | 'showcase' | 'dc-facility' | 'nuclear' | 'gas-pipeline' | 'hydro-plant' | 'hydrogen') => {
+  const handleDemoChange = (demo: 'vertical' | 'wind-farm' | 'solar-plant' | 'datacenter' | 'power-supply' | 'hvdc' | 'showcase' | 'dc-facility' | 'nuclear' | 'gas-pipeline' | 'hydro-plant' | 'hydrogen' | 'smr') => {
     setActiveDemo(demo);
     if (demo === 'vertical') setCurrentDiagram(sampleDiagram);
     if (demo === 'showcase') setCurrentDiagram(showcaseDiagram);
@@ -3343,6 +3763,22 @@ export function App() {
           }}
         >
           Hydrogen
+        </button>
+        <button
+          onClick={() => handleDemoChange('smr')}
+          style={{
+            padding: '6px 12px',
+            borderRadius: 6,
+            border: '1px solid rgba(255,255,255,0.15)',
+            background: activeDemo === 'smr' ? '#e2e8f0' : 'rgba(22,33,62,0.85)',
+            color: activeDemo === 'smr' ? '#1a1a1a' : '#e2e8f0',
+            cursor: 'pointer',
+            fontSize: 12,
+            fontWeight: 600,
+            backdropFilter: 'blur(4px)',
+          }}
+        >
+          SMR
         </button>
       </div>
       <FlowCanvas
