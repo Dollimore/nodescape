@@ -38,6 +38,8 @@ export const FlowNodeRenderer = React.forwardRef<HTMLDivElement, FlowNodeRendere
       transform: `translate(${position.x}px, ${position.y}px)`,
       transition: isDragging ? undefined : 'transform 0.3s ease',
       cursor: onClick && !editable ? 'pointer' : undefined,
+      // Groups render behind everything else
+      zIndex: node.type === 'group' ? 0 : 1,
       // Force grid-snapped width; groups use fixed height, others use min-height for collapse
       ...(size ? {
         width: size.width,

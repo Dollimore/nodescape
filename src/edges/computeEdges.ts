@@ -217,8 +217,11 @@ export function computeDynamicEdges(
         const targetIsBelow = end.y > start.y;
         const needsWrapAround = (goingDown && targetIsAbove) || (goingUp && targetIsBelow);
 
-        if (Math.abs(start.x - end.x) < 1 && !needsWrapAround) {
-          points = [start, end];
+        // Straight line if handles are nearly aligned (within half a grid unit)
+        if (Math.abs(start.x - end.x) < 5 && !needsWrapAround) {
+          // Snap to perfectly straight
+          const avgX = (start.x + end.x) / 2;
+          points = [{ x: avgX, y: start.y }, { x: avgX, y: end.y }];
         } else if (needsWrapAround) {
           // Route around — pick closest side that clears both nodes
           const clearRight = Math.max(sourcePos.x + sourceSize.width, targetPos.x + targetSize.width) + STUB_LENGTH;
@@ -272,8 +275,9 @@ export function computeDynamicEdges(
         const targetIsRight = end.x > start.x;
         const needsWrapAround = (goingRight && targetIsLeft) || (goingLeft && targetIsRight);
 
-        if (Math.abs(start.y - end.y) < 1 && !needsWrapAround) {
-          points = [start, end];
+        if (Math.abs(start.y - end.y) < 5 && !needsWrapAround) {
+          const avgY = (start.y + end.y) / 2;
+          points = [{ x: start.x, y: avgY }, { x: end.x, y: avgY }];
         } else if (needsWrapAround) {
           const clearBottom = Math.max(sourcePos.y + sourceSize.height, targetPos.y + targetSize.height) + STUB_LENGTH;
           const clearTop = Math.min(sourcePos.y, targetPos.y) - STUB_LENGTH;
