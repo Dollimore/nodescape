@@ -64,3 +64,8 @@ export { MeritOrder } from './detail/MeritOrder';
 export type { GenerationSource } from './detail/MeritOrder';
 export { calculateH2Production, h2ProductionSections } from './utils/hydrogenUtils';
 export type { ElectrolyzerSpec, H2ProductionResult } from './utils/hydrogenUtils';
+export { KanbanBoard } from './project/KanbanBoard';
+export { ProjectView } from './project/ProjectView';
+export { applyProjectStatus, getProjectSummary } from './project/projectUtils';
+export { GanttChart } from './project/GanttChart';
+export type { ProjectTask, ProjectData, TaskStatus, TaskPriority, TaskDependency, DependencyType, TimeScale } from './project/types';
