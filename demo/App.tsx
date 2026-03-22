@@ -43,25 +43,596 @@ const sampleDiagram: FlowDiagram = {
   ],
 };
 
-const horizontalDiagram: FlowDiagram = {
-  title: 'Data Pipeline',
-  layout: { direction: 'LR', routing: 'orthogonal', cornerRadius: 24 },
+const windFarmDiagram: FlowDiagram = {
+  title: 'Offshore Wind Farm — Hornsea Scale',
+  layout: { direction: 'TB', routing: 'orthogonal', cornerRadius: 16 },
   nodes: [
-    { id: 'ingest', type: 'start', label: 'Ingest', description: 'Receive raw data from API.', icon: 'download' },
-    { id: 'validate', label: 'Validate', description: 'Check schema and types.', icon: 'shield-check' },
-    { id: 'transform', label: 'Transform', description: 'Normalize and enrich data.', icon: 'refresh-cw' },
-    { id: 'check', type: 'decision', label: 'Quality check?', icon: 'check-circle' },
-    { id: 'store', label: 'Store', description: 'Write to database.', icon: 'database' },
-    { id: 'reject', type: 'end', label: 'Reject', description: 'Send to dead letter queue.', icon: 'x-circle' },
-    { id: 'done', type: 'end', label: 'Complete', icon: 'check' },
+    // ===== OFFSHORE ARRAY =====
+    { id: 'grp-array', type: 'group', label: 'Offshore Array', style: { color: '#06b6d4' } },
+
+    { id: 'string-a', label: 'Turbine String A', icon: 'zap',
+      description: '25x Siemens SG 14-222 DD offshore turbines.',
+      status: 'online', progress: 94, flowRate: '334 MW',
+      parentId: 'grp-array',
+      sections: [
+        { heading: 'Turbines', content: '25 x 14 MW' },
+        { heading: 'Rotor Dia.', content: '222 m' },
+        { heading: 'Hub Height', content: '150 m MSL' },
+        { heading: 'Availability', content: '94.2%' },
+      ],
+      detail: {
+        content: 'String A covers the **north-west sector** of the array. Turbines are arranged in 5 rows of 5, spaced 7 rotor diameters apart to minimize wake losses.',
+        sections: [
+          { type: 'keyvalue', title: 'Turbine Specifications', data: {
+            'Model': 'Siemens SG 14-222 DD',
+            'Rated Power': '14 MW per unit',
+            'Cut-in Wind': '3 m/s',
+            'Rated Wind': '11 m/s',
+            'Cut-out Wind': '25 m/s',
+            'Foundation': 'Monopile (jacket backup)',
+            'Water Depth': '25-40 m',
+          }},
+          { type: 'chart', title: 'Power Curve (MW vs Wind Speed)', data: {
+            type: 'line', values: [0, 0.5, 2, 5, 9, 13.5, 14, 14, 14, 13.8, 0],
+            labels: ['0', '3', '5', '7', '9', '11', '12', '15', '20', '22', '25'],
+            color: '#06b6d4',
+          }},
+          { type: 'timeline', title: 'Operational Events', data: [
+            { time: '09:15', event: 'String A output at rated power', status: 'success' },
+            { time: '07:30', event: 'Wind speed crossed rated threshold', status: 'info' },
+            { time: '05:00', event: 'Turbine A-12 resumed after maintenance', status: 'success' },
+            { time: '01:30', event: 'Turbine A-12 scheduled maintenance', status: 'warning' },
+          ]},
+        ],
+      },
+    },
+
+    { id: 'string-b', label: 'Turbine String B', icon: 'zap',
+      description: '25x Siemens SG 14-222 DD offshore turbines.',
+      status: 'online', progress: 91, flowRate: '318 MW',
+      parentId: 'grp-array',
+      sections: [
+        { heading: 'Turbines', content: '25 x 14 MW' },
+        { heading: 'Availability', content: '91.4%' },
+        { heading: 'Wake Loss', content: '3.8%' },
+        { heading: 'Sector', content: 'North-East' },
+      ],
+    },
+
+    { id: 'string-c', label: 'Turbine String C', icon: 'zap',
+      description: '20x Siemens SG 14-222 DD offshore turbines.',
+      status: 'warning', progress: 78, flowRate: '218 MW',
+      parentId: 'grp-array',
+      sections: [
+        { heading: 'Turbines', content: '20 x 14 MW (2 offline)' },
+        { heading: 'Availability', content: '78.1%' },
+        { heading: 'Alert', content: '2 turbines in **scheduled maintenance**' },
+        { heading: 'Sector', content: 'South' },
+      ],
+    },
+
+    { id: 'array-junction', label: 'Inter-Array Junction', icon: 'git-merge',
+      description: '33kV submarine cable junction hub.',
+      status: 'online',
+      parentId: 'grp-array',
+      sections: [
+        { heading: 'Voltage', content: '33 kV AC' },
+        { heading: 'Cable Type', content: 'XLPE submarine' },
+        { heading: 'Total Flow', content: '870 MW' },
+      ],
+    },
+
+    { id: 'collect-platform', label: 'Collection Platform', icon: 'server',
+      description: 'Offshore collection and switching platform.',
+      status: 'online', flowRate: '870 MW',
+      parentId: 'grp-array',
+      sections: [
+        { heading: 'Type', content: 'Jacket-mounted topsides' },
+        { heading: 'Switchgear', content: '33kV GIS switchboard' },
+        { heading: 'Voltage', content: '33 kV' },
+        { heading: 'Busbars', content: '2x double-bus arrangement' },
+      ],
+    },
+
+    // ===== OFFSHORE SUBSTATION =====
+    { id: 'grp-oss', type: 'group', label: 'Offshore Substation (OSS)', style: { color: '#f59e0b' } },
+
+    { id: 'oss-xfmr', label: 'Offshore Transformer', icon: 'transformer',
+      description: '33kV to 132kV step-up transformer.',
+      status: 'online', progress: 82, flowRate: '870 MW',
+      parentId: 'grp-oss',
+      sections: [
+        { heading: 'Rating', content: '1000 MVA ONAN' },
+        { heading: 'HV Voltage', content: '132 kV' },
+        { heading: 'LV Voltage', content: '33 kV' },
+        { heading: 'Vector Group', content: 'YNd11' },
+        { heading: 'Impedance', content: '12.5%' },
+      ],
+    },
+
+    { id: 'oss-svc', label: 'SVC — Reactive Compensation', icon: 'zap',
+      description: 'Static Var Compensator for voltage stability.',
+      status: 'online',
+      parentId: 'grp-oss',
+      sections: [
+        { heading: 'Range', content: '-200 to +200 MVAr' },
+        { heading: 'Response', content: '<30 ms' },
+        { heading: 'Current', content: '+45 MVAr absorb' },
+      ],
+    },
+
+    { id: 'oss-switchgear', label: 'OSS 132kV Switchgear', icon: 'git-branch',
+      description: 'GIS switchgear at 132kV.',
+      status: 'online',
+      parentId: 'grp-oss',
+      sections: [
+        { heading: 'Type', content: 'SF6 GIS' },
+        { heading: 'Voltage', content: '132 kV' },
+        { heading: 'Busbars', content: 'Double busbar' },
+        { heading: 'Feeders', content: '6 outgoing' },
+      ],
+    },
+
+    // ===== EXPORT CABLE =====
+    { id: 'grp-export', type: 'group', label: 'Export Cable System', style: { color: '#3b82f6' } },
+
+    { id: 'export-cable', label: 'Export Subsea Cable', icon: 'zap',
+      description: '132kV HVAC subsea cable export route.',
+      status: 'online', flowRate: '850 MW',
+      parentId: 'grp-export',
+      sections: [
+        { heading: 'Length', content: '95 km subsea' },
+        { heading: 'Voltage', content: '132 kV AC' },
+        { heading: 'Type', content: 'Mass-impregnated XLPE' },
+        { heading: 'Cross-section', content: '1200 mm2 Cu' },
+        { heading: 'Burial Depth', content: '1-2 m below seabed' },
+        { heading: 'Rated Current', content: '1050 A' },
+      ],
+    },
+
+    { id: 'cable-transition', label: 'Cable Transition Joint', icon: 'arrow-right',
+      description: 'Subsea-to-onshore cable transition at beach.',
+      status: 'online',
+      parentId: 'grp-export',
+      sections: [
+        { heading: 'Location', content: 'Landfall — Grimsby' },
+        { heading: 'Method', content: 'Horizontal directional drill' },
+        { heading: 'HDD Length', content: '600 m' },
+      ],
+    },
+
+    // ===== ONSHORE GRID =====
+    { id: 'grp-onshore', type: 'group', label: 'Onshore Grid Connection', style: { color: '#22c55e' } },
+
+    { id: 'onshore-sub', label: 'Onshore Substation', icon: 'box',
+      description: '132/400kV onshore substation.',
+      status: 'online', progress: 85, flowRate: '835 MW',
+      parentId: 'grp-onshore',
+      sections: [
+        { heading: 'HV Rating', content: '400 kV' },
+        { heading: 'LV Rating', content: '132 kV' },
+        { heading: 'Transformers', content: '2x 500 MVA autotransformers' },
+        { heading: 'Switchgear', content: '400kV AIS double busbar' },
+      ],
+    },
+
+    { id: 'onshore-xfmr', label: 'Grid Transformer', icon: 'transformer',
+      description: '132kV to 400kV autotransformer.',
+      status: 'online', flowRate: '835 MW',
+      parentId: 'grp-onshore',
+      sections: [
+        { heading: 'Rating', content: '2x 500 MVA' },
+        { heading: 'HV', content: '400 kV' },
+        { heading: 'LV', content: '132 kV' },
+        { heading: 'Tap Range', content: '+/-10% OLTC' },
+      ],
+    },
+
+    { id: 'grid-poi', label: 'Grid Connection Point', icon: 'zap',
+      description: '400kV point of common coupling with National Grid.',
+      status: 'online', flowRate: '835 MW',
+      style: { color: '#22c55e' },
+      parentId: 'grp-onshore',
+      sections: [
+        { heading: 'Voltage', content: '400 kV' },
+        { heading: 'Grid Code', content: 'GB Grid Code 2023' },
+        { heading: 'Freq Response', content: 'FFR contracted' },
+        { heading: 'Export Cap.', content: '1200 MW (contracted)' },
+      ],
+    },
+
+    { id: 'om-base', label: 'O&M Operations Base', icon: 'anchor',
+      description: 'Shore-based operations and maintenance facility.',
+      status: 'online',
+      sections: [
+        { heading: 'Location', content: 'Grimsby Port' },
+        { heading: 'Personnel', content: '120 technicians' },
+        { heading: 'Vessels', content: '4x SOV, 6x CTV' },
+        { heading: 'Shift Pattern', content: '12-hour rotating' },
+      ],
+    },
+
+    { id: 'weather-station', label: 'Met Mast — Weather Station', icon: 'cloud',
+      description: 'Offshore meteorological monitoring mast.',
+      status: 'online',
+      sections: [
+        { heading: 'Wind Speed', content: '**12.4 m/s** at 100m hub' },
+        { heading: 'Wind Dir.', content: '248 degrees (WSW)' },
+        { heading: 'Wave Height', content: '1.8 m Hs' },
+        { heading: 'Air Temp', content: '9.2 C' },
+        { heading: 'Visibility', content: '14 km' },
+      ],
+    },
+
+    { id: 'scada-wind', label: 'Wind Farm SCADA', icon: 'layout-dashboard',
+      description: 'Central SCADA and asset management system.',
+      status: 'online', style: { color: '#8b5cf6', glow: true },
+      sections: [
+        { heading: 'Total Output', content: '**870 MW**' },
+        { heading: 'Capacity Factor', content: '43.7%' },
+        { heading: 'Turbines Online', content: '68 / 70' },
+        { heading: 'Curtailment', content: '0 MW' },
+        { heading: 'Est. Daily Gen.', content: '~18,500 MWh' },
+      ],
+    },
   ],
   edges: [
-    { id: 'h1', source: 'ingest', target: 'validate' },
-    { id: 'h2', source: 'validate', target: 'transform' },
-    { id: 'h3', source: 'transform', target: 'check' },
-    { id: 'h4', source: 'check', target: 'store', label: 'Pass', type: 'success' },
-    { id: 'h5', source: 'check', target: 'reject', label: 'Fail', type: 'failure' },
-    { id: 'h6', source: 'store', target: 'done' },
+    // Turbine strings to junction
+    { id: 'wf1', source: 'string-a', target: 'array-junction', color: '#06b6d4', flowAnimation: true, annotation: '334 MW', thickness: 3, label: '33kV' },
+    { id: 'wf2', source: 'string-b', target: 'array-junction', color: '#06b6d4', flowAnimation: true, annotation: '318 MW', thickness: 3 },
+    { id: 'wf3', source: 'string-c', target: 'array-junction', color: '#f59e0b', flowAnimation: true, annotation: '218 MW', thickness: 2 },
+
+    // Junction to collection platform
+    { id: 'wf4', source: 'array-junction', target: 'collect-platform', color: '#06b6d4', flowAnimation: true, annotation: '870 MW', thickness: 4, label: '33kV XLPE' },
+
+    // Collection platform to OSS transformer
+    { id: 'wf5', source: 'collect-platform', target: 'oss-xfmr', color: '#22c55e', flowAnimation: true, annotation: '33kV', thickness: 4 },
+
+    // OSS transformer to switchgear
+    { id: 'wf6', source: 'oss-xfmr', target: 'oss-switchgear', color: '#f59e0b', flowAnimation: true, annotation: '132kV', thickness: 4 },
+
+    // SVC to switchgear (reactive compensation)
+    { id: 'wf7', source: 'oss-svc', target: 'oss-switchgear', color: '#8b5cf6', type: 'dashed', annotation: 'VAr support' },
+
+    // Switchgear to export cable
+    { id: 'wf8', source: 'oss-switchgear', target: 'export-cable', color: '#3b82f6', flowAnimation: true, annotation: '132kV', thickness: 4, label: '132kV Export' },
+
+    // Export cable to cable transition
+    { id: 'wf9', source: 'export-cable', target: 'cable-transition', color: '#3b82f6', flowAnimation: true, annotation: '95 km', thickness: 3 },
+
+    // Cable transition to onshore substation
+    { id: 'wf10', source: 'cable-transition', target: 'onshore-sub', color: '#22c55e', flowAnimation: true, annotation: '132kV', thickness: 4 },
+
+    // Onshore substation to grid transformer
+    { id: 'wf11', source: 'onshore-sub', target: 'onshore-xfmr', color: '#22c55e', flowAnimation: true, thickness: 3 },
+
+    // Grid transformer to POI
+    { id: 'wf12', source: 'onshore-xfmr', target: 'grid-poi', color: '#22c55e', flowAnimation: true, annotation: '400kV', thickness: 4, label: 'National Grid' },
+
+    // O&M base monitoring links
+    { id: 'wf13', source: 'om-base', target: 'collect-platform', color: '#94a3b8', type: 'dashed', annotation: 'Vessel ops' },
+    { id: 'wf14', source: 'om-base', target: 'weather-station', color: '#94a3b8', type: 'dashed' },
+
+    // SCADA monitoring
+    { id: 'wf15', source: 'scada-wind', target: 'string-a', color: '#8b5cf6', type: 'dashed', annotation: 'IEC 61400-25' },
+    { id: 'wf16', source: 'scada-wind', target: 'string-b', color: '#8b5cf6', type: 'dashed' },
+    { id: 'wf17', source: 'scada-wind', target: 'string-c', color: '#8b5cf6', type: 'dashed' },
+    { id: 'wf18', source: 'scada-wind', target: 'oss-switchgear', color: '#8b5cf6', type: 'dashed', annotation: 'IEC 61850' },
+    { id: 'wf19', source: 'weather-station', target: 'scada-wind', color: '#06b6d4', type: 'dashed', annotation: 'Met data' },
+  ],
+};
+
+const solarPlantDiagram: FlowDiagram = {
+  title: 'Utility-Scale Solar Plant — 400 MWdc',
+  layout: { direction: 'TB', routing: 'orthogonal', cornerRadius: 16 },
+  nodes: [
+    // ===== SOLAR ARRAY =====
+    { id: 'grp-solar', type: 'group', label: 'Solar Array', style: { color: '#f59e0b' } },
+
+    { id: 'pv-block-a', label: 'PV Block A — 100 MWdc', icon: 'zap',
+      description: 'Bifacial N-type modules, single-axis tracking.',
+      status: 'online', progress: 88, flowRate: '88 MW',
+      parentId: 'grp-solar',
+      sections: [
+        { heading: 'Modules', content: '166,667x Longi LR5-72HBD-555M' },
+        { heading: 'Module Power', content: '555 Wp bifacial' },
+        { heading: 'Strings', content: '10,000 strings x 28 modules' },
+        { heading: 'Tracking', content: 'GTX single-axis N-S' },
+        { heading: 'GHI Today', content: '**6.2 kWh/m2**' },
+        { heading: 'Temp', content: 'Cell temp 42 C' },
+      ],
+      detail: {
+        content: 'Block A covers **250 hectares** in the south-west quadrant. All trackers are operational and currently tracking at **35 degrees** elevation.',
+        sections: [
+          { type: 'keyvalue', title: 'Block A Specifications', data: {
+            'DC Capacity': '100 MWdc',
+            'Module Type': 'LR5-72HBD-555M bifacial',
+            'Tracker': 'Array Technologies DuoMax',
+            'Row Pitch': '7.5 m',
+            'Coverage': '250 ha',
+            'Specific Yield': '1,680 kWh/kWp/yr',
+            'PR (Performance Ratio)': '83.4%',
+          }},
+          { type: 'chart', title: 'Today\'s Generation (MW)', data: {
+            type: 'bar', values: [0, 5, 22, 55, 78, 88, 85, 79, 60, 32, 8, 0],
+            labels: ['6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17'],
+            color: '#f59e0b',
+          }},
+          { type: 'timeline', title: 'Block A Events', data: [
+            { time: '11:04', event: 'Peak output 88 MW achieved', status: 'success' },
+            { time: '08:30', event: 'Trackers active, stow angle released', status: 'info' },
+            { time: '07:15', event: 'Inverter warm-up sequence', status: 'info' },
+            { time: '02:00', event: 'Overnight wind stow deactivated', status: 'success' },
+          ]},
+        ],
+      },
+    },
+
+    { id: 'pv-block-b', label: 'PV Block B — 100 MWdc', icon: 'zap',
+      description: 'Bifacial N-type modules, single-axis tracking.',
+      status: 'online', progress: 86, flowRate: '86 MW',
+      parentId: 'grp-solar',
+      sections: [
+        { heading: 'Modules', content: '166,667x Longi LR5-72HBD-555M' },
+        { heading: 'GHI Today', content: '6.1 kWh/m2' },
+        { heading: 'Availability', content: '99.6%' },
+        { heading: 'Sector', content: 'North-West quadrant' },
+      ],
+    },
+
+    { id: 'pv-block-c', label: 'PV Block C — 100 MWdc', icon: 'zap',
+      description: 'Bifacial N-type modules, fixed tilt 20 degrees.',
+      status: 'online', progress: 81, flowRate: '81 MW',
+      parentId: 'grp-solar',
+      sections: [
+        { heading: 'Modules', content: '166,667x JA JAM72S30-555MR' },
+        { heading: 'Tilt', content: 'Fixed 20 degrees (terrain constrained)' },
+        { heading: 'GHI Today', content: '5.8 kWh/m2' },
+        { heading: 'Soiling Loss', content: '1.2% (last cleaned 3 days ago)' },
+      ],
+    },
+
+    { id: 'pv-block-d', label: 'PV Block D — 100 MWdc', icon: 'zap',
+      description: 'Bifacial N-type modules, single-axis tracking.',
+      status: 'warning', progress: 72, flowRate: '72 MW',
+      parentId: 'grp-solar',
+      sections: [
+        { heading: 'Modules', content: '166,667x Longi LR5-72HBD-555M' },
+        { heading: 'Availability', content: '72.4%' },
+        { heading: 'Alert', content: '3 inverter units offline — **maintenance**' },
+        { heading: 'Sector', content: 'South-East quadrant' },
+      ],
+    },
+
+    { id: 'combiner-ab', label: 'Combiner Station AB', icon: 'git-merge',
+      description: 'DC combiner and string monitoring for Blocks A and B.',
+      status: 'online', flowRate: '174 MW DC',
+      parentId: 'grp-solar',
+      sections: [
+        { heading: 'String Monitoring', content: 'SMA ShadeFix per string' },
+        { heading: 'DC Voltage', content: '1000-1500V DC range' },
+        { heading: 'Fusing', content: '10A string fuses' },
+        { heading: 'Comms', content: 'RS-485 Modbus to SCADA' },
+      ],
+    },
+
+    { id: 'combiner-cd', label: 'Combiner Station CD', icon: 'git-merge',
+      description: 'DC combiner and string monitoring for Blocks C and D.',
+      status: 'warning', flowRate: '153 MW DC',
+      parentId: 'grp-solar',
+    },
+
+    { id: 'string-inv-ab', label: 'String Inverters — AB', icon: 'zap',
+      description: 'Distributed string inverters for Blocks A and B.',
+      status: 'online', progress: 92, flowRate: '169 MW AC',
+      parentId: 'grp-solar',
+      sections: [
+        { heading: 'Inverters', content: '80x SMA Sunny Tripower 2500 TLEE' },
+        { heading: 'Unit Power', content: '2.5 MWac each' },
+        { heading: 'Efficiency', content: '98.8% peak CEC' },
+        { heading: 'AC Output', content: '690V AC 3-phase' },
+        { heading: 'MPPT Range', content: '860-1500V DC' },
+      ],
+    },
+
+    { id: 'string-inv-cd', label: 'String Inverters — CD', icon: 'zap',
+      description: 'Distributed string inverters for Blocks C and D.',
+      status: 'warning', progress: 77, flowRate: '148 MW AC',
+      parentId: 'grp-solar',
+      sections: [
+        { heading: 'Inverters', content: '80x SMA Sunny Tripower 2500 TLEE' },
+        { heading: 'Online', content: '77 / 80 (3 in maintenance)' },
+        { heading: 'AC Output', content: '690V AC 3-phase' },
+      ],
+    },
+
+    // ===== CENTRAL PLANT =====
+    { id: 'grp-plant', type: 'group', label: 'Central Plant', style: { color: '#3b82f6' } },
+
+    { id: 'mv-switchgear', label: 'MV Switchgear — 33kV', icon: 'git-branch',
+      description: 'Medium-voltage GIS switchgear collection bus.',
+      status: 'online', flowRate: '317 MW AC',
+      parentId: 'grp-plant',
+      sections: [
+        { heading: 'Voltage', content: '33 kV' },
+        { heading: 'Configuration', content: 'Single busbar, 12 feeders' },
+        { heading: 'Type', content: 'SF6 GIS indoor' },
+        { heading: 'Protection', content: 'Diff, OC, earth fault' },
+      ],
+    },
+
+    { id: 'stepup-xfmr', label: 'Step-Up Transformer', icon: 'transformer',
+      description: '33kV to 132kV power transformer.',
+      status: 'online', progress: 85, flowRate: '310 MW',
+      parentId: 'grp-plant',
+      sections: [
+        { heading: 'Rating', content: '340 MVA ONAF' },
+        { heading: 'HV', content: '132 kV' },
+        { heading: 'LV', content: '33 kV' },
+        { heading: 'Vector Group', content: 'YNd11' },
+        { heading: 'Tap Changer', content: 'OLTC +/-15% 19 steps' },
+        { heading: 'Cooling', content: 'ODAF at full load' },
+      ],
+    },
+
+    { id: 'plant-ctrl', label: 'Plant Controller — PPC', icon: 'layout-dashboard',
+      description: 'Park-level Power Plant Controller.',
+      status: 'online',
+      parentId: 'grp-plant',
+      sections: [
+        { heading: 'Function', content: 'Active/reactive power dispatch' },
+        { heading: 'Grid Code', content: 'BDEW 2018 compliant' },
+        { heading: 'Ramp Rate', content: '10% FP/min (active)' },
+        { heading: 'Response', content: '<500 ms to TSO setpoint' },
+      ],
+    },
+
+    // ===== BATTERY STORAGE (BESS) =====
+    { id: 'grp-bess', type: 'group', label: 'Battery Energy Storage (BESS)', style: { color: '#8b5cf6' } },
+
+    { id: 'bess-modules', label: 'BESS — 100 MW / 400 MWh', icon: 'battery',
+      description: 'Li-ion battery energy storage system.',
+      status: 'online', progress: 67, flowRate: '45 MW charge',
+      parentId: 'grp-bess',
+      sections: [
+        { heading: 'Chemistry', content: 'LFP (LiFePO4) prismatic cells' },
+        { heading: 'Total Energy', content: '400 MWh usable' },
+        { heading: 'Power Rating', content: '100 MW / 4h' },
+        { heading: 'SoC', content: '**67%** (268 MWh stored)' },
+        { heading: 'Mode', content: 'Charging at 45 MW' },
+        { heading: 'Round-trip Eff.', content: '92.5%' },
+        { heading: 'Cycles', content: '1,240 of 6,000 rated' },
+      ],
+    },
+
+    { id: 'bms', label: 'BMS — Battery Management', icon: 'shield-check',
+      description: 'Battery Management System with cell balancing.',
+      status: 'online',
+      parentId: 'grp-bess',
+      sections: [
+        { heading: 'Cell Balancing', content: 'Active balancing <10mV delta' },
+        { heading: 'Max Cell Temp', content: '32.4 C (within limits)' },
+        { heading: 'Min Cell Temp', content: '28.1 C' },
+        { heading: 'Cell Voltage', content: '3.26V avg (LFP nominal)' },
+        { heading: 'Protection', content: 'OVP, UVP, OTP, short circuit' },
+      ],
+    },
+
+    { id: 'thermal-mgmt', label: 'Thermal Management', icon: 'thermometer',
+      description: 'Liquid cooling for battery modules.',
+      status: 'online', progress: 42,
+      parentId: 'grp-bess',
+      sections: [
+        { heading: 'Coolant', content: '50/50 glycol/water' },
+        { heading: 'Supply Temp', content: '20 C' },
+        { heading: 'Return Temp', content: '28 C' },
+        { heading: 'HVAC', content: '2x 150kW compressor units' },
+        { heading: 'Setpoint', content: '25-30 C operating range' },
+      ],
+    },
+
+    // ===== GRID INTERFACE =====
+    { id: 'grp-grid', type: 'group', label: 'Grid Interface', style: { color: '#22c55e' } },
+
+    { id: 'revenue-meter', label: 'Revenue Meter', icon: 'gauge',
+      description: 'Fiscal metering at point of interconnection.',
+      status: 'online', flowRate: '310 MW export',
+      parentId: 'grp-grid',
+      sections: [
+        { heading: 'Type', content: 'Landis+Gyr E650 revenue meter' },
+        { heading: 'Accuracy', content: 'Class 0.2S (IEC 62053-22)' },
+        { heading: 'Metering', content: 'Active, reactive, power factor' },
+        { heading: 'Tariff', content: 'Interval data 30-min settlement' },
+      ],
+    },
+
+    { id: 'poi', label: 'POI — Point of Interconnection', icon: 'zap',
+      description: '132kV grid connection point.',
+      status: 'online', flowRate: '310 MW',
+      style: { color: '#22c55e' },
+      parentId: 'grp-grid',
+      sections: [
+        { heading: 'Voltage', content: '132 kV' },
+        { heading: 'Contracted Capacity', content: '320 MW' },
+        { heading: 'Grid Operator', content: 'National Grid ESO' },
+        { heading: 'Connection Ref.', content: 'TEC 2029/04/SW-001' },
+        { heading: 'Reactive Range', content: '+/-60 MVAr (contractual)' },
+      ],
+    },
+
+    // Weather station
+    { id: 'weather-solar', label: 'Weather Station', icon: 'sun',
+      description: 'Onsite meteorological monitoring.',
+      status: 'online',
+      sections: [
+        { heading: 'GHI', content: '**812 W/m2** (pyranometer)' },
+        { heading: 'DNI', content: '745 W/m2' },
+        { heading: 'Ambient Temp', content: '24.1 C' },
+        { heading: 'Wind Speed', content: '3.2 m/s (tracker stow: 14 m/s)' },
+        { heading: 'Humidity', content: '38%' },
+      ],
+    },
+
+    // SCADA
+    { id: 'scada-solar', label: 'Plant SCADA', icon: 'layout-dashboard',
+      description: 'Supervisory control and data acquisition system.',
+      status: 'online', style: { color: '#8b5cf6', glow: true },
+      sections: [
+        { heading: 'Total DC', content: '**327 MW**' },
+        { heading: 'Total AC', content: '**317 MW**' },
+        { heading: 'Plant PR', content: '82.1%' },
+        { heading: 'BESS SoC', content: '67% / 268 MWh' },
+        { heading: 'Irradiance', content: '812 W/m2 avg' },
+        { heading: 'Today\'s Gen.', content: '1,840 MWh' },
+      ],
+    },
+  ],
+  edges: [
+    // PV blocks to combiners
+    { id: 'sp1', source: 'pv-block-a', target: 'combiner-ab', color: '#f59e0b', flowAnimation: true, annotation: '88 MW DC', thickness: 3, label: '1500V DC' },
+    { id: 'sp2', source: 'pv-block-b', target: 'combiner-ab', color: '#f59e0b', flowAnimation: true, annotation: '86 MW DC', thickness: 3 },
+    { id: 'sp3', source: 'pv-block-c', target: 'combiner-cd', color: '#f59e0b', flowAnimation: true, annotation: '81 MW DC', thickness: 3 },
+    { id: 'sp4', source: 'pv-block-d', target: 'combiner-cd', color: '#f59e0b', flowAnimation: true, annotation: '72 MW DC', thickness: 2 },
+
+    // Combiners to string inverters
+    { id: 'sp5', source: 'combiner-ab', target: 'string-inv-ab', color: '#f59e0b', flowAnimation: true, annotation: '174 MW DC', thickness: 3 },
+    { id: 'sp6', source: 'combiner-cd', target: 'string-inv-cd', color: '#f59e0b', flowAnimation: true, annotation: '153 MW DC', thickness: 3 },
+
+    // String inverters to MV switchgear (DC to AC)
+    { id: 'sp7', source: 'string-inv-ab', target: 'mv-switchgear', color: '#3b82f6', flowAnimation: true, annotation: '169 MW AC', thickness: 3, label: '690V -> 33kV' },
+    { id: 'sp8', source: 'string-inv-cd', target: 'mv-switchgear', color: '#3b82f6', flowAnimation: true, annotation: '148 MW AC', thickness: 3 },
+
+    // BESS to MV switchgear
+    { id: 'sp9', source: 'bess-modules', target: 'mv-switchgear', color: '#8b5cf6', flowAnimation: true, annotation: '45 MW', thickness: 2, label: 'BESS AC' },
+
+    // MV switchgear to step-up transformer
+    { id: 'sp10', source: 'mv-switchgear', target: 'stepup-xfmr', color: '#3b82f6', flowAnimation: true, annotation: '317 MW', thickness: 4, label: '33kV' },
+
+    // Transformer to revenue meter
+    { id: 'sp11', source: 'stepup-xfmr', target: 'revenue-meter', color: '#22c55e', flowAnimation: true, annotation: '132kV', thickness: 4 },
+
+    // Revenue meter to POI
+    { id: 'sp12', source: 'revenue-meter', target: 'poi', color: '#22c55e', flowAnimation: true, annotation: '310 MW', thickness: 4 },
+
+    // BMS controls BESS
+    { id: 'sp13', source: 'bms', target: 'bess-modules', color: '#8b5cf6', type: 'dashed', annotation: 'Cell mgmt' },
+
+    // Thermal management to BESS
+    { id: 'sp14', source: 'thermal-mgmt', target: 'bess-modules', color: '#06b6d4', type: 'dashed', annotation: 'Cooling loop' },
+
+    // Plant controller
+    { id: 'sp15', source: 'plant-ctrl', target: 'mv-switchgear', color: '#3b82f6', type: 'dashed', annotation: 'Dispatch' },
+    { id: 'sp16', source: 'plant-ctrl', target: 'bess-modules', color: '#8b5cf6', type: 'dashed', annotation: 'BESS setpoint' },
+
+    // Weather station to SCADA
+    { id: 'sp17', source: 'weather-solar', target: 'scada-solar', color: '#f59e0b', type: 'dashed', annotation: 'Met data' },
+
+    // SCADA monitoring
+    { id: 'sp18', source: 'scada-solar', target: 'string-inv-ab', color: '#8b5cf6', type: 'dashed', annotation: 'IEC 61850' },
+    { id: 'sp19', source: 'scada-solar', target: 'string-inv-cd', color: '#8b5cf6', type: 'dashed' },
+    { id: 'sp20', source: 'scada-solar', target: 'bms', color: '#8b5cf6', type: 'dashed', annotation: 'BESS telemetry' },
+    { id: 'sp21', source: 'scada-solar', target: 'poi', color: '#8b5cf6', type: 'dashed', annotation: 'Grid data' },
+    { id: 'sp22', source: 'scada-solar', target: 'plant-ctrl', color: '#8b5cf6', type: 'dashed', annotation: 'TSO setpoints' },
   ],
 };
 
@@ -89,55 +660,319 @@ const datacenterDiagram: FlowDiagram = {
   ],
 };
 
-const circuitDiagram: FlowDiagram = {
-  title: 'Audio Amplifier Circuit',
+const powerSupplyDiagram: FlowDiagram = {
+  title: 'ATX Power Supply — Multi-Stage Design',
   layout: { direction: 'LR', routing: 'orthogonal', cornerRadius: 12 },
   nodes: [
-    // Power supply section
-    { id: 'vcc', type: 'netlabel', label: 'VCC +9V', style: { color: '#ef4444' } },
-    { id: 'gnd1', type: 'netlabel', label: 'GND', style: { color: '#94a3b8' } },
+    // ===== AC INPUT STAGE =====
+    { id: 'grp-ac', type: 'group', label: 'AC Input Stage', style: { color: '#ef4444' } },
 
-    // Input stage
-    { id: 'input', label: 'Audio Input', icon: 'connector', description: '3.5mm jack.' },
-    { id: 'c1', label: 'C1', icon: 'capacitor', description: 'Coupling capacitor.', flowRate: '10uF' },
-    { id: 'r1', label: 'R1', icon: 'resistor', description: 'Bias resistor.', flowRate: '10K' },
-    { id: 'r2', label: 'R2', icon: 'resistor', description: 'Bias resistor.', flowRate: '47K' },
-
-    // Amplifier
-    { id: 'q1', label: 'Q1', icon: 'transistor-npn', description: 'NPN amplifier stage.',
+    { id: 'mains', label: 'J1 — Mains Input', icon: 'connector',
+      description: 'IEC C14 inlet connector. 85-264V AC universal input.',
+      parentId: 'grp-ac',
       ports: [
-        { id: 'B', label: 'B', side: 'left', position: 0.5 },
-        { id: 'C', label: 'C', side: 'top', position: 0.5 },
-        { id: 'E', label: 'E', side: 'bottom', position: 0.5 },
-      ]
+        { id: 'L', label: 'L', side: 'left', position: 0.3 },
+        { id: 'N', label: 'N', side: 'left', position: 0.7 },
+        { id: 'PE', label: 'PE', side: 'bottom', position: 0.5 },
+      ],
     },
-    { id: 'r3', label: 'R3', icon: 'resistor', description: 'Collector resistor.', flowRate: '4.7K' },
-    { id: 'r4', label: 'R4', icon: 'resistor', description: 'Emitter resistor.', flowRate: '1K' },
 
-    // Output
-    { id: 'c2', label: 'C2', icon: 'capacitor', description: 'Output coupling.', flowRate: '100uF' },
-    { id: 'speaker', label: 'Speaker', icon: 'speaker', description: '8 ohm speaker.', status: 'online' },
-    { id: 'gnd2', type: 'netlabel', label: 'GND', style: { color: '#94a3b8' } },
+    { id: 'f1-mov', label: 'F1 / MOV1', icon: 'fuse',
+      description: 'T6.3A 250V slow-blow fuse in series with MOV surge suppressor.',
+      parentId: 'grp-ac',
+      sections: [
+        { heading: 'Fuse', content: 'T6.3A 250V ceramic' },
+        { heading: 'MOV', content: 'S20K275 — 275V clamping' },
+        { heading: 'Function', content: 'Overcurrent and surge protection' },
+      ],
+    },
+
+    { id: 'emi-filter', label: 'EMI Filter', icon: 'inductor',
+      description: 'Common-mode choke + differential-mode filter.',
+      parentId: 'grp-ac',
+      sections: [
+        { heading: 'CM Choke', content: 'L1: 2x 15mH toroid' },
+        { heading: 'X Cap', content: 'CX1: 0.47uF X2 class' },
+        { heading: 'Y Cap', content: 'CY1/CY2: 2.2nF Y2 class' },
+        { heading: 'Attenuation', content: '40dB @ 150kHz' },
+      ],
+    },
+
+    { id: 'bridge-rect', label: 'BD1 — Bridge Rectifier', icon: 'diode',
+      description: 'Full-wave bridge rectifier with bulk capacitor.',
+      status: 'online', flowRate: '325V DC',
+      parentId: 'grp-ac',
+      ports: [
+        { id: 'AC1', label: 'AC~', side: 'left', position: 0.3 },
+        { id: 'AC2', label: 'AC~', side: 'left', position: 0.7 },
+        { id: 'pos', label: '+', side: 'right', position: 0.3 },
+        { id: 'neg', label: '-', side: 'right', position: 0.7 },
+      ],
+      sections: [
+        { heading: 'Type', content: 'GBU1506 15A 600V' },
+        { heading: 'Vout', content: '~325V DC (230V in)' },
+        { heading: 'Bulk Cap', content: 'C1: 470uF 400V electrolytic' },
+        { heading: 'Ripple', content: '<5V at full load' },
+      ],
+    },
+
+    // ===== PFC STAGE =====
+    { id: 'grp-pfc', type: 'group', label: 'PFC Stage', style: { color: '#f59e0b' } },
+
+    { id: 'pfc-boost', label: 'PFC Boost Converter', icon: 'inductor',
+      description: 'Active power factor correction boost stage.',
+      status: 'online', progress: 96, flowRate: '400V DC bus',
+      parentId: 'grp-pfc',
+      ports: [
+        { id: 'in', label: 'Vin', side: 'left', position: 0.5 },
+        { id: 'out', label: 'Vout', side: 'right', position: 0.5 },
+        { id: 'gate', label: 'G', side: 'bottom', position: 0.5 },
+      ],
+      sections: [
+        { heading: 'Topology', content: 'Continuous conduction mode boost' },
+        { heading: 'Inductor', content: 'L2: 200uH, 15A, powder core' },
+        { heading: 'MOSFET', content: 'Q1: IPW65R065C7 650V 40A' },
+        { heading: 'Diode', content: 'D1: IDH08SG60C SiC 8A 600V' },
+        { heading: 'Vout', content: '400V DC regulated' },
+        { heading: 'fsw', content: '65 kHz' },
+      ],
+    },
+
+    { id: 'pfc-ctrl', label: 'PFC Controller — L6599', icon: 'circuit-breaker',
+      description: 'Interleaved PFC controller IC with multiplier.',
+      parentId: 'grp-pfc',
+      sections: [
+        { heading: 'IC', content: 'STMicro L6599 or NCP1650' },
+        { heading: 'Sensing', content: 'AC voltage + inductor current' },
+        { heading: 'THD', content: '<5% total harmonic distortion' },
+        { heading: 'PF', content: '>0.99 at full load' },
+        { heading: 'OVP', content: '430V threshold' },
+      ],
+    },
+
+    // ===== DC-DC STAGE =====
+    { id: 'grp-dcdc', type: 'group', label: 'DC-DC Converter Stage', style: { color: '#3b82f6' } },
+
+    { id: 'half-bridge', label: 'Q2/Q3 — Half-Bridge LLC', icon: 'transistor-npn',
+      description: 'Series-resonant LLC half-bridge converter.',
+      status: 'online', progress: 94,
+      parentId: 'grp-dcdc',
+      ports: [
+        { id: 'Vbus', label: 'Vbus', side: 'left', position: 0.3 },
+        { id: 'gnd_dc', label: 'GND', side: 'left', position: 0.7 },
+        { id: 'sw', label: 'SW', side: 'right', position: 0.5 },
+      ],
+      sections: [
+        { heading: 'Topology', content: 'Half-bridge LLC resonant' },
+        { heading: 'Q2', content: 'IPP65R080CFD 650V 21A' },
+        { heading: 'Q3', content: 'IPP65R080CFD 650V 21A' },
+        { heading: 'Lr (resonant)', content: '18 uH' },
+        { heading: 'Cr (resonant)', content: '56 nF' },
+        { heading: 'fsw range', content: '80-150 kHz' },
+        { heading: 'Efficiency', content: '96.5% at full load' },
+      ],
+    },
+
+    { id: 'hf-xfmr', label: 'T1 — HF Transformer', icon: 'transformer',
+      description: 'High-frequency isolation transformer.',
+      status: 'online',
+      parentId: 'grp-dcdc',
+      ports: [
+        { id: 'pri', label: 'Pri', side: 'left', position: 0.5 },
+        { id: 'sec1', label: '12V', side: 'right', position: 0.3 },
+        { id: 'sec2', label: '5V', side: 'right', position: 0.7 },
+      ],
+      sections: [
+        { heading: 'Core', content: 'Ferrite N87, E65/32/27' },
+        { heading: 'Turns Ratio', content: 'Pri:12V = 14:3 / Pri:5V = 14:1.3' },
+        { heading: 'Frequency', content: '80-150 kHz (LLC)' },
+        { heading: 'Isolation', content: '3kV AC / 4.2kV DC' },
+        { heading: 'Power', content: '650W continuous' },
+      ],
+      detail: {
+        content: 'The HF transformer provides galvanic isolation between the 400V DC bus and the low-voltage secondary outputs. The core is designed for minimum flux density at the LLC resonant frequency.',
+        sections: [
+          { type: 'keyvalue', title: 'Transformer Parameters', data: {
+            'Core Material': 'Ferroxcube 3C95 / TDK N87',
+            'Core Size': 'E65/32/27 gapped',
+            'Primary Turns': '14',
+            '12V Winding': '3 turns bifilar',
+            '5V Winding': '1.3 turns copper strip',
+            'Magnetizing Ind.': 'Lm = 230 uH',
+            'Leakage Ind.': 'Llk = 18 uH (forms Lr)',
+            'Winding Temp Rise': '<40 C at 650W',
+          }},
+          { type: 'chart', title: 'Efficiency vs Load (%)', data: {
+            type: 'line', values: [85, 90, 93, 95, 96.5, 96.8, 96.5, 95.5, 93],
+            labels: ['10%', '20%', '30%', '40%', '50%', '60%', '70%', '80%', '100%'],
+            color: '#3b82f6',
+          }},
+        ],
+      },
+    },
+
+    { id: 'out-rectifier', label: 'D2/D3 — Sync Rectifier', icon: 'diode',
+      description: 'Synchronous rectification on secondary side.',
+      parentId: 'grp-dcdc',
+      sections: [
+        { heading: '12V Rect.', content: 'D2: BSC093N10NS3G 100V 50A' },
+        { heading: '5V Rect.', content: 'D3: BSC050N10NS3G 100V 100A' },
+        { heading: 'Control', content: 'SY8206 synchronous rectifier IC' },
+        { heading: 'VF', content: '<5mV on-state (SR mode)' },
+      ],
+    },
+
+    // ===== OUTPUT STAGE =====
+    { id: 'grp-out', type: 'group', label: 'Output Filter & Regulation', style: { color: '#22c55e' } },
+
+    { id: 'out-filter-12v', label: 'L3/C3 — 12V Output Filter', icon: 'inductor',
+      description: 'Output LC filter for 12V rail.',
+      parentId: 'grp-out',
+      sections: [
+        { heading: 'Inductor', content: 'L3: 1.2uH, 50A powder core' },
+        { heading: 'Cap', content: 'C3: 3x 2200uF 16V low-ESR' },
+        { heading: 'Ripple', content: '<15mV pk-pk at 40A load' },
+      ],
+    },
+
+    { id: 'out-filter-5v', label: 'L4/C4 — 5V Output Filter', icon: 'inductor',
+      description: 'Output LC filter for 5V rail.',
+      parentId: 'grp-out',
+      sections: [
+        { heading: 'Inductor', content: 'L4: 0.8uH, 30A' },
+        { heading: 'Cap', content: 'C4: 2x 3300uF 10V' },
+        { heading: 'Ripple', content: '<10mV pk-pk at 25A load' },
+      ],
+    },
+
+    { id: 'vdiv-fb', label: 'R5/R6 — Voltage Divider', icon: 'resistor',
+      description: 'Feedback voltage divider for 12V regulation.',
+      parentId: 'grp-out',
+      sections: [
+        { heading: 'R5', content: '10 kohm 0.1%' },
+        { heading: 'R6', content: '3.48 kohm 0.1%' },
+        { heading: 'Vfb', content: '2.5V (TL431 reference)' },
+        { heading: 'Gain', content: 'Sets 12.0V +/- 1%' },
+      ],
+    },
+
+    { id: 'out-12v', label: '+12V Rail Output', icon: 'connector',
+      description: '12V output rail terminal.',
+      status: 'online', flowRate: '+12V / 40A',
+      parentId: 'grp-out',
+      style: { color: '#ef4444' },
+      sections: [
+        { heading: 'Voltage', content: '+12.02 V' },
+        { heading: 'Current', content: '40 A (rated)' },
+        { heading: 'Power', content: '480 W' },
+        { heading: 'Load Reg.', content: '<1% (full to 20% load)' },
+        { heading: 'Protection', content: 'OVP 13.8V / OCP 48A' },
+      ],
+    },
+
+    { id: 'out-5v', label: '+5V Rail Output', icon: 'connector',
+      description: '5V output rail terminal.',
+      status: 'online', flowRate: '+5V / 25A',
+      parentId: 'grp-out',
+      style: { color: '#f59e0b' },
+      sections: [
+        { heading: 'Voltage', content: '+5.02 V' },
+        { heading: 'Current', content: '25 A (rated)' },
+        { heading: 'Power', content: '125 W' },
+        { heading: 'Protection', content: 'OVP 6.0V / OCP 30A' },
+      ],
+    },
+
+    // ===== CONTROL & FEEDBACK =====
+    { id: 'grp-ctrl', type: 'group', label: 'Control and Feedback', style: { color: '#8b5cf6' } },
+
+    { id: 'pwm-ctrl', label: 'U1 — LLC PWM Controller', icon: 'circuit-breaker',
+      description: 'Resonant mode LLC controller IC.',
+      status: 'online', style: { color: '#8b5cf6', glow: true },
+      parentId: 'grp-ctrl',
+      sections: [
+        { heading: 'IC', content: 'NCP1395 / FAN7621' },
+        { heading: 'Topology', content: 'Half-bridge LLC driver' },
+        { heading: 'DT', content: '180 ns dead-time' },
+        { heading: 'Soft Start', content: '8 ms from 150kHz down' },
+        { heading: 'OVP', content: 'Latching shutdown' },
+        { heading: 'Thermal', content: 'NTC thermistor shutdown >110C' },
+      ],
+    },
+
+    { id: 'optocoupler', label: 'U2 — Optocoupler', icon: 'diode',
+      description: 'PC817 optocoupler for isolated feedback.',
+      parentId: 'grp-ctrl',
+      sections: [
+        { heading: 'Part', content: 'PC817C or FOD817' },
+        { heading: 'CTR', content: '100-300%' },
+        { heading: 'Isolation', content: '5kV AC' },
+        { heading: 'BW', content: '~80 kHz' },
+      ],
+    },
+
+    { id: 'tl431', label: 'U3 — TL431 Reference', icon: 'diode',
+      description: 'Precision shunt regulator for voltage reference.',
+      parentId: 'grp-ctrl',
+      sections: [
+        { heading: 'Part', content: 'TL431C 2.5V' },
+        { heading: 'Vref', content: '2.495 V nominal' },
+        { heading: 'Temp Coef', content: '30 ppm/C' },
+        { heading: 'Loop Comp', content: 'Type-II compensator' },
+      ],
+    },
+
+    // Net labels
+    { id: 'nl-400vdc', type: 'netlabel', label: '400V DC Bus', style: { color: '#ef4444' } },
+    { id: 'nl-pgnd', type: 'netlabel', label: 'PGND', style: { color: '#94a3b8' } },
+    { id: 'nl-sgnd', type: 'netlabel', label: 'SGND', style: { color: '#06b6d4' } },
   ],
   edges: [
-    // Signal path
-    { id: 'a1', source: 'input', target: 'c1', color: '#3b82f6', flowAnimation: true, annotation: 'Audio in' },
-    { id: 'a2', source: 'c1', target: 'q1', targetPort: 'B', color: '#3b82f6', flowAnimation: true },
-    { id: 'a3', source: 'r1', target: 'q1', targetPort: 'B', color: '#94a3b8', showJunction: true },
-    { id: 'a4', source: 'r2', target: 'q1', targetPort: 'B', color: '#94a3b8', showJunction: true },
+    // AC Input path
+    { id: 'ps1', source: 'mains', sourcePort: 'L', target: 'f1-mov', color: '#ef4444', flowAnimation: true, annotation: '230V AC' },
+    { id: 'ps2', source: 'f1-mov', target: 'emi-filter', color: '#ef4444', flowAnimation: true, annotation: 'L+N' },
+    { id: 'ps3', source: 'emi-filter', target: 'bridge-rect', targetPort: 'AC1', color: '#ef4444', flowAnimation: true, thickness: 2 },
+    { id: 'ps4', source: 'mains', sourcePort: 'N', target: 'bridge-rect', targetPort: 'AC2', color: '#94a3b8', flowAnimation: true },
 
-    // Collector path
-    { id: 'a5', source: 'vcc', target: 'r3', color: '#ef4444', annotation: '+9V' },
-    { id: 'a6', source: 'r3', target: 'q1', targetPort: 'C', color: '#ef4444', flowAnimation: true },
+    // Rectified DC to PFC
+    { id: 'ps5', source: 'bridge-rect', sourcePort: 'pos', target: 'pfc-boost', targetPort: 'in', color: '#f59e0b', flowAnimation: true, annotation: '325V DC', thickness: 2 },
+    { id: 'ps6', source: 'bridge-rect', sourcePort: 'neg', target: 'nl-pgnd', color: '#94a3b8' },
 
-    // Emitter path
-    { id: 'a7', source: 'q1', sourcePort: 'E', target: 'r4', color: '#f59e0b' },
-    { id: 'a8', source: 'r4', target: 'gnd1', color: '#94a3b8' },
+    // PFC boost to 400V DC bus
+    { id: 'ps7', source: 'pfc-boost', sourcePort: 'out', target: 'nl-400vdc', color: '#ef4444', flowAnimation: true, annotation: '400V DC', thickness: 3 },
+    { id: 'ps8', source: 'nl-400vdc', target: 'half-bridge', targetPort: 'Vbus', color: '#ef4444', flowAnimation: true, thickness: 3 },
 
-    // Output path
-    { id: 'a9', source: 'q1', sourcePort: 'C', target: 'c2', color: '#22c55e', flowAnimation: true, showJunction: true },
-    { id: 'a10', source: 'c2', target: 'speaker', color: '#22c55e', flowAnimation: true, annotation: 'Amplified' },
-    { id: 'a11', source: 'speaker', target: 'gnd2', color: '#94a3b8' },
+    // PFC control
+    { id: 'ps9', source: 'pfc-ctrl', target: 'pfc-boost', targetPort: 'gate', color: '#8b5cf6', type: 'dashed', annotation: 'PWM gate' },
+
+    // Half-bridge to transformer
+    { id: 'ps10', source: 'half-bridge', sourcePort: 'sw', target: 'hf-xfmr', targetPort: 'pri', color: '#3b82f6', flowAnimation: true, annotation: 'LLC resonant', thickness: 2 },
+    { id: 'ps11', source: 'half-bridge', sourcePort: 'gnd_dc', target: 'nl-pgnd', color: '#94a3b8', showJunction: true },
+
+    // Transformer secondaries to rectifier
+    { id: 'ps12', source: 'hf-xfmr', sourcePort: 'sec1', target: 'out-rectifier', color: '#22c55e', flowAnimation: true, annotation: '12V AC' },
+    { id: 'ps13', source: 'hf-xfmr', sourcePort: 'sec2', target: 'out-rectifier', color: '#f59e0b', flowAnimation: true, annotation: '5V AC' },
+
+    // Rectifier to output filters
+    { id: 'ps14', source: 'out-rectifier', target: 'out-filter-12v', color: '#ef4444', flowAnimation: true, annotation: '12V rect.', thickness: 2 },
+    { id: 'ps15', source: 'out-rectifier', target: 'out-filter-5v', color: '#f59e0b', flowAnimation: true, annotation: '5V rect.', thickness: 2 },
+
+    // Output filters to terminals
+    { id: 'ps16', source: 'out-filter-12v', target: 'out-12v', color: '#ef4444', flowAnimation: true, annotation: '+12V 40A', thickness: 3 },
+    { id: 'ps17', source: 'out-filter-5v', target: 'out-5v', color: '#f59e0b', flowAnimation: true, annotation: '+5V 25A', thickness: 2 },
+
+    // Feedback path
+    { id: 'ps18', source: 'out-12v', target: 'vdiv-fb', color: '#8b5cf6', type: 'dashed', annotation: 'V sense' },
+    { id: 'ps19', source: 'vdiv-fb', target: 'tl431', color: '#8b5cf6', type: 'dashed', annotation: '2.5V ref' },
+    { id: 'ps20', source: 'tl431', target: 'optocoupler', color: '#8b5cf6', type: 'dashed', annotation: 'Error signal' },
+    { id: 'ps21', source: 'optocoupler', target: 'pwm-ctrl', color: '#8b5cf6', type: 'dashed', annotation: 'Isolated FB' },
+
+    // PWM controller to half-bridge
+    { id: 'ps22', source: 'pwm-ctrl', target: 'half-bridge', color: '#8b5cf6', type: 'dashed', annotation: 'HB drive' },
+
+    // Ground references
+    { id: 'ps23', source: 'out-12v', target: 'nl-sgnd', color: '#94a3b8', type: 'dashed' },
+    { id: 'ps24', source: 'mains', sourcePort: 'PE', target: 'nl-pgnd', color: '#94a3b8', type: 'dashed', annotation: 'Earth' },
   ],
 };
 
@@ -695,9 +1530,9 @@ const nodeTemplates: SidebarNodeTemplate[] = [
 ];
 
 export function App() {
-  const [activeDemo, setActiveDemo] = React.useState<'vertical' | 'horizontal' | 'datacenter' | 'circuit' | 'hvdc' | 'showcase' | 'dc-facility' | 'nuclear'>('vertical');
+  const [activeDemo, setActiveDemo] = React.useState<'vertical' | 'wind-farm' | 'solar-plant' | 'datacenter' | 'power-supply' | 'hvdc' | 'showcase' | 'dc-facility' | 'nuclear'>('vertical');
   const [currentDiagram, setCurrentDiagram] = useState<FlowDiagram>(sampleDiagram);
-  const demoMap: Record<string, FlowDiagram> = { vertical: sampleDiagram, horizontal: horizontalDiagram, datacenter: datacenterDiagram, circuit: circuitDiagram, hvdc: hvdcDiagram, showcase: showcaseDiagram, 'dc-facility': dcFacilityDiagram, nuclear: nuclearDiagram };
+  const demoMap: Record<string, FlowDiagram> = { vertical: sampleDiagram, 'wind-farm': windFarmDiagram, 'solar-plant': solarPlantDiagram, datacenter: datacenterDiagram, 'power-supply': powerSupplyDiagram, hvdc: hvdcDiagram, showcase: showcaseDiagram, 'dc-facility': dcFacilityDiagram, nuclear: nuclearDiagram };
   const baseDiagram = demoMap[activeDemo] || sampleDiagram;
   const diagram = (activeDemo === 'vertical' || activeDemo === 'showcase') ? currentDiagram : baseDiagram;
   const canvasRef = useRef<FlowCanvasRef>(null);
@@ -709,7 +1544,7 @@ export function App() {
     }));
   };
 
-  const handleDemoChange = (demo: 'vertical' | 'horizontal' | 'datacenter' | 'circuit' | 'hvdc' | 'showcase' | 'dc-facility' | 'nuclear') => {
+  const handleDemoChange = (demo: 'vertical' | 'wind-farm' | 'solar-plant' | 'datacenter' | 'power-supply' | 'hvdc' | 'showcase' | 'dc-facility' | 'nuclear') => {
     setActiveDemo(demo);
     if (demo === 'vertical') setCurrentDiagram(sampleDiagram);
     if (demo === 'showcase') setCurrentDiagram(showcaseDiagram);
@@ -781,20 +1616,36 @@ export function App() {
           Vertical (TB)
         </button>
         <button
-          onClick={() => handleDemoChange('horizontal')}
+          onClick={() => handleDemoChange('wind-farm')}
           style={{
             padding: '6px 12px',
             borderRadius: 6,
             border: '1px solid rgba(255,255,255,0.15)',
-            background: activeDemo === 'horizontal' ? '#e2e8f0' : 'rgba(22,33,62,0.85)',
-            color: activeDemo === 'horizontal' ? '#1a1a1a' : '#e2e8f0',
+            background: activeDemo === 'wind-farm' ? '#e2e8f0' : 'rgba(22,33,62,0.85)',
+            color: activeDemo === 'wind-farm' ? '#1a1a1a' : '#e2e8f0',
             cursor: 'pointer',
             fontSize: 12,
             fontWeight: 600,
             backdropFilter: 'blur(4px)',
           }}
         >
-          Horizontal (LR)
+          Wind Farm
+        </button>
+        <button
+          onClick={() => handleDemoChange('solar-plant')}
+          style={{
+            padding: '6px 12px',
+            borderRadius: 6,
+            border: '1px solid rgba(255,255,255,0.15)',
+            background: activeDemo === 'solar-plant' ? '#e2e8f0' : 'rgba(22,33,62,0.85)',
+            color: activeDemo === 'solar-plant' ? '#1a1a1a' : '#e2e8f0',
+            cursor: 'pointer',
+            fontSize: 12,
+            fontWeight: 600,
+            backdropFilter: 'blur(4px)',
+          }}
+        >
+          Solar Plant
         </button>
         <button
           onClick={() => handleDemoChange('datacenter')}
@@ -813,20 +1664,20 @@ export function App() {
           Data Center
         </button>
         <button
-          onClick={() => handleDemoChange('circuit')}
+          onClick={() => handleDemoChange('power-supply')}
           style={{
             padding: '6px 12px',
             borderRadius: 6,
             border: '1px solid rgba(255,255,255,0.15)',
-            background: activeDemo === 'circuit' ? '#e2e8f0' : 'rgba(22,33,62,0.85)',
-            color: activeDemo === 'circuit' ? '#1a1a1a' : '#e2e8f0',
+            background: activeDemo === 'power-supply' ? '#e2e8f0' : 'rgba(22,33,62,0.85)',
+            color: activeDemo === 'power-supply' ? '#1a1a1a' : '#e2e8f0',
             cursor: 'pointer',
             fontSize: 12,
             fontWeight: 600,
             backdropFilter: 'blur(4px)',
           }}
         >
-          Circuit
+          Power Supply
         </button>
         <button
           onClick={() => handleDemoChange('hvdc')}
