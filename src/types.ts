@@ -125,6 +125,7 @@ export interface FlowCanvasProps {
   className?: string;
   fitView?: boolean;
   background?: CanvasBackground;
+  showGroupOutlines?: boolean;
   minimap?: boolean | { width?: number; height?: number; position?: 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left' };
   theme?: 'light' | 'dark';
   onNodeClick?: (nodeId: string, node: FlowNode) => void;

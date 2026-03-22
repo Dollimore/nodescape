@@ -61,7 +61,7 @@ function getVisibleNodesAndEdges(diagram: FlowDiagram): { nodes: FlowNode[]; edg
 
 
 export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
-  function FlowCanvas({ diagram, mode = 'view', className, onDiagramChange, background, minimap, theme, onNodeClick, nodeRenderers, onContextMenu, contextMenu, onNodeCollapse, sidebar, onNodeDrop, themeToggle, onThemeChange, zoomControls, onUndo, onRedo, canUndo, canRedo, onSelectionChange, onNodesDelete, onNodesCopy, onNodesPaste, onEdgeCreate, onNodeLabelChange, contextualZoom, displayMode = 'standard', detailPanel, renderDetailSection, legend, story: storyConfig, onStoryStepChange, alarms, onAlarmClick, onAlarmAcknowledge }: FlowCanvasProps, ref) {
+  function FlowCanvas({ diagram, mode = 'view', className, onDiagramChange, background, showGroupOutlines = true, minimap, theme, onNodeClick, nodeRenderers, onContextMenu, contextMenu, onNodeCollapse, sidebar, onNodeDrop, themeToggle, onThemeChange, zoomControls, onUndo, onRedo, canUndo, canRedo, onSelectionChange, onNodesDelete, onNodesCopy, onNodesPaste, onEdgeCreate, onNodeLabelChange, contextualZoom, displayMode = 'standard', detailPanel, renderDetailSection, legend, story: storyConfig, onStoryStepChange, alarms, onAlarmClick, onAlarmAcknowledge }: FlowCanvasProps, ref) {
   const editable = mode === 'edit';
 
   const [currentScale, setCurrentScale] = useState(1);
@@ -464,7 +464,9 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
           />
         </svg>
       )}
-      {[...visibleNodes].sort((a, b) => {
+      {[...visibleNodes]
+      .filter(node => node.type !== 'group' || showGroupOutlines)
+      .sort((a, b) => {
         // Render group nodes first so they appear behind child nodes
         if (a.type === 'group' && b.type !== 'group') return -1;
         if (a.type !== 'group' && b.type === 'group') return 1;
