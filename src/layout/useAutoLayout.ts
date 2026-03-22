@@ -29,7 +29,7 @@ export function computeLayout(
   diagram: FlowDiagram,
   nodeRefs: Map<string, HTMLElement | null>
 ): LayoutResult {
-  const g = new dagre.graphlib.Graph();
+  const g = new dagre.graphlib.Graph({ compound: true });
   g.setDefaultEdgeLabel(() => ({}));
 
   const direction = diagram.layout?.direction || 'TB';
@@ -48,17 +48,26 @@ export function computeLayout(
   const GRID = 8;
   const snapUp = (v: number) => Math.ceil(v / GRID) * GRID;
 
+  // Add group nodes to dagre as compound parents
   for (const node of diagram.nodes) {
-    if (node.type === 'group') continue; // groups are positioned after layout
+    if (node.type === 'group') {
+      g.setNode(node.id, { clusterLabelPos: 'top' });
+    }
+  }
+
+  for (const node of diagram.nodes) {
+    if (node.type === 'group') continue;
     const el = nodeRefs.get(node.id);
     let rawW = el ? el.offsetWidth : DEFAULT_NODE_WIDTH;
     let rawH = el ? el.offsetHeight : DEFAULT_NODE_HEIGHT;
-    // Swap width/height for 90/270 rotations so dagre allocates correct space
     if (node.rotation === 90 || node.rotation === 270) {
       [rawW, rawH] = [rawH, rawW];
     }
-    // Snap dimensions up to nearest grid unit so nodes align with the grid
     g.setNode(node.id, { width: snapUp(rawW), height: snapUp(rawH) });
+    // Set parent-child relationship for compound layout
+    if (node.parentId && diagram.nodes.some(n => n.id === node.parentId && n.type === 'group')) {
+      g.setParent(node.id, node.parentId);
+    }
   }
 
   for (const edge of diagram.edges) {
