@@ -99,7 +99,12 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
     if (story.activeNodeId) {
       setSelectedNodeIds(new Set([story.activeNodeId]));
       if (detailPanel) {
-        setDetailNode(diagram.nodes.find(n => n.id === story.activeNodeId) || null);
+        const found = diagram.nodes.find(n => n.id === story.activeNodeId);
+        if (found && (found.detail || found.sections?.length || found.description)) {
+          setDetailNode(found);
+        } else {
+          setDetailNode(null);
+        }
       }
     }
   }, [story.activeNodeId]);
@@ -476,7 +481,13 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
           isDragging={isDragging}
           onClick={() => {
             if (onNodeClick) onNodeClick(node.id, node);
-            if (detailPanel) setDetailNode(diagram.nodes.find(n => n.id === node.id) || null);
+            if (detailPanel) {
+              const found = diagram.nodes.find(n => n.id === node.id);
+              // Only open detail panel if node has detail content, sections, or description
+              if (found && (found.detail || found.sections?.length || found.description)) {
+                setDetailNode(found);
+              }
+            }
           }}
           onNodeSelect={(nodeId, e) => {
             if (e.shiftKey) {

@@ -19,7 +19,7 @@ interface TrendChartProps {
 
 export function TrendChart({ data }: TrendChartProps) {
   const { series, label, unit = '', color = '#3b82f6', setpoint, minRange, maxRange } = data;
-  if (!series.length) return null;
+  if (!series || !series.length) return null;
 
   const values = series.map(p => p.value);
   const min = minRange ?? Math.min(...values) * 0.95;
