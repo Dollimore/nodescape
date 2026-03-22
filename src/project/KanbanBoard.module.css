@@ -1,0 +1,180 @@
+.board {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  height: 100%;
+  overflow-x: auto;
+  padding: 16px;
+  align-items: flex-start;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  min-width: 240px;
+  max-width: 320px;
+  flex-shrink: 0;
+  background: var(--fc-node-bg);
+  border: 1px solid var(--fc-node-border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.columnHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px 10px;
+  border-bottom: 1px solid var(--fc-node-border);
+}
+
+.columnLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--fc-node-label);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.countBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  background: var(--fc-node-border);
+  color: var(--fc-node-desc);
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.cardList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 80px;
+}
+
+.cardListOver {
+  background: rgba(59, 130, 246, 0.04);
+}
+
+.card {
+  position: relative;
+  background: var(--fc-bg);
+  border: 1px solid var(--fc-node-border);
+  border-radius: 8px;
+  padding: 11px 12px 0;
+  cursor: grab;
+  transition: box-shadow 0.15s ease, transform 0.1s ease, border-color 0.15s ease;
+  overflow: hidden;
+  user-select: none;
+}
+
+.card:hover {
+  box-shadow: 0 4px 12px var(--fc-node-shadow);
+  border-color: var(--fc-handle-border);
+}
+
+.cardDragging {
+  opacity: 0.4;
+}
+
+.cardSelected {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.priorityStripe {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  border-radius: 8px 0 0 8px;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 7px;
+}
+
+.cardTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fc-node-label);
+  line-height: 1.35;
+  flex: 1;
+}
+
+.assigneeAvatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+  letter-spacing: 0.02em;
+}
+
+.cardMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--fc-node-desc);
+  margin-bottom: 10px;
+}
+
+.dueDate {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.progressMini {
+  height: 3px;
+  background: var(--fc-node-border);
+  border-radius: 0 0 8px 8px;
+  margin: 0 -12px;
+  overflow: hidden;
+}
+
+.progressMiniBar {
+  height: 100%;
+  background: #3b82f6;
+  border-radius: 0 0 8px 8px;
+  transition: width 0.3s ease;
+}
+
+.emptyState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 0;
+  font-size: 12px;
+  color: var(--fc-node-desc);
+  opacity: 0.6;
+  font-style: italic;
+}
+
+.dragOverlay {
+  border-radius: 8px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: rotate(1.5deg) scale(1.02);
+  cursor: grabbing;
+  pointer-events: none;
+  opacity: 0.95;
+}
