@@ -2,6 +2,8 @@ import React, { useRef, useState } from 'react';
 import { FlowCanvas } from '../src';
 import type { FlowDiagram, SidebarNodeTemplate } from '../src';
 import type { FlowCanvasRef } from '../src/FlowCanvas';
+import { ProjectView } from '../src/project/ProjectView';
+import type { ProjectData } from '../src/project/types';
 
 const sampleDiagram: FlowDiagram = {
   title: 'User Authentication Flow',
@@ -3511,6 +3513,39 @@ const smrDiagram: FlowDiagram = {
   ],
 };
 
+const sampleProject: ProjectData = {
+  title: 'HVDC Converter Station Build',
+  tasks: [
+    { id: 't1', title: 'Site Preparation', status: 'complete', startDate: '2026-01-06', endDate: '2026-02-28', progress: 100, assignee: 'Team Alpha', priority: 'high', isGroup: true, children: ['t1a', 't1b', 't1c'], color: '#22c55e' },
+    { id: 't1a', title: 'Land clearing & grading', status: 'complete', startDate: '2026-01-06', endDate: '2026-01-31', progress: 100, assignee: 'J. Smith', groupId: 't1', nodeId: 'gen-solar' },
+    { id: 't1b', title: 'Foundation excavation', status: 'complete', startDate: '2026-01-20', endDate: '2026-02-14', progress: 100, assignee: 'M. Chen', groupId: 't1', dependencies: [{ taskId: 't1a', type: 'FS' as const, lag: -10 }] },
+    { id: 't1c', title: 'Concrete pour & cure', status: 'complete', startDate: '2026-02-10', endDate: '2026-02-28', progress: 100, assignee: 'R. Patel', groupId: 't1', dependencies: [{ taskId: 't1b', type: 'FS' as const }] },
+
+    { id: 't2', title: 'Equipment Procurement', status: 'complete', startDate: '2026-01-13', endDate: '2026-04-30', progress: 100, assignee: 'Procurement', priority: 'critical', isGroup: true, children: ['t2a', 't2b', 't2c'], color: '#3b82f6' },
+    { id: 't2a', title: 'Converter transformers (x4)', status: 'complete', startDate: '2026-01-13', endDate: '2026-03-31', progress: 100, assignee: 'ABB Supply', priority: 'critical', groupId: 't2', nodeId: 'xfmr-main' },
+    { id: 't2b', title: 'Thyristor valve halls', status: 'complete', startDate: '2026-02-01', endDate: '2026-04-15', progress: 100, assignee: 'Siemens', groupId: 't2', dependencies: [{ taskId: 't2a', type: 'SS' as const, lag: 14 }] },
+    { id: 't2c', title: 'DC switchgear & breakers', status: 'complete', startDate: '2026-02-15', endDate: '2026-04-30', progress: 100, assignee: 'GE Grid', groupId: 't2' },
+
+    { id: 't3', title: 'Civil & Structural', status: 'in-progress', startDate: '2026-03-01', endDate: '2026-06-30', progress: 72, assignee: 'Team Beta', priority: 'high', isGroup: true, children: ['t3a', 't3b', 't3c'], color: '#f59e0b' },
+    { id: 't3a', title: 'Valve hall building', status: 'complete', startDate: '2026-03-01', endDate: '2026-05-15', progress: 100, assignee: 'K. Tanaka', groupId: 't3', dependencies: [{ taskId: 't1c', type: 'FS' as const }] },
+    { id: 't3b', title: 'Control building', status: 'in-progress', startDate: '2026-04-01', endDate: '2026-06-15', progress: 65, assignee: 'A. Johansson', groupId: 't3', dependencies: [{ taskId: 't1c', type: 'FS' as const }], nodeId: 'scada' },
+    { id: 't3c', title: 'Cooling system installation', status: 'in-progress', startDate: '2026-05-01', endDate: '2026-06-30', progress: 40, assignee: 'L. Garcia', groupId: 't3', dependencies: [{ taskId: 't3a', type: 'FS' as const }] },
+
+    { id: 't4', title: 'Electrical Installation', status: 'in-progress', startDate: '2026-05-01', endDate: '2026-09-30', progress: 35, assignee: 'Team Gamma', priority: 'critical', isGroup: true, children: ['t4a', 't4b', 't4c', 't4d'], color: '#8b5cf6' },
+    { id: 't4a', title: 'Transformer installation', status: 'in-progress', startDate: '2026-05-01', endDate: '2026-06-30', progress: 55, assignee: 'P. Mueller', priority: 'critical', groupId: 't4', dependencies: [{ taskId: 't2a', type: 'FS' as const }, { taskId: 't3a', type: 'FS' as const }], baselineStart: '2026-04-15', baselineEnd: '2026-06-15' },
+    { id: 't4b', title: 'Valve assembly & testing', status: 'todo', startDate: '2026-06-01', endDate: '2026-08-31', progress: 0, assignee: 'D. Kim', priority: 'critical', groupId: 't4', dependencies: [{ taskId: 't2b', type: 'FS' as const }, { taskId: 't3a', type: 'FS' as const }] },
+    { id: 't4c', title: 'DC yard equipment', status: 'todo', startDate: '2026-07-01', endDate: '2026-08-31', progress: 0, assignee: 'S. Okonkwo', groupId: 't4', dependencies: [{ taskId: 't2c', type: 'FS' as const }] },
+    { id: 't4d', title: 'SCADA & protection systems', status: 'backlog', startDate: '2026-08-01', endDate: '2026-09-30', progress: 0, assignee: 'N. Larsson', groupId: 't4', dependencies: [{ taskId: 't4b', type: 'FS' as const }] },
+
+    { id: 't5', title: 'Commissioning', status: 'backlog', startDate: '2026-09-01', endDate: '2026-11-30', progress: 0, assignee: 'Commissioning Team', priority: 'high', isGroup: true, children: ['t5a', 't5b', 't5c'], color: '#06b6d4' },
+    { id: 't5a', title: 'Individual equipment tests', status: 'backlog', startDate: '2026-09-01', endDate: '2026-10-15', progress: 0, assignee: 'Test Lead', groupId: 't5', dependencies: [{ taskId: 't4a', type: 'FS' as const }] },
+    { id: 't5b', title: 'System integration tests', status: 'backlog', startDate: '2026-10-01', endDate: '2026-11-15', progress: 0, assignee: 'Test Lead', groupId: 't5', dependencies: [{ taskId: 't5a', type: 'FS' as const }, { taskId: 't4d', type: 'FS' as const }] },
+    { id: 't5c', title: 'Grid connection & energization', status: 'backlog', startDate: '2026-11-01', endDate: '2026-11-30', progress: 0, assignee: 'Grid Ops', groupId: 't5', dependencies: [{ taskId: 't5b', type: 'FS' as const }], isMilestone: true },
+
+    { id: 't6', title: 'Commercial Operation', status: 'backlog', startDate: '2026-12-01', endDate: '2026-12-01', progress: 0, priority: 'critical', isMilestone: true, dependencies: [{ taskId: 't5c', type: 'FS' as const }], color: '#ef4444' },
+  ],
+};
+
 const nodeTemplates: SidebarNodeTemplate[] = [
   { type: 'default', label: 'Process', description: 'A process step' },
   { type: 'decision', label: 'Decision', description: 'A branch point' },
@@ -3519,7 +3554,7 @@ const nodeTemplates: SidebarNodeTemplate[] = [
 ];
 
 export function App() {
-  const [activeDemo, setActiveDemo] = React.useState<'vertical' | 'wind-farm' | 'solar-plant' | 'datacenter' | 'power-supply' | 'hvdc' | 'showcase' | 'dc-facility' | 'nuclear' | 'gas-pipeline' | 'hydro-plant' | 'hydrogen' | 'smr'>('vertical');
+  const [activeDemo, setActiveDemo] = React.useState<'vertical' | 'wind-farm' | 'solar-plant' | 'datacenter' | 'power-supply' | 'hvdc' | 'showcase' | 'dc-facility' | 'nuclear' | 'gas-pipeline' | 'hydro-plant' | 'hydrogen' | 'smr' | 'project'>('vertical');
   const [currentDiagram, setCurrentDiagram] = useState<FlowDiagram>(sampleDiagram);
   const demoMap: Record<string, FlowDiagram> = { vertical: sampleDiagram, 'wind-farm': windFarmDiagram, 'solar-plant': solarPlantDiagram, datacenter: datacenterDiagram, 'power-supply': powerSupplyDiagram, hvdc: hvdcDiagram, showcase: showcaseDiagram, 'dc-facility': dcFacilityDiagram, nuclear: nuclearDiagram, 'gas-pipeline': gasPipelineDiagram, 'hydro-plant': hydroPlantDiagram, hydrogen: hydrogenDiagram, smr: smrDiagram };
   const baseDiagram = demoMap[activeDemo] || sampleDiagram;
@@ -3533,7 +3568,7 @@ export function App() {
     }));
   };
 
-  const handleDemoChange = (demo: 'vertical' | 'wind-farm' | 'solar-plant' | 'datacenter' | 'power-supply' | 'hvdc' | 'showcase' | 'dc-facility' | 'nuclear' | 'gas-pipeline' | 'hydro-plant' | 'hydrogen' | 'smr') => {
+  const handleDemoChange = (demo: 'vertical' | 'wind-farm' | 'solar-plant' | 'datacenter' | 'power-supply' | 'hvdc' | 'showcase' | 'dc-facility' | 'nuclear' | 'gas-pipeline' | 'hydro-plant' | 'hydrogen' | 'smr' | 'project') => {
     setActiveDemo(demo);
     if (demo === 'vertical') setCurrentDiagram(sampleDiagram);
     if (demo === 'showcase') setCurrentDiagram(showcaseDiagram);
@@ -3780,7 +3815,33 @@ export function App() {
         >
           SMR
         </button>
+        <button
+          onClick={() => handleDemoChange('project')}
+          style={{
+            padding: '6px 12px',
+            borderRadius: 6,
+            border: '1px solid rgba(255,255,255,0.15)',
+            background: activeDemo === 'project' ? '#e2e8f0' : 'rgba(22,33,62,0.85)',
+            color: activeDemo === 'project' ? '#1a1a1a' : '#e2e8f0',
+            cursor: 'pointer',
+            fontSize: 12,
+            fontWeight: 600,
+            backdropFilter: 'blur(4px)',
+          }}
+        >
+          Project
+        </button>
       </div>
+      {activeDemo === 'project' ? (
+        <div style={{ width: '100%', height: 'calc(100vh - 56px)', marginTop: 56 }}>
+          <ProjectView
+            project={sampleProject}
+            diagram={showcaseDiagram}
+            onTaskClick={(id) => console.log('Task clicked:', id)}
+            onTaskStatusChange={(id, status) => console.log('Status change:', id, status)}
+          />
+        </div>
+      ) : (
       <FlowCanvas
         ref={canvasRef}
         diagram={diagram}
@@ -3812,6 +3873,7 @@ export function App() {
           ],
         } : undefined}
       />
+      )}
     </div>
   );
 }
