@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useMemo } from 'react';
+import React, { lazy, Suspense, useMemo, useState } from 'react';
 import type { FlowCanvasProps, FlowDiagram } from '../types';
 import type { ProjectData, TaskStatus } from './types';
 import { KanbanBoard } from './KanbanBoard';
@@ -82,7 +82,7 @@ const VIEW_TABS: { id: 'kanban' | 'gantt' | 'diagram'; label: string; icon: Reac
 export function ProjectView({
   project,
   diagram,
-  activeView = 'kanban',
+  activeView: controlledView,
   onViewChange,
   onTaskClick,
   onTaskStatusChange,
@@ -90,6 +90,14 @@ export function ProjectView({
   diagramProps,
   className,
 }: ProjectViewProps) {
+  const [internalView, setInternalView] = useState<'kanban' | 'gantt' | 'diagram'>('kanban');
+  const activeView = controlledView ?? internalView;
+
+  const handleViewChange = (view: 'kanban' | 'gantt' | 'diagram') => {
+    setInternalView(view);
+    onViewChange?.(view);
+  };
+
   const coloredDiagram = useMemo(() => {
     if (!diagram) return undefined;
     return applyProjectStatus(diagram, project);
@@ -104,7 +112,7 @@ export function ProjectView({
             <button
               key={tab.id}
               className={[styles.tab, activeView === tab.id ? styles.tabActive : ''].filter(Boolean).join(' ')}
-              onClick={() => onViewChange?.(tab.id)}
+              onClick={() => handleViewChange(tab.id)}
             >
               {tab.icon}
               {tab.label}
