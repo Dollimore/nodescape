@@ -6,6 +6,7 @@
   height: 1px;
   pointer-events: none;
   overflow: visible;
+  z-index: 1;
 }
 
 .edgePath {
@@ -70,6 +71,7 @@
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
   border: 1px solid var(--fc-edge-label-border);
   transition: left 0.3s ease, top 0.3s ease;
+  z-index: 2;
 }
 
 .edgeLabelDefault {
@@ -132,4 +134,5 @@
   background: var(--fc-bg);
   padding: 1px 4px;
   border-radius: 3px;
+  z-index: 2;
 }
