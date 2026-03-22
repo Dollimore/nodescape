@@ -1,3 +1,4 @@
+/* ── Board ─────────────────────────────────────────────────── */
 .board {
   display: flex;
   flex-direction: row;
@@ -6,33 +7,50 @@
   overflow-x: auto;
   padding: 16px;
   align-items: flex-start;
+  background: var(--fc-bg);
+  scroll-behavior: smooth;
 }
 
+.board::-webkit-scrollbar {
+  height: 6px;
+}
+
+.board::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.board::-webkit-scrollbar-thumb {
+  background: var(--fc-node-border);
+  border-radius: 3px;
+}
+
+/* ── Column ────────────────────────────────────────────────── */
 .column {
   display: flex;
   flex-direction: column;
-  min-width: 240px;
+  min-width: 280px;
   max-width: 320px;
   flex-shrink: 0;
-  background: var(--fc-node-bg);
-  border: 1px solid var(--fc-node-border);
-  border-radius: 10px;
-  overflow: hidden;
+  background: color-mix(in srgb, var(--fc-node-bg) 60%, var(--fc-bg) 40%);
+  border-radius: 12px;
+  max-height: 100%;
 }
 
 .columnHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 14px 10px;
-  border-bottom: 1px solid var(--fc-node-border);
+  padding: 14px 16px 12px;
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
 .columnLabel {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
-  color: var(--fc-node-label);
-  letter-spacing: 0.04em;
+  color: var(--fc-node-desc);
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
@@ -42,69 +60,101 @@
   justify-content: center;
   min-width: 20px;
   height: 20px;
-  padding: 0 6px;
-  background: var(--fc-node-border);
+  padding: 0 7px;
+  background: color-mix(in srgb, var(--fc-node-border) 60%, transparent);
   color: var(--fc-node-desc);
   border-radius: 10px;
   font-size: 11px;
   font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 
+/* ── Card list / drop zone ─────────────────────────────────── */
 .cardList {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 10px;
+  padding: 4px 10px 12px;
   overflow-y: auto;
   flex: 1;
-  min-height: 80px;
+  min-height: 60px;
+  transition: background 100ms ease;
+}
+
+.cardList::-webkit-scrollbar {
+  width: 0;
 }
 
 .cardListOver {
-  background: rgba(59, 130, 246, 0.04);
+  background: color-mix(in srgb, #3b82f6 5%, transparent);
 }
 
+/* ── Card ──────────────────────────────────────────────────── */
 .card {
   position: relative;
-  background: var(--fc-bg);
+  background: var(--fc-node-bg);
   border: 1px solid var(--fc-node-border);
   border-radius: 8px;
-  padding: 11px 12px 0;
+  padding: 12px 14px;
   cursor: grab;
-  transition: box-shadow 0.15s ease, transform 0.1s ease, border-color 0.15s ease;
-  overflow: hidden;
+  transition: box-shadow 150ms ease, transform 150ms ease, border-color 150ms ease, opacity 150ms ease;
   user-select: none;
+  box-shadow: 0 1px 3px var(--fc-node-shadow);
 }
 
 .card:hover {
+  transform: translateY(-1px);
   box-shadow: 0 4px 12px var(--fc-node-shadow);
-  border-color: var(--fc-handle-border);
+}
+
+/* Color tint top border for tasks with a color */
+.cardColorBorder {
+  border-top-width: 2px;
+  border-top-style: solid;
+}
+
+/* ── Card states ───────────────────────────────────────────── */
+.cardSelected {
+  border-left: 2px solid #3b82f6;
+  box-shadow: 0 4px 14px var(--fc-node-shadow);
 }
 
 .cardDragging {
   opacity: 0.4;
+  pointer-events: none;
 }
 
-.cardSelected {
-  border-color: #3b82f6 !important;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+/* ── Drag overlay ──────────────────────────────────────────── */
+.dragOverlay {
+  border-radius: 8px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18), 0 6px 16px rgba(0, 0, 0, 0.12);
+  transform: rotate(2deg) scale(1.02);
+  opacity: 0.9;
+  cursor: grabbing;
+  pointer-events: none;
 }
 
-.priorityStripe {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 3px;
-  border-radius: 8px 0 0 8px;
-}
-
-.cardHeader {
+/* ── Title row ─────────────────────────────────────────────── */
+.titleRow {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 7px;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 2px;
+  min-width: 0;
+}
+
+.priorityDot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.milestoneDiamond {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  color: var(--fc-node-desc);
 }
 
 .cardTitle {
@@ -113,68 +163,100 @@
   color: var(--fc-node-label);
   line-height: 1.35;
   flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
+.groupTitle {
+  font-weight: 700;
+}
+
+/* ── Description ───────────────────────────────────────────── */
+.cardDescription {
+  font-size: 11px;
+  color: var(--fc-node-desc);
+  line-height: 1.45;
+  margin-top: 4px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ── Card footer ───────────────────────────────────────────── */
+.cardFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+/* ── Assignee avatar ───────────────────────────────────────── */
 .assigneeAvatar {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 9px;
+  font-size: 8px;
   font-weight: 700;
   color: #fff;
   flex-shrink: 0;
   letter-spacing: 0.02em;
 }
 
-.cardMeta {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 11px;
-  color: var(--fc-node-desc);
-  margin-bottom: 10px;
-}
-
+/* ── Due date ──────────────────────────────────────────────── */
 .dueDate {
-  display: flex;
-  align-items: center;
-  gap: 3px;
+  font-size: 10px;
+  color: var(--fc-node-desc);
+  white-space: nowrap;
 }
 
-.progressMini {
-  height: 3px;
+.dueDateOverdue {
+  color: #ef4444;
+  font-weight: 500;
+}
+
+/* ── Children count badge (group tasks) ────────────────────── */
+.childrenBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 6px;
+  background: color-mix(in srgb, var(--fc-node-border) 50%, transparent);
+  color: var(--fc-node-desc);
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 600;
+  margin-left: auto;
+}
+
+/* ── Progress bar ──────────────────────────────────────────── */
+.progressBar {
+  height: 2px;
   background: var(--fc-node-border);
   border-radius: 0 0 8px 8px;
-  margin: 0 -12px;
+  margin: 12px -14px -12px;
   overflow: hidden;
 }
 
-.progressMiniBar {
+.progressBarFill {
   height: 100%;
-  background: #3b82f6;
   border-radius: 0 0 8px 8px;
-  transition: width 0.3s ease;
+  transition: width 300ms ease;
 }
 
+/* ── Empty state ───────────────────────────────────────────── */
 .emptyState {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px 0;
+  padding: 32px 0;
   font-size: 12px;
   color: var(--fc-node-desc);
-  opacity: 0.6;
+  opacity: 0.5;
   font-style: italic;
-}
-
-.dragOverlay {
-  border-radius: 8px;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.15);
-  transform: rotate(1.5deg) scale(1.02);
-  cursor: grabbing;
-  pointer-events: none;
-  opacity: 0.95;
 }
