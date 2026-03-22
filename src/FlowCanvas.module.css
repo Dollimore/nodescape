@@ -24,6 +24,7 @@
   --fc-edge-label-success-border: #bbf7d0;
   --fc-edge-label-failure-border: #fecaca;
   --fc-icon-color: #666;
+  --fc-group-halo: rgba(0, 0, 0, 0.15);
 }
 
 .dark {
@@ -48,6 +49,7 @@
   --fc-edge-label-success-border: #166534;
   --fc-edge-label-failure-border: #991b1b;
   --fc-icon-color: #94a3b8;
+  --fc-group-halo: rgba(255, 255, 255, 0.15);
 }
 
 .root * {
