@@ -640,23 +640,259 @@ const datacenterDiagram: FlowDiagram = {
   title: 'Data Center Power Distribution',
   layout: { direction: 'TB', routing: 'orthogonal', cornerRadius: 24 },
   nodes: [
+    // ===== UTILITY & MAIN POWER =====
     { id: 'grid', type: 'start', label: 'Utility Grid', icon: 'zap', status: 'online', flowRate: '12.4 MW' },
-    { id: 'xfmr', label: 'Main Transformer', description: '132kV to 11kV step-down.', icon: 'box', status: 'online', progress: 78 },
-    { id: 'swgr', label: 'Main Switchgear', description: '11kV distribution.', icon: 'git-branch', status: 'online' },
-    { id: 'ups-a', label: 'UPS System A', description: '2MW capacity.', icon: 'battery-charging', status: 'online', progress: 65, flowRate: '1.3 MW' },
-    { id: 'ups-b', label: 'UPS System B', description: '2MW capacity.', icon: 'battery-charging', status: 'warning', progress: 92, flowRate: '1.8 MW' },
-    { id: 'pdu-a', label: 'PDU Row A', description: 'Power distribution to racks.', icon: 'server', status: 'online', progress: 45 },
-    { id: 'pdu-b', label: 'PDU Row B', description: 'Power distribution to racks.', icon: 'server', status: 'online', progress: 71 },
-    { id: 'gen', label: 'Backup Generator', description: '4MW diesel generator.', icon: 'fuel', status: 'idle', flowRate: '0 MW' },
+    { id: 'xfmr', label: 'Main Transformer', description: '132kV to 11kV step-down.', icon: 'box', status: 'online', progress: 78,
+      sections: [
+        { heading: 'Rating', content: '16 MVA ONAN' },
+        { heading: 'Impedance', content: '5.75%' },
+        { heading: 'Tap', content: '+2 (11.5kV)' },
+      ],
+    },
+    { id: 'swgr', label: 'Main Switchgear', description: '11kV distribution.', icon: 'git-branch', status: 'online',
+      sections: [
+        { heading: 'Voltage', content: '11kV' },
+        { heading: 'Fault Level', content: '25kA' },
+      ],
+    },
+
+    // ===== UPS SYSTEMS =====
+    { id: 'ups-a', label: 'UPS System A', description: '2MW capacity, double conversion.', icon: 'battery-charging', status: 'online', progress: 65, flowRate: '1.3 MW',
+      sections: [
+        { heading: 'Capacity', content: '2 MW / 2000 kVA' },
+        { heading: 'Battery', content: '1500 Ah VRLA, 480V' },
+        { heading: 'Runtime', content: '15 min at full load' },
+        { heading: 'Efficiency', content: '96.2% ECO mode' },
+      ],
+      detail: {
+        content: 'UPS System A provides conditioned, uninterruptible power to IT Row A. Double conversion topology with active harmonic filter.',
+        sections: [
+          {
+            type: 'trend',
+            title: 'Battery Voltage (V) — Last 4 Hours',
+            data: { values: [484, 483, 482, 482, 483, 484, 484, 483, 482, 483, 484, 484], labels: ['4h', '3.6h', '3.2h', '2.8h', '2.4h', '2h', '1.6h', '1.2h', '0.8h', '0.4h', '0.1h', 'Now'], color: '#3b82f6', unit: 'V', min: 460, max: 500 },
+          },
+          {
+            type: 'keyvalue',
+            title: 'UPS Specifications',
+            data: {
+              'Model': 'Eaton 9395P',
+              'Input Voltage': '480V 3-phase',
+              'Output Voltage': '480V 3-phase',
+              'Capacity': '2000 kVA / 2000 kW',
+              'Battery Type': 'VRLA sealed lead-acid',
+              'Battery Strings': '4 strings x 40 cells',
+              'Commissioning': '2022-08',
+              'Next PM': '2026-08',
+            },
+          },
+        ],
+      },
+    },
+    { id: 'ups-b', label: 'UPS System B', description: '2MW capacity — high load.', icon: 'battery-charging', status: 'warning', progress: 92, flowRate: '1.8 MW',
+      sections: [
+        { heading: 'Capacity', content: '2 MW' },
+        { heading: 'Load', content: '**92%** — approaching threshold' },
+        { heading: 'Battery', content: '1500 Ah VRLA, 480V' },
+      ],
+    },
+
+    // ===== PDUs =====
+    { id: 'pdu-a', label: 'PDU Row A', description: 'Power distribution to racks.', icon: 'server', status: 'online', progress: 45,
+      sections: [{ heading: 'Circuits', content: '24x 30A branch circuits' }, { heading: 'Metering', content: 'Per-outlet monitoring' }],
+    },
+    { id: 'pdu-b', label: 'PDU Row B', description: 'Power distribution to racks.', icon: 'server', status: 'online', progress: 71,
+      sections: [{ heading: 'Circuits', content: '24x 30A branch circuits' }, { heading: 'Alert', content: 'Load at 71% — monitor closely' }],
+    },
+
+    // ===== RACK ROWS =====
+    { id: 'rack-row-1', label: 'Rack Row 1', description: 'High-density compute — 20 racks.', icon: 'server', status: 'online', progress: 88, flowRate: '320 kW',
+      sections: [
+        { heading: 'Racks', content: '20 x 42U' },
+        { heading: 'Avg Density', content: '16 kW/rack' },
+        { heading: 'Max Density', content: '32 kW/rack' },
+        { heading: 'Inlet Temp', content: '22C (target 21C)' },
+      ],
+      detail: {
+        content: 'Row 1 hosts the primary compute cluster: **80 dual-socket servers** running virtualized workloads. Inlet temperature is within spec.',
+        sections: [
+          {
+            type: 'chart',
+            title: 'CPU Utilisation (%) — Last 24h',
+            data: {
+              type: 'bar',
+              values: [42, 38, 35, 33, 36, 45, 62, 74, 82, 85, 88, 86, 84, 83, 85, 80, 76, 72, 68, 65, 62, 58, 52, 46],
+              labels: ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
+              color: '#8b5cf6',
+            },
+          },
+          {
+            type: 'keyvalue',
+            title: 'Server Specifications',
+            data: {
+              'Platform': 'Dell PowerEdge R760',
+              'CPU': '2x Intel Xeon Platinum 8480+',
+              'Cores': '112 cores / 224 threads per server',
+              'RAM': '512 GB DDR5 ECC',
+              'Storage': '2x 1.92TB NVMe SSD',
+              'NICs': '2x 25GbE + 1x 1GbE IPMI',
+              'Power Draw': '600W typical / 900W max',
+              'OS': 'RHEL 9.3 / VMware ESXi 8',
+            },
+          },
+          {
+            type: 'timeline',
+            title: 'Recent Deployment Events',
+            data: [
+              { time: '14:02', event: 'vSphere cluster rebalance completed', status: 'success' },
+              { time: '11:30', event: 'Firmware update applied — rack-1-04', status: 'info' },
+              { time: '09:15', event: 'New VM batch deployed (x40)', status: 'success' },
+              { time: '03:30', event: 'Overnight patch window — 12 servers rebooted', status: 'warning' },
+              { time: '00:05', event: 'Backup jobs completed successfully', status: 'success' },
+            ],
+          },
+        ],
+      },
+    },
+    { id: 'rack-row-2', label: 'Rack Row 2', description: 'Storage and network tier — 20 racks.', icon: 'server', status: 'online', progress: 60, flowRate: '180 kW',
+      sections: [
+        { heading: 'Racks', content: '20 x 42U' },
+        { heading: 'Avg Density', content: '9 kW/rack' },
+        { heading: 'Inlet Temp', content: '21C' },
+      ],
+    },
+
+    // ===== BACKUP GENERATOR =====
+    { id: 'gen', label: 'Backup Generator', description: '4MW diesel generator.', icon: 'fuel', status: 'idle', flowRate: '0 MW',
+      sections: [
+        { heading: 'Capacity', content: '4 MW' },
+        { heading: 'Fuel', content: 'Diesel — 72h at full load' },
+        { heading: 'Start Time', content: '<10s to full load' },
+        { heading: 'Last Test', content: '2026-03-10 — PASS' },
+      ],
+    },
+
+    // ===== NETWORK =====
+    { id: 'grp-net', type: 'group', label: 'Network Infrastructure', style: { color: '#22c55e' } },
+    { id: 'core-sw', label: 'Core Switch', description: 'Spine layer — dual-homed.', icon: 'network-switch', status: 'online', flowRate: '800 Gbps', parentId: 'grp-net',
+      sections: [
+        { heading: 'Model', content: 'Arista 7050CX3' },
+        { heading: 'Uplinks', content: '8x 100GbE to ISPs' },
+        { heading: 'Downlinks', content: '48x 25GbE to ToR switches' },
+      ],
+      detail: {
+        content: 'Core switches form the spine of a leaf-spine Clos architecture. All inter-row traffic traverses the spine layer via ECMP.',
+        sections: [
+          {
+            type: 'keyvalue',
+            title: 'Port Utilisation',
+            data: {
+              'Spine Uplink 1': '82% (82 Gbps)',
+              'Spine Uplink 2': '79% (79 Gbps)',
+              'ToR Downlinks Avg': '54%',
+              'Peak Throughput': '612 Gbps (today)',
+              'Packet Loss': '0.00%',
+              'Latency (p99)': '28 µs',
+            },
+          },
+          {
+            type: 'table',
+            title: 'Connected Leaf Switches',
+            data: {
+              headers: ['Switch', 'Rack Row', 'Uplink Speed', 'Load', 'Status'],
+              rows: [
+                ['ToR-A1', 'Row 1 (A-side)', '2x 25GbE', '67%', 'Online'],
+                ['ToR-A2', 'Row 1 (B-side)', '2x 25GbE', '71%', 'Online'],
+                ['ToR-B1', 'Row 2 (A-side)', '2x 25GbE', '44%', 'Online'],
+                ['ToR-B2', 'Row 2 (B-side)', '2x 25GbE', '39%', 'Online'],
+                ['ToR-OOB', 'OOB Mgmt', '1x 1GbE', '8%', 'Online'],
+              ],
+            },
+          },
+        ],
+      },
+    },
+    { id: 'tor-a1', label: 'ToR Switch A1', description: 'Top-of-rack, Row 1 A-side.', icon: 'network-switch', status: 'online', flowRate: '50 Gbps', parentId: 'grp-net' },
+    { id: 'tor-b1', label: 'ToR Switch B1', description: 'Top-of-rack, Row 2 A-side.', icon: 'network-switch', status: 'online', flowRate: '22 Gbps', parentId: 'grp-net' },
+    { id: 'fw', label: 'Firewall Cluster', description: 'Stateful inspection, HA pair.', icon: 'shield', status: 'online', parentId: 'grp-net',
+      sections: [{ heading: 'Model', content: 'Palo Alto PA-5450' }, { heading: 'Throughput', content: '200 Gbps' }],
+    },
+    { id: 'dns-dhcp', label: 'DNS / DHCP', description: 'Infoblox Grid — dual site.', icon: 'layout-dashboard', status: 'online', parentId: 'grp-net',
+      sections: [{ heading: 'DNS Queries/s', content: '28,400' }, { heading: 'DHCP Leases', content: '12,840 active' }],
+    },
+
+    // ===== MONITORING & SECURITY =====
+    { id: 'grp-mon', type: 'group', label: 'Monitoring & Security', style: { color: '#06b6d4' } },
+    { id: 'dcim', label: 'DCIM System', description: 'Data Center Infrastructure Mgmt.', icon: 'layout-dashboard', status: 'online', style: { color: '#06b6d4', glow: true }, parentId: 'grp-mon',
+      sections: [
+        { heading: 'Platform', content: 'Nlyte DCIM v12' },
+        { heading: 'Devices Managed', content: '1,840' },
+        { heading: 'PUE (live)', content: '1.38' },
+        { heading: 'Power Efficiency', content: '72.5%' },
+      ],
+    },
+    { id: 'env-sensor', label: 'Environmental Sensors', description: 'Temp/humidity per rack row.', icon: 'thermometer', status: 'online', parentId: 'grp-mon',
+      sections: [
+        { heading: 'Row 1 Inlet', content: '22.1 C / 41% RH' },
+        { heading: 'Row 2 Inlet', content: '21.4 C / 43% RH' },
+        { heading: 'Hot Aisle', content: '38.2 C' },
+        { heading: 'Alert Threshold', content: '27C inlet / 45C hot aisle' },
+      ],
+    },
+    { id: 'cctv', label: 'CCTV & Access Control', description: 'Physical security — all entry points.', icon: 'shield', status: 'online', parentId: 'grp-mon',
+      sections: [
+        { heading: 'Cameras', content: '64 IP cameras (4K)' },
+        { heading: 'Access Points', content: '12 card readers + biometric' },
+        { heading: 'Last Breach Attempt', content: 'None in 180 days' },
+      ],
+    },
+    { id: 'fire-suppress', label: 'Fire Suppression', description: 'Pre-action FM-200 system.', icon: 'zap', status: 'online', parentId: 'grp-mon',
+      sections: [
+        { heading: 'Agent', content: 'FM-200 (HFC-227ea)' },
+        { heading: 'Coverage', content: 'All IT halls + UPS rooms' },
+        { heading: 'Last Inspection', content: '2026-01-15 — PASS' },
+      ],
+    },
   ],
   edges: [
-    { id: 'dc1', source: 'grid', target: 'xfmr', flowAnimation: true, color: '#22c55e' },
-    { id: 'dc2', source: 'xfmr', target: 'swgr', flowAnimation: true, color: '#22c55e' },
-    { id: 'dc3', source: 'swgr', target: 'ups-a', label: 'Feed A', type: 'success', flowAnimation: true, color: '#3b82f6' },
-    { id: 'dc4', source: 'swgr', target: 'ups-b', label: 'Feed B', type: 'success', flowAnimation: true, color: '#3b82f6' },
-    { id: 'dc5', source: 'ups-a', target: 'pdu-a', flowAnimation: true, color: '#3b82f6' },
-    { id: 'dc6', source: 'ups-b', target: 'pdu-b', flowAnimation: true, color: '#f59e0b' },
+    // Main power path
+    { id: 'dc1', source: 'grid', target: 'xfmr', flowAnimation: true, color: '#22c55e', thickness: 3,
+      measurements: [{ label: 'V', value: '132', unit: 'kV' }, { label: 'P', value: '12.4', unit: 'MW' }],
+    },
+    { id: 'dc2', source: 'xfmr', target: 'swgr', flowAnimation: true, color: '#22c55e', thickness: 3,
+      measurements: [{ label: 'V', value: '11', unit: 'kV' }, { label: 'I', value: '651', unit: 'A' }],
+    },
+    { id: 'dc3', source: 'swgr', target: 'ups-a', label: 'Feed A', type: 'success', flowAnimation: true, color: '#3b82f6',
+      measurements: [{ label: 'P', value: '1.3', unit: 'MW', status: 'normal' as const }],
+    },
+    { id: 'dc4', source: 'swgr', target: 'ups-b', label: 'Feed B', type: 'success', flowAnimation: true, color: '#3b82f6',
+      measurements: [{ label: 'P', value: '1.8', unit: 'MW', status: 'warning' as const }],
+    },
+    { id: 'dc5', source: 'ups-a', target: 'pdu-a', flowAnimation: true, color: '#3b82f6', annotation: '480V AC' },
+    { id: 'dc6', source: 'ups-b', target: 'pdu-b', flowAnimation: true, color: '#f59e0b', annotation: '480V AC' },
     { id: 'dc7', source: 'gen', target: 'swgr', label: 'Backup', type: 'dashed', color: '#94a3b8' },
+
+    // PDU to racks
+    { id: 'dc8', source: 'pdu-a', target: 'rack-row-1', flowAnimation: true, color: '#8b5cf6', showJunction: true },
+    { id: 'dc9', source: 'pdu-b', target: 'rack-row-1', flowAnimation: true, color: '#8b5cf6', showJunction: true },
+    { id: 'dc10', source: 'pdu-a', target: 'rack-row-2', flowAnimation: true, color: '#8b5cf6' },
+    { id: 'dc11', source: 'pdu-b', target: 'rack-row-2', flowAnimation: true, color: '#8b5cf6' },
+
+    // Network
+    { id: 'dc12', source: 'core-sw', target: 'tor-a1', color: '#22c55e', flowAnimation: true, annotation: '25GbE' },
+    { id: 'dc13', source: 'core-sw', target: 'tor-b1', color: '#22c55e', flowAnimation: true, annotation: '25GbE' },
+    { id: 'dc14', source: 'tor-a1', target: 'rack-row-1', color: '#22c55e', flowAnimation: true },
+    { id: 'dc15', source: 'tor-b1', target: 'rack-row-2', color: '#22c55e', flowAnimation: true },
+    { id: 'dc16', source: 'fw', target: 'core-sw', color: '#22c55e', flowAnimation: true, annotation: '100GbE', thickness: 3 },
+    { id: 'dc17', source: 'core-sw', target: 'dns-dhcp', color: '#22c55e', type: 'dashed' },
+
+    // Monitoring
+    { id: 'dc18', source: 'dcim', target: 'env-sensor', color: '#06b6d4', type: 'dashed', annotation: 'Modbus/SNMP' },
+    { id: 'dc19', source: 'dcim', target: 'ups-a', color: '#06b6d4', type: 'dashed' },
+    { id: 'dc20', source: 'dcim', target: 'ups-b', color: '#06b6d4', type: 'dashed' },
+    { id: 'dc21', source: 'cctv', target: 'rack-row-1', color: '#94a3b8', type: 'dashed', annotation: 'Physical access' },
+    { id: 'dc22', source: 'fire-suppress', target: 'rack-row-1', color: '#ef4444', type: 'dashed', annotation: 'FM-200 zone' },
+    { id: 'dc23', source: 'fire-suppress', target: 'rack-row-2', color: '#ef4444', type: 'dashed' },
   ],
 };
 
@@ -990,6 +1226,10 @@ const hvdcDiagram: FlowDiagram = {
     { id: 'nw-conv', label: 'Offshore Converter', icon: 'diode', description: 'VSC-MMC AC/DC conversion.',
       status: 'online', progress: 88, flowRate: '1600 MW',
       sections: [{ heading: 'Topology', content: 'Half-bridge MMC' }, { heading: 'DC Voltage', content: '+/-320 kV' }], parentId: 'nw-group' },
+    { id: 'nw-statcom', label: 'STATCOM NW', icon: 'zap', description: 'Reactive compensation at offshore PCC.',
+      status: 'online', flowRate: '200 MVAr', parentId: 'nw-group',
+      sections: [{ heading: 'Type', content: 'VSC-based STATCOM' }, { heading: 'Rating', content: '+/-200 MVAr' }, { heading: 'Function', content: 'Voltage control & reactive support' }],
+    },
 
     // ===== NORTH-EAST REGION — Nuclear + Hydro =====
     { id: 'ne-group', type: 'group', label: 'North-East — Nuclear & Hydro Generation', style: { color: '#8b5cf6' } },
@@ -1004,10 +1244,85 @@ const hvdcDiagram: FlowDiagram = {
       sections: [{ heading: 'Rating', content: '1400 MVA' }], parentId: 'ne-group' },
     { id: 'ne-conv1', label: 'Rectifier Station 1', icon: 'diode', description: 'Thyristor LCC 12-pulse.',
       status: 'online', progress: 92, flowRate: '3000 MW',
-      sections: [{ heading: 'Type', content: 'LCC Thyristor' }, { heading: 'DC', content: '+/-800 kV' }], parentId: 'ne-group' },
+      sections: [
+        { heading: 'Type', content: 'LCC Thyristor' },
+        { heading: 'DC', content: '+/-800 kV' },
+        { heading: 'Firing Angle', content: '15 deg (alpha)' },
+        { heading: 'Cooling', content: 'Deionised water' },
+      ],
+      parentId: 'ne-group',
+      detail: {
+        content: 'Rectifier Station 1 uses a **12-pulse thyristor LCC** topology fed from two converter transformers with 30-degree phase shift. It is the backbone of the +/-800 kV ultra-HVDC corridor.',
+        sections: [
+          {
+            type: 'trend',
+            title: 'Power Transfer (MW) — Last 24h',
+            data: {
+              values: [2800, 2750, 2700, 2720, 2800, 2900, 3000, 3050, 3000, 2980, 3000, 3000, 2950, 2900, 2950, 3000, 3000, 2980, 2950, 2900, 2850, 2800, 2780, 2800],
+              labels: ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
+              color: '#ef4444', unit: 'MW', min: 0, max: 3200,
+            },
+          },
+          {
+            type: 'keyvalue',
+            title: 'Converter Specifications',
+            data: {
+              'Topology': 'LCC 12-pulse thyristor',
+              'DC Voltage': '+/-800 kV',
+              'Rated Current': '3750 A',
+              'Rated Power': '3000 MW',
+              'Firing Angle (alpha)': '15 deg',
+              'Overlap Angle (mu)': '22 deg',
+              'Valve Groups': '2 x 6-pulse in series',
+              'Thyristor Rating': '8500V / 4000A',
+              'Cooling': 'Deionised water loop',
+              'Commissioning': '2020',
+            },
+          },
+          {
+            type: 'timeline',
+            title: 'Recent Events',
+            data: [
+              { time: '11:00', event: 'Power order increased to 3000 MW', status: 'success' },
+              { time: '06:30', event: 'Shift changeover — all parameters normal', status: 'info' },
+              { time: '03:15', event: 'Temporary derating to 2700 MW (maintenance)', status: 'warning' },
+              { time: '00:00', event: 'Steady-state full-power operation', status: 'success' },
+            ],
+          },
+        ],
+      },
+    },
     { id: 'ne-conv2', label: 'Rectifier Station 2', icon: 'diode', description: 'VSC-MMC bi-directional.',
       status: 'online', progress: 67, flowRate: '1200 MW',
       sections: [{ heading: 'Type', content: 'FB-MMC VSC' }, { heading: 'DC', content: '+/-500 kV' }], parentId: 'ne-group' },
+    { id: 'ne-svc', label: 'SVC — NE', icon: 'zap', description: 'Static Var Compensator at 400kV bus.',
+      status: 'online', flowRate: '+150 MVAr', parentId: 'ne-group',
+      sections: [{ heading: 'Type', content: 'TCR + TSC' }, { heading: 'Rating', content: '+/-300 MVAr' }, { heading: 'Purpose', content: 'Commutation failure prevention' }],
+    },
+
+    // ===== DC FAULT DETECTION & PROTECTION =====
+    { id: 'prot-group', type: 'group', label: 'DC Protection & Fault Detection', style: { color: '#ef4444' } },
+    { id: 'dc-fault1', label: 'DC Fault Detector 1', icon: 'shield', description: 'Travelling-wave fault location — Link 1.',
+      status: 'online', parentId: 'prot-group',
+      sections: [
+        { heading: 'Method', content: 'Travelling wave + di/dt' },
+        { heading: 'Reach', content: 'Full 1200km line' },
+        { heading: 'Op Time', content: '<1ms detection' },
+        { heading: 'Last Trip', content: 'None in 90 days' },
+      ],
+    },
+    { id: 'dc-fault2', label: 'DC Fault Detector 2', icon: 'shield', description: 'Differential protection — Link 2.',
+      status: 'online', parentId: 'prot-group',
+      sections: [{ heading: 'Method', content: 'Line differential' }, { heading: 'Op Time', content: '<2ms' }],
+    },
+    { id: 'prot-coord', label: 'Protection Coordination', icon: 'layout-dashboard', description: 'Central HVDC protection logic.',
+      status: 'online', style: { color: '#ef4444' }, parentId: 'prot-group',
+      sections: [
+        { heading: 'Standard', content: 'IEC 60919 / CIGRE B4' },
+        { heading: 'Backup', content: 'Teleprotection via OPGW' },
+        { heading: 'Comm Latency', content: '<1ms fiber' },
+      ],
+    },
 
     // ===== DC TRANSMISSION CORRIDORS =====
     { id: 'dc-corridor1-p', label: 'HVDC Link 1 (+800kV)', description: '1200km overhead line.', flowRate: '+800 kV', style: { color: '#ef4444' } },
@@ -1036,6 +1351,10 @@ const hvdcDiagram: FlowDiagram = {
       status: 'online', flowRate: '1200 MW', progress: 95, parentId: 'sw-group' },
     { id: 'sw-city', label: 'Metro Distribution', icon: 'zap', description: 'City grid connection.',
       status: 'online', flowRate: '1600 MW', parentId: 'sw-group' },
+    { id: 'sw-statcom', label: 'STATCOM SW', icon: 'zap', description: 'Dynamic reactive support at SW inverter.',
+      status: 'online', flowRate: '+180 MVAr', parentId: 'sw-group',
+      sections: [{ heading: 'Type', content: 'FB-MMC STATCOM' }, { heading: 'Rating', content: '+/-250 MVAr' }],
+    },
 
     // ===== SOUTH-EAST REGION — Solar + BESS =====
     { id: 'se-group', type: 'group', label: 'South-East — Solar & Battery Storage', style: { color: '#22c55e' } },
@@ -1063,55 +1382,111 @@ const hvdcDiagram: FlowDiagram = {
         { heading: 'Total Load', content: '6700 MW' },
         { heading: 'DC Losses', content: '~2.1%' },
         { heading: 'System Freq', content: '50.02 Hz' },
-      ]
+      ],
+      detail: {
+        content: 'The SCADA/EMS manages all four converter stations and the central switching hub. **IEC 61850-90-8** HVDC communication standard is implemented across all substations.',
+        sections: [
+          {
+            type: 'meritorder',
+            title: 'Generation Merit Order Dispatch',
+            data: [
+              { label: 'Nuclear', value: 3200, cost: 12, color: '#8b5cf6' },
+              { label: 'Hydro', value: 1200, cost: 18, color: '#06b6d4' },
+              { label: 'Offshore Wind', value: 1600, cost: 22, color: '#22c55e' },
+              { label: 'Solar', value: 1400, cost: 25, color: '#f59e0b' },
+              { label: 'BESS Dispatch', value: 300, cost: 35, color: '#3b82f6' },
+            ],
+          },
+          {
+            type: 'loadprofile',
+            title: 'System Load Profile — 24h',
+            data: {
+              values: [5800, 5600, 5400, 5300, 5400, 5700, 6100, 6400, 6600, 6700, 6700, 6650, 6600, 6500, 6450, 6400, 6350, 6300, 6400, 6500, 6600, 6500, 6300, 6000],
+              labels: ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
+              color: '#8b5cf6', unit: 'MW',
+            },
+          },
+        ],
+      },
     },
   ],
   edges: [
     // NW Wind Farm internal
-    { id: 'nw1', source: 'nw-wind1', target: 'nw-collect', color: '#22c55e', flowAnimation: true, annotation: '960 MW' },
-    { id: 'nw2', source: 'nw-wind2', target: 'nw-collect', color: '#22c55e', flowAnimation: true, annotation: '800 MW' },
+    { id: 'nw1', source: 'nw-wind1', target: 'nw-collect', color: '#22c55e', flowAnimation: true, annotation: '960 MW',
+      measurements: [{ label: 'P', value: '960', unit: 'MW' }, { label: 'V', value: '66', unit: 'kV' }],
+    },
+    { id: 'nw2', source: 'nw-wind2', target: 'nw-collect', color: '#22c55e', flowAnimation: true, annotation: '800 MW',
+      measurements: [{ label: 'P', value: '800', unit: 'MW' }],
+    },
     { id: 'nw3', source: 'nw-collect', target: 'nw-xfmr', color: '#22c55e', flowAnimation: true, thickness: 3 },
     { id: 'nw4', source: 'nw-xfmr', target: 'nw-conv', color: '#f59e0b', flowAnimation: true, annotation: '320kV AC' },
+    { id: 'nw5', source: 'nw-statcom', target: 'nw-collect', color: '#06b6d4', type: 'dashed', annotation: 'Q support' },
 
     // NE Generation internal
-    { id: 'ne1', source: 'ne-nuclear', target: 'ne-bus', color: '#8b5cf6', flowAnimation: true, annotation: '3200 MW', thickness: 4 },
-    { id: 'ne2', source: 'ne-hydro', target: 'ne-bus', color: '#06b6d4', flowAnimation: true, annotation: '1200 MW', thickness: 3 },
+    { id: 'ne1', source: 'ne-nuclear', target: 'ne-bus', color: '#8b5cf6', flowAnimation: true, annotation: '3200 MW', thickness: 4,
+      measurements: [{ label: 'P', value: '3200', unit: 'MW' }, { label: 'V', value: '400', unit: 'kV' }],
+    },
+    { id: 'ne2', source: 'ne-hydro', target: 'ne-bus', color: '#06b6d4', flowAnimation: true, annotation: '1200 MW', thickness: 3,
+      measurements: [{ label: 'P', value: '1200', unit: 'MW' }],
+    },
     { id: 'ne3', source: 'ne-bus', target: 'ne-xfmr1', color: '#22c55e', flowAnimation: true, thickness: 3, showJunction: true },
     { id: 'ne4', source: 'ne-bus', target: 'ne-xfmr2', color: '#22c55e', flowAnimation: true, thickness: 2, showJunction: true },
     { id: 'ne5', source: 'ne-xfmr1', target: 'ne-conv1', color: '#f59e0b', flowAnimation: true, annotation: '200kV AC' },
     { id: 'ne6', source: 'ne-xfmr2', target: 'ne-conv2', color: '#f59e0b', flowAnimation: true, annotation: '200kV AC' },
+    { id: 'ne7', source: 'ne-svc', target: 'ne-bus', color: '#06b6d4', type: 'dashed', annotation: 'Q ctrl' },
 
     // DC Corridors — NE to Hub
-    { id: 'dc1a', source: 'ne-conv1', target: 'dc-corridor1-p', color: '#ef4444', flowAnimation: true, annotation: '+800kV', thickness: 5 },
-    { id: 'dc1b', source: 'ne-conv1', target: 'dc-corridor1-n', color: '#3b82f6', flowAnimation: true, annotation: '-800kV', thickness: 5 },
+    { id: 'dc1a', source: 'ne-conv1', target: 'dc-corridor1-p', color: '#ef4444', flowAnimation: true, annotation: '+800kV', thickness: 5,
+      measurements: [{ label: 'V', value: '+800', unit: 'kV', status: 'normal' as const }, { label: 'I', value: '3750', unit: 'A' }, { label: 'P', value: '3000', unit: 'MW' }],
+    },
+    { id: 'dc1b', source: 'ne-conv1', target: 'dc-corridor1-n', color: '#3b82f6', flowAnimation: true, annotation: '-800kV', thickness: 5,
+      measurements: [{ label: 'V', value: '-800', unit: 'kV' }],
+    },
     { id: 'dc1c', source: 'dc-corridor1-p', target: 'dc-breaker1', color: '#ef4444', flowAnimation: true, thickness: 5 },
     { id: 'dc1d', source: 'dc-corridor1-n', target: 'dc-breaker1', color: '#3b82f6', flowAnimation: true, thickness: 5 },
 
     // DC Corridor — NE Conv2 to Hub
-    { id: 'dc2a', source: 'ne-conv2', target: 'dc-corridor2', color: '#f59e0b', flowAnimation: true, annotation: '+/-500kV', thickness: 3 },
+    { id: 'dc2a', source: 'ne-conv2', target: 'dc-corridor2', color: '#f59e0b', flowAnimation: true, annotation: '+/-500kV', thickness: 3,
+      measurements: [{ label: 'V', value: '500', unit: 'kV' }, { label: 'P', value: '1200', unit: 'MW' }],
+    },
     { id: 'dc2b', source: 'dc-corridor2', target: 'dc-breaker2', color: '#f59e0b', flowAnimation: true, thickness: 3 },
 
     // DC Corridor — NW Offshore to Hub
-    { id: 'dc3a', source: 'nw-conv', target: 'dc-corridor3', color: '#22c55e', flowAnimation: true, annotation: '+/-320kV', thickness: 3 },
+    { id: 'dc3a', source: 'nw-conv', target: 'dc-corridor3', color: '#22c55e', flowAnimation: true, annotation: '+/-320kV', thickness: 3,
+      measurements: [{ label: 'V', value: '320', unit: 'kV' }, { label: 'P', value: '1600', unit: 'MW' }],
+    },
     { id: 'dc3b', source: 'dc-corridor3', target: 'dc-breaker3', color: '#22c55e', flowAnimation: true, thickness: 3 },
 
     // Hub to SW
-    { id: 'hub-sw1', source: 'dc-breaker1', target: 'sw-conv', color: '#ef4444', flowAnimation: true, thickness: 4, annotation: '800kV DC' },
-    { id: 'hub-sw2', source: 'dc-breaker2', target: 'sw-conv', color: '#f59e0b', flowAnimation: true, thickness: 3, showJunction: true },
+    { id: 'hub-sw1', source: 'dc-breaker1', target: 'sw-conv', color: '#ef4444', flowAnimation: true, thickness: 4, annotation: '800kV DC',
+      measurements: [{ label: 'P', value: '2400', unit: 'MW' }, { label: 'V', value: '800', unit: 'kV' }],
+    },
+    { id: 'hub-sw2', source: 'dc-breaker2', target: 'sw-conv', color: '#f59e0b', flowAnimation: true, thickness: 3, showJunction: true,
+      measurements: [{ label: 'P', value: '400', unit: 'MW' }],
+    },
 
     // Hub to SE
-    { id: 'hub-se1', source: 'dc-breaker3', target: 'se-conv', color: '#22c55e', flowAnimation: true, thickness: 3 },
-    { id: 'hub-se2', source: 'dc-breaker2', target: 'se-conv', color: '#f59e0b', flowAnimation: true, thickness: 2, showJunction: true },
+    { id: 'hub-se1', source: 'dc-breaker3', target: 'se-conv', color: '#22c55e', flowAnimation: true, thickness: 3,
+      measurements: [{ label: 'P', value: '800', unit: 'MW' }, { label: 'V', value: '320', unit: 'kV' }],
+    },
+    { id: 'hub-se2', source: 'dc-breaker2', target: 'se-conv', color: '#f59e0b', flowAnimation: true, thickness: 2, showJunction: true,
+      measurements: [{ label: 'P', value: '300', unit: 'MW' }],
+    },
 
     // SW internal
     { id: 'sw1', source: 'sw-conv', target: 'sw-xfmr', color: '#f59e0b', flowAnimation: true, annotation: '200kV AC' },
     { id: 'sw2', source: 'sw-xfmr', target: 'sw-bus', color: '#22c55e', flowAnimation: true, annotation: '400kV AC', thickness: 3 },
     { id: 'sw3', source: 'sw-bus', target: 'sw-smelter', color: '#ef4444', flowAnimation: true, annotation: '1200 MW', thickness: 3 },
     { id: 'sw4', source: 'sw-bus', target: 'sw-city', color: '#3b82f6', flowAnimation: true, annotation: '1600 MW', thickness: 3 },
+    { id: 'sw5', source: 'sw-statcom', target: 'sw-bus', color: '#06b6d4', type: 'dashed', annotation: 'Q support' },
 
     // SE internal
-    { id: 'se1', source: 'se-solar', target: 'se-bus', color: '#f59e0b', flowAnimation: true, annotation: '1400 MW', thickness: 3 },
-    { id: 'se2', source: 'se-bess', target: 'se-bus', color: '#8b5cf6', flowAnimation: true, annotation: '300 MW' },
+    { id: 'se1', source: 'se-solar', target: 'se-bus', color: '#f59e0b', flowAnimation: true, annotation: '1400 MW', thickness: 3,
+      measurements: [{ label: 'P', value: '1400', unit: 'MW' }],
+    },
+    { id: 'se2', source: 'se-bess', target: 'se-bus', color: '#8b5cf6', flowAnimation: true, annotation: '300 MW',
+      measurements: [{ label: 'P', value: '300', unit: 'MW' }, { label: 'SoC', value: '62', unit: '%' }],
+    },
     { id: 'se3', source: 'se-bus', target: 'se-conv', color: '#22c55e', flowAnimation: true, thickness: 2 },
 
     // Earth electrodes
@@ -1120,13 +1495,21 @@ const hvdcDiagram: FlowDiagram = {
     { id: 'gnd3', source: 'se-conv', target: 'gnd-se', color: '#94a3b8', type: 'dashed' },
     { id: 'gnd4', source: 'nw-conv', target: 'gnd-nw', color: '#94a3b8', type: 'dashed' },
 
+    // Protection links
+    { id: 'prot1', source: 'dc-fault1', target: 'dc-corridor1-p', color: '#ef4444', type: 'dashed', annotation: 'TW monitor' },
+    { id: 'prot2', source: 'dc-fault2', target: 'dc-corridor2', color: '#ef4444', type: 'dashed' },
+    { id: 'prot3', source: 'prot-coord', target: 'dc-breaker1', color: '#ef4444', type: 'dashed', annotation: 'Trip signal' },
+    { id: 'prot4', source: 'prot-coord', target: 'dc-breaker2', color: '#ef4444', type: 'dashed' },
+    { id: 'prot5', source: 'prot-coord', target: 'dc-breaker3', color: '#ef4444', type: 'dashed' },
+
     // SCADA monitoring links
     { id: 'scada1', source: 'scada', target: 'dc-breaker1', color: '#8b5cf6', type: 'dashed', annotation: 'IEC 61850' },
     { id: 'scada2', source: 'scada', target: 'dc-breaker2', color: '#8b5cf6', type: 'dashed' },
     { id: 'scada3', source: 'scada', target: 'dc-breaker3', color: '#8b5cf6', type: 'dashed' },
+    { id: 'scada4', source: 'scada', target: 'ne-conv1', color: '#8b5cf6', type: 'dashed' },
+    { id: 'scada5', source: 'scada', target: 'prot-coord', color: '#8b5cf6', type: 'dashed', annotation: 'Protection IED' },
   ],
 };
-
 // ===== SHOWCASE: Every feature in one diagram =====
 const showcaseDiagram: FlowDiagram = {
   title: 'Nodescape Feature Showcase',
@@ -1384,6 +1767,11 @@ const nuclearDiagram: FlowDiagram = {
             'Cycle Length': '18 months',
             'Control Rods': '69 RCCA assemblies',
           }},
+          { type: 'trend', title: 'Neutron Flux (% FP) — Last 24h', data: {
+            values: [100, 100, 100, 100, 100, 100, 99.8, 99.9, 100, 100, 100, 100, 100, 100, 100, 100, 99.9, 100, 100, 100, 100, 100, 100, 100],
+            labels: ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
+            color: '#ef4444', unit: '% FP', min: 95, max: 101,
+          }},
           { type: 'chart', title: 'Core Temperature Distribution', data: {
             type: 'line', values: [290, 295, 305, 315, 325, 322, 310, 298, 290], labels: ['In', '', '', '', 'Peak', '', '', '', 'Out'], color: '#ef4444',
           }},
@@ -1404,6 +1792,15 @@ const nuclearDiagram: FlowDiagram = {
       status: 'online', progress: 85, parentId: 'grp-primary' },
     { id: 'ctrl-rods', label: 'Control Rods', icon: 'control-rod', description: '69 RCCA assemblies.',
       status: 'online', progress: 15, flowRate: '15% inserted', parentId: 'grp-primary' },
+    { id: 'chem-vol', label: 'CVCS', icon: 'valve', description: 'Chemical & Volume Control System.',
+      status: 'online', parentId: 'grp-primary',
+      sections: [
+        { heading: 'Boron Concentration', content: '850 ppm (boric acid)' },
+        { heading: 'pH', content: '7.2 (lithiated)' },
+        { heading: 'Dissolved H2', content: '25 cc/kg' },
+        { heading: 'Function', content: 'Long-term reactivity control + primary purification' },
+      ],
+    },
 
     // Steam Generators
     { id: 'grp-sg', type: 'group', label: 'Steam Generation', style: { color: '#f59e0b' } },
@@ -1420,7 +1817,38 @@ const nuclearDiagram: FlowDiagram = {
       status: 'online', progress: 91, parentId: 'grp-secondary' },
     { id: 'generator', label: 'Generator', icon: 'generator', description: '1200 MWe turbo-generator.',
       status: 'online', flowRate: '1200 MWe', progress: 96, parentId: 'grp-secondary',
-      style: { color: '#22c55e' } },
+      style: { color: '#22c55e' },
+      detail: {
+        content: 'The main generator is a **hydrogen-cooled turbo-generator** directly coupled to the LP turbine shaft. It operates at 22kV, 50Hz.',
+        sections: [
+          {
+            type: 'keyvalue',
+            title: 'Generator Specifications',
+            data: {
+              'Model': 'Alstom/GE ARABELLE',
+              'Rated Output': '1200 MWe',
+              'Terminal Voltage': '22 kV',
+              'Current': '31,500 A',
+              'Power Factor': '0.90 lagging',
+              'Frequency': '50.0 Hz',
+              'Speed': '1500 rpm (4-pole)',
+              'Cooling': 'Hydrogen inner-cooled',
+              'Stator Cooling': 'Distilled water',
+              'Efficiency': '98.7%',
+            },
+          },
+          {
+            type: 'trend',
+            title: 'Active Power Output (MWe) — Last 24h',
+            data: {
+              values: [1200, 1200, 1200, 1200, 1200, 1200, 1198, 1199, 1200, 1200, 1200, 1200, 1200, 1200, 1200, 1200, 1199, 1200, 1200, 1200, 1200, 1200, 1200, 1200],
+              labels: ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
+              color: '#22c55e', unit: 'MWe', min: 1100, max: 1250,
+            },
+          },
+        ],
+      },
+    },
     { id: 'condenser', label: 'Condenser', icon: 'condenser', description: 'Steam to water conversion.',
       status: 'online', parentId: 'grp-secondary' },
     { id: 'feedpump', label: 'Feed Pump', icon: 'pump', description: 'Main feedwater pump.',
@@ -1437,11 +1865,86 @@ const nuclearDiagram: FlowDiagram = {
     { id: 'grp-safety', type: 'group', label: 'Safety Systems', style: { color: '#8b5cf6' } },
     { id: 'eccs', label: 'ECCS', icon: 'valve', description: 'Emergency Core Cooling System.',
       status: 'online', parentId: 'grp-safety',
-      sections: [{ heading: 'Status', content: 'Standby - all trains available' }] },
+      sections: [
+        { heading: 'Status', content: 'Standby - all trains available' },
+        { heading: 'Trains', content: '4 independent safety trains' },
+        { heading: 'Injection Flow', content: '1800 m3/h per train' },
+      ],
+    },
+    { id: 'accumulator', label: 'Accumulators', icon: 'pressurizer', description: 'Passive high-pressure injection tanks.',
+      status: 'online', parentId: 'grp-safety',
+      sections: [
+        { heading: 'Tanks', content: '4 x 50 m3' },
+        { heading: 'Pressure', content: '45 bar N2 cover gas' },
+        { heading: 'Boron', content: '2500 ppm' },
+        { heading: 'Level', content: '100% (ready)' },
+      ],
+    },
+    { id: 'diesel-gen', label: 'Emergency Diesels', icon: 'fuel', description: 'Class 1E safety-grade generators.',
+      status: 'idle', parentId: 'grp-safety',
+      sections: [
+        { heading: 'Units', content: '4 x 6 MVA' },
+        { heading: 'Fuel', content: 'Diesel — 72h supply' },
+        { heading: 'Start Time', content: '<10s to full load' },
+        { heading: 'Last Test', content: '2026-03-01 — PASS' },
+      ],
+    },
     { id: 'containment', label: 'Containment', icon: 'containment', description: 'Pre-stressed concrete with steel liner.',
       status: 'online', parentId: 'grp-safety',
       sections: [{ heading: 'Pressure', content: '1.01 bar (normal)' }, { heading: 'Leak Rate', content: '<0.1%/day' }] },
     { id: 'spray', label: 'Containment Spray', icon: 'valve', status: 'online', parentId: 'grp-safety' },
+
+    // Radiation Monitoring
+    { id: 'grp-rad', type: 'group', label: 'Radiation Monitoring', style: { color: '#ef4444' } },
+    { id: 'rad-primary', label: 'Primary Coolant Monitor', icon: 'shield', description: 'Continuous activity monitoring.',
+      status: 'online', parentId: 'grp-rad',
+      sections: [
+        { heading: 'Activity', content: '3.2 x 10^5 Bq/kg (normal)' },
+        { heading: 'Cs-137', content: 'ND (below detection limit)' },
+        { heading: 'I-131', content: '12 Bq/kg (within limit)' },
+        { heading: 'Alert Level', content: '10^7 Bq/kg (fuel failure indicator)' },
+      ],
+    },
+    { id: 'rad-containment', label: 'Containment Area Monitor', icon: 'shield', description: 'In-containment radiation survey.',
+      status: 'online', parentId: 'grp-rad',
+      sections: [
+        { heading: 'Dose Rate', content: '2.1 mSv/h (normal ops)' },
+        { heading: 'Alert', content: '>10 mSv/h evacuation zone' },
+      ],
+    },
+    { id: 'rad-stack', label: 'Stack Emission Monitor', icon: 'shield', description: 'Effluent discharge monitoring.',
+      status: 'online', parentId: 'grp-rad',
+      sections: [
+        { heading: 'Noble Gases', content: '< 10^6 Bq/m3' },
+        { heading: 'Particulates', content: '< 0.1 Bq/m3' },
+        { heading: 'Tritium', content: '< 10^4 Bq/m3' },
+      ],
+    },
+
+    // Spent Fuel Pool
+    { id: 'grp-sfp', type: 'group', label: 'Spent Fuel Pool', style: { color: '#f59e0b' } },
+    { id: 'sfp', label: 'Spent Fuel Pool', icon: 'pressurizer', description: 'Underwater storage for discharged assemblies.',
+      status: 'online', parentId: 'grp-sfp',
+      sections: [
+        { heading: 'Capacity', content: '1200 assemblies (wet)' },
+        { heading: 'Occupancy', content: '640 assemblies stored' },
+        { heading: 'Water Level', content: '7.2 m above top of fuel' },
+        { heading: 'Water Temp', content: '32 C' },
+        { heading: 'pH', content: '7.4 (borated)' },
+      ],
+    },
+    { id: 'sfp-pump', label: 'SFP Cooling Pump', icon: 'pump', description: 'Forced circulation cooling.',
+      status: 'online', progress: 45, parentId: 'grp-sfp',
+      sections: [{ heading: 'Flow', content: '1200 m3/h' }, { heading: 'Heat Removal', content: '4.2 MWt' }],
+    },
+    { id: 'sfp-hx', label: 'SFP Heat Exchanger', icon: 'steam-generator', description: 'Pool water to service water.',
+      status: 'online', parentId: 'grp-sfp',
+      sections: [{ heading: 'Capacity', content: '5 MWt' }, { heading: 'Coolant', content: 'River water' }],
+    },
+    { id: 'sfp-level', label: 'SFP Level Monitor', icon: 'thermometer', description: 'Level + temperature instrumentation.',
+      status: 'online', parentId: 'grp-sfp',
+      sections: [{ heading: 'Level', content: '7.2 m (alarm at 6.0 m)' }, { heading: 'Temp Alarm', content: '>60C' }],
+    },
 
     // Grid Connection
     { id: 'xfmr-main', label: 'Main Transformer', icon: 'transformer', status: 'online', flowRate: '1200 MWe',
@@ -1461,6 +1964,30 @@ const nuclearDiagram: FlowDiagram = {
         { heading: 'Keff', content: '1.0000' },
         { heading: 'Boron', content: '850 ppm' },
       ],
+      detail: {
+        content: 'The Main Control Room is staffed 24/7 by licensed Senior Reactor Operators. All safety parameters are within Tech Spec limits.',
+        sections: [
+          {
+            type: 'loadprofile',
+            title: 'Unit 1 Generation Profile — 24h',
+            data: {
+              values: [1200, 1200, 1200, 1200, 1200, 1200, 1198, 1199, 1200, 1200, 1200, 1200, 1200, 1200, 1200, 1200, 1199, 1200, 1200, 1200, 1200, 1200, 1200, 1200],
+              labels: ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
+              color: '#8b5cf6', unit: 'MWe',
+            },
+          },
+          {
+            type: 'meritorder',
+            title: 'Multi-Unit Dispatch Order',
+            data: [
+              { label: 'Unit 1 Nuclear', value: 1200, cost: 10, color: '#ef4444' },
+              { label: 'Unit 2 Nuclear', value: 1200, cost: 10, color: '#f97316' },
+              { label: 'Hydro Peaker', value: 400, cost: 28, color: '#06b6d4' },
+              { label: 'Gas Backup', value: 300, cost: 75, color: '#94a3b8' },
+            ],
+          },
+        ],
+      },
     },
   ],
   edges: [
@@ -1469,18 +1996,27 @@ const nuclearDiagram: FlowDiagram = {
       measurements: [
         { label: 'T', value: '325', unit: 'C', status: 'normal' as const },
         { label: 'P', value: '155', unit: 'bar' },
+        { label: 'F', value: '9400', unit: 'kg/s' },
       ],
     },
-    { id: 'n2', source: 'reactor', target: 'sg-2', color: '#ef4444', flowAnimation: true, annotation: '325C', thickness: 4 },
+    { id: 'n2', source: 'reactor', target: 'sg-2', color: '#ef4444', flowAnimation: true, annotation: '325C', thickness: 4,
+      measurements: [
+        { label: 'T', value: '325', unit: 'C' },
+        { label: 'P', value: '155', unit: 'bar' },
+      ],
+    },
     { id: 'n3', source: 'sg-1', target: 'rcp-1', color: '#f97316', flowAnimation: true, annotation: '290C' },
     { id: 'n4', source: 'sg-2', target: 'rcp-2', color: '#f97316', flowAnimation: true, annotation: '290C' },
     { id: 'n5', source: 'rcp-1', target: 'reactor', color: '#f97316', flowAnimation: true, thickness: 3 },
     { id: 'n6', source: 'rcp-2', target: 'reactor', color: '#f97316', flowAnimation: true, thickness: 3 },
     { id: 'n7', source: 'pressurizer', target: 'reactor', color: '#ef4444', type: 'dashed', annotation: '155 bar' },
     { id: 'n8', source: 'ctrl-rods', target: 'reactor', color: '#94a3b8', type: 'dashed' },
+    { id: 'n8b', source: 'chem-vol', target: 'reactor', color: '#f59e0b', type: 'dashed', annotation: 'Boron/makeup' },
 
     // Steam side
-    { id: 'n9', source: 'sg-1', target: 'msv', color: '#3b82f6', flowAnimation: true, annotation: 'Steam 280C' },
+    { id: 'n9', source: 'sg-1', target: 'msv', color: '#3b82f6', flowAnimation: true, annotation: 'Steam 280C',
+      measurements: [{ label: 'T', value: '280', unit: 'C' }, { label: 'P', value: '65', unit: 'bar' }],
+    },
     { id: 'n10', source: 'sg-2', target: 'msv', color: '#3b82f6', flowAnimation: true, showJunction: true },
     { id: 'n11', source: 'msv', target: 'hp-turbine', color: '#3b82f6', flowAnimation: true, thickness: 3 },
     { id: 'n12', source: 'hp-turbine', target: 'lp-turbine', color: '#3b82f6', flowAnimation: true, thickness: 3 },
@@ -1488,6 +2024,7 @@ const nuclearDiagram: FlowDiagram = {
       measurements: [
         { label: 'P', value: '1200', unit: 'MWe', status: 'normal' as const },
         { label: 'f', value: '50.0', unit: 'Hz' },
+        { label: 'N', value: '1500', unit: 'rpm' },
       ],
     },
     { id: 'n14', source: 'lp-turbine', target: 'condenser', color: '#06b6d4', flowAnimation: true, annotation: 'Exhaust' },
@@ -1511,17 +2048,30 @@ const nuclearDiagram: FlowDiagram = {
     { id: 'n22', source: 'grid', target: 'nl-grid', color: '#22c55e', type: 'dashed' },
 
     // Safety
-    { id: 'n23', source: 'eccs', target: 'reactor', color: '#8b5cf6', type: 'dashed', annotation: 'Emergency' },
+    { id: 'n23', source: 'eccs', target: 'reactor', color: '#8b5cf6', type: 'dashed', annotation: 'Emergency injection' },
+    { id: 'n23b', source: 'accumulator', target: 'reactor', color: '#f59e0b', type: 'dashed', annotation: 'High-P injection' },
+    { id: 'n23c', source: 'diesel-gen', target: 'eccs', color: '#94a3b8', type: 'dashed', annotation: 'Emergency power' },
     { id: 'n24', source: 'containment', target: 'reactor', color: '#8b5cf6', type: 'dashed' },
     { id: 'n25', source: 'spray', target: 'containment', color: '#8b5cf6', type: 'dashed' },
     { id: 'n26', source: 'reactor', target: 'nl-rad', color: '#ef4444', type: 'dashed' },
 
+    // Radiation monitoring
+    { id: 'n26b', source: 'rad-primary', target: 'reactor', color: '#ef4444', type: 'dashed', annotation: 'Activity' },
+    { id: 'n26c', source: 'rad-containment', target: 'containment', color: '#ef4444', type: 'dashed' },
+    { id: 'n26d', source: 'rad-stack', target: 'grid', color: '#94a3b8', type: 'dashed', annotation: 'Effluent' },
+
+    // Spent fuel pool
+    { id: 'n29', source: 'sfp-pump', target: 'sfp', color: '#f59e0b', flowAnimation: true, annotation: 'Pool cooling' },
+    { id: 'n30', source: 'sfp', target: 'sfp-hx', color: '#f59e0b', flowAnimation: true },
+    { id: 'n31', source: 'sfp-level', target: 'sfp', color: '#94a3b8', type: 'dashed', annotation: 'Level/Temp' },
+
     // Control room monitoring
     { id: 'n27', source: 'control-room', target: 'reactor', color: '#8b5cf6', type: 'dashed', annotation: 'Monitoring' },
     { id: 'n28', source: 'control-room', target: 'generator', color: '#8b5cf6', type: 'dashed' },
+    { id: 'n28b', source: 'control-room', target: 'sfp', color: '#8b5cf6', type: 'dashed', annotation: 'SFP monitor' },
+    { id: 'n28c', source: 'control-room', target: 'rad-primary', color: '#8b5cf6', type: 'dashed' },
   ],
 };
-
 const nodeTemplates: SidebarNodeTemplate[] = [
   { type: 'default', label: 'Process', description: 'A process step' },
   { type: 'decision', label: 'Decision', description: 'A branch point' },
