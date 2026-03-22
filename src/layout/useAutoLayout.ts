@@ -33,15 +33,15 @@ export function computeLayout(
   g.setDefaultEdgeLabel(() => ({}));
 
   const direction = diagram.layout?.direction || 'TB';
-  const nodeSpacing = diagram.layout?.nodeSpacing ?? 64;  // 8 * 8
-  const rankSpacing = diagram.layout?.rankSpacing ?? 80;  // 10 * 8
+  const nodeSpacing = diagram.layout?.nodeSpacing ?? 96;  // 12 * 8
+  const rankSpacing = diagram.layout?.rankSpacing ?? 104; // 13 * 8
 
   g.setGraph({
     rankdir: direction,
     nodesep: nodeSpacing,
     ranksep: rankSpacing,
-    marginx: 32, // 4 * 8
-    marginy: 32,
+    marginx: 48, // 6 * 8
+    marginy: 48,
   });
 
   // Universal 8px grid. All dimensions and positions are multiples of 8.
@@ -93,8 +93,8 @@ export function computeLayout(
       continue;
     }
 
-    const padding = GRID * 4; // 32px padding around children
-    const headerHeight = GRID * 4; // 32px for group label
+    const padding = GRID * 6; // 48px padding around children
+    const headerHeight = GRID * 5; // 40px for group label
     const minX = snapTo(Math.min(...childLayouts.map(c => c.x)) - padding);
     const minY = snapTo(Math.min(...childLayouts.map(c => c.y)) - padding - headerHeight);
     const maxX = Math.max(...childLayouts.map(c => c.x + c.width)) + padding;
