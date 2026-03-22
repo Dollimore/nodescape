@@ -116,6 +116,11 @@
   pointer-events: none;
 }
 
+.edgePathLight { stroke-width: 1; }
+.edgePathMedium { stroke-width: 2; }
+.edgePathHeavy { stroke-width: 3.5; }
+.edgePathMassive { stroke-width: 5; }
+
 .edgeAnnotation {
   font-family: 'SF Mono', 'Fira Code', monospace;
   font-size: 10px;

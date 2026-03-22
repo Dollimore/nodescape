@@ -47,3 +47,8 @@ export type { StoryStep, StoryConfig } from './types';
 export { InlineMeasurement } from './edges/InlineMeasurement';
 export type { EdgeMeasurement } from './types';
 export { Legend } from './legend/Legend';
+export { analyzeContingencies, applyContingencyHighlight } from './utils/contingency';
+export type { ContingencyResult } from './utils/contingency';
+export { applyLoadFlowArrows } from './utils/loadFlowArrows';
+export { applyGridHealthOverlay } from './utils/gridHealth';
+export type { GridHealthMetrics } from './utils/gridHealth';
