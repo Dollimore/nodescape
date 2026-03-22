@@ -2072,6 +2072,599 @@ const nuclearDiagram: FlowDiagram = {
     { id: 'n28c', source: 'control-room', target: 'rad-primary', color: '#8b5cf6', type: 'dashed' },
   ],
 };
+const gasPipelineDiagram: FlowDiagram = {
+  title: 'Natural Gas Pipeline Network',
+  layout: { direction: 'LR', routing: 'orthogonal', cornerRadius: 16 },
+  nodes: [
+    // ===== PRODUCTION ZONE =====
+    { id: 'grp-production', type: 'group', label: 'Production Zone', style: { color: '#22c55e' } },
+    {
+      id: 'well-1', label: 'Gas Well A-1', icon: 'fuel', description: 'High-pressure natural gas wellhead.',
+      status: 'online', progress: 84, flowRate: '12.4 MMscfd', parentId: 'grp-production',
+      sections: [
+        { heading: 'Wellhead Pressure', content: '3400 psi' },
+        { heading: 'Depth', content: '9200 ft' },
+        { heading: 'Formation', content: 'Marcellus Shale' },
+      ],
+    },
+    {
+      id: 'well-2', label: 'Gas Well A-2', icon: 'fuel', description: 'Medium-pressure wellhead.',
+      status: 'online', progress: 71, flowRate: '9.8 MMscfd', parentId: 'grp-production',
+      sections: [
+        { heading: 'Wellhead Pressure', content: '2900 psi' },
+        { heading: 'Depth', content: '8600 ft' },
+      ],
+    },
+    {
+      id: 'well-3', label: 'Gas Well A-3', icon: 'fuel', description: 'Lower-rate wellhead — workover scheduled.',
+      status: 'warning', progress: 38, flowRate: '4.1 MMscfd', parentId: 'grp-production',
+      sections: [
+        { heading: 'Wellhead Pressure', content: '1800 psi' },
+        { heading: 'Alert', content: 'Liquid loading detected' },
+      ],
+    },
+    {
+      id: 'processing-plant', label: 'Gas Processing Plant', icon: 'settings', description: 'Full separation and treatment facility.',
+      status: 'online', progress: 79, flowRate: '26.3 MMscfd', parentId: 'grp-production',
+      style: { color: '#22c55e' },
+      sections: [
+        { heading: 'H2S Removal', content: 'Amine scrubbing — 98.7% removal' },
+        { heading: 'NGL Extraction', content: 'Cryogenic fractionation — C2+' },
+        { heading: 'CO2 Content', content: '<2 mol%' },
+        { heading: 'Water Dew Point', content: '-40 degF' },
+      ],
+      detail: {
+        content: 'The processing plant receives **raw wellhead gas** and conditions it to pipeline specification. H2S is removed via amine absorption and NGL fractions are separated cryogenically.',
+        sections: [
+          { type: 'keyvalue', title: 'Plant Specifications', data: {
+            'Inlet Capacity': '30 MMscfd',
+            'Inlet Pressure': '600 psi',
+            'Outlet Pressure': '850 psi',
+            'H2S Spec': '<4 ppm',
+            'Water Content': '<7 lb/MMscf',
+            'NGL Recovery': '92% ethane',
+            'Commissioned': '2019',
+          }},
+          { type: 'chart', title: 'Daily Throughput (MMscfd)', data: { type: 'bar', values: [24, 26, 25, 27, 26, 28, 26], labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], color: '#22c55e' } },
+          { type: 'timeline', title: 'Recent Events', data: [
+            { time: '06:15', event: 'Amine reboiler startup complete', status: 'success' },
+            { time: '04:30', event: 'NGL separator pressure adjusted', status: 'info' },
+            { time: 'Yesterday', event: 'H2S scrubber solvent regenerated', status: 'success' },
+            { time: '2 days ago', event: 'Inlet slug catcher overflow', status: 'warning' },
+          ]},
+        ],
+      },
+    },
+    {
+      id: 'dehydration', label: 'Dehydration Unit', icon: 'droplets', description: 'TEG glycol dehydration.',
+      status: 'online', progress: 88, flowRate: '26.3 MMscfd', parentId: 'grp-production',
+      sections: [
+        { heading: 'Process', content: 'Triethylene glycol (TEG)' },
+        { heading: 'Outlet Dew Point', content: '-50 degF' },
+        { heading: 'Glycol Circulation', content: '2.8 gal/lb H2O removed' },
+      ],
+    },
+
+    // ===== TRANSMISSION =====
+    { id: 'grp-transmission', type: 'group', label: 'High-Pressure Transmission', style: { color: '#f59e0b' } },
+    {
+      id: 'compressor-1', label: 'Compressor Station 1', icon: 'zap', description: 'Gas turbine-driven centrifugal compressor.',
+      status: 'online', progress: 82, flowRate: '26.3 MMscfd', parentId: 'grp-transmission',
+      sections: [
+        { heading: 'Driver', content: 'Solar Turbines Centaur 50' },
+        { heading: 'Discharge Pressure', content: '1200 psi' },
+        { heading: 'Suction Pressure', content: '850 psi' },
+        { heading: 'Utilization', content: '82%' },
+      ],
+      detail: {
+        content: 'Station 1 is the primary inlet compression point. It boosts wellhead-gathered gas from **850 psi to 1200 psi** for long-distance transmission.',
+        sections: [
+          { type: 'keyvalue', title: 'Compressor Parameters', data: {
+            'Driver Type': 'Gas turbine',
+            'Rated Power': '5800 HP',
+            'Compression Ratio': '1.41:1',
+            'Discharge Temp': '140 degF',
+            'Unit Run Hours': '14,820 hr',
+            'Next Overhaul': '18,000 hr',
+          }},
+          { type: 'chart', title: 'Station Flow (MMscfd)', data: { type: 'line', values: [22, 24, 25, 26, 26, 27, 26], labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], color: '#f59e0b' } },
+          { type: 'timeline', title: 'Recent Events', data: [
+            { time: '12:00', event: 'Load step — demand increase', status: 'info' },
+            { time: '08:45', event: 'Unit 1A at rated speed', status: 'success' },
+            { time: 'Yesterday', event: 'Preventive lube oil change', status: 'success' },
+            { time: '3 days ago', event: 'Surge event — recycle valve opened', status: 'warning' },
+          ]},
+        ],
+      },
+    },
+    {
+      id: 'pipeline-seg-1', label: 'Transmission Pipeline AB', icon: 'minus', description: '48-inch OD mainline — Segment AB.',
+      flowRate: '26.3 MMscfd', parentId: 'grp-transmission',
+      sections: [
+        { heading: 'Diameter', content: '48 inch OD' },
+        { heading: 'Length', content: '62 miles' },
+        { heading: 'Operating Pressure', content: '1100 psi' },
+        { heading: 'Wall Thickness', content: '0.625 inch, X70 grade' },
+      ],
+    },
+    {
+      id: 'metering-1', label: 'Fiscal Metering Station', icon: 'gauge', description: 'Custody transfer measurement.',
+      status: 'online', flowRate: '26.3 MMscfd', parentId: 'grp-transmission',
+      sections: [
+        { heading: 'Meter Type', content: 'Ultrasonic (5-path)' },
+        { heading: 'Uncertainty', content: '+/-0.25%' },
+        { heading: 'Temperature', content: '58 degF' },
+        { heading: 'Pressure', content: '1090 psi' },
+      ],
+    },
+    {
+      id: 'compressor-2', label: 'Compressor Station 2', icon: 'zap', description: 'Mid-line booster station.',
+      status: 'online', progress: 67, flowRate: '26.3 MMscfd', parentId: 'grp-transmission',
+      sections: [
+        { heading: 'Driver', content: 'Electric motor + VFD' },
+        { heading: 'Discharge Pressure', content: '1150 psi' },
+        { heading: 'Utilization', content: '67%' },
+      ],
+    },
+    {
+      id: 'pipeline-seg-2', label: 'Transmission Pipeline BC', icon: 'minus', description: '36-inch OD mainline — Segment BC.',
+      flowRate: '26.3 MMscfd', parentId: 'grp-transmission',
+      sections: [
+        { heading: 'Diameter', content: '36 inch OD' },
+        { heading: 'Length', content: '48 miles' },
+        { heading: 'Operating Pressure', content: '1050 psi' },
+      ],
+    },
+    {
+      id: 'compressor-3', label: 'Compressor Station 3', icon: 'zap', description: 'End-of-line delivery compressor.',
+      status: 'online', progress: 74, flowRate: '24.8 MMscfd', parentId: 'grp-transmission',
+      sections: [
+        { heading: 'Driver', content: 'Reciprocating gas engine' },
+        { heading: 'Discharge Pressure', content: '600 psi' },
+        { heading: 'Utilization', content: '74%' },
+      ],
+    },
+
+    // ===== DISTRIBUTION =====
+    { id: 'grp-distribution', type: 'group', label: 'City Gate & Distribution', style: { color: '#3b82f6' } },
+    {
+      id: 'city-gate', label: 'City Gate Station', icon: 'building', description: 'Pressure regulation and odorization.',
+      status: 'online', flowRate: '18.2 MMscfd', parentId: 'grp-distribution',
+      sections: [
+        { heading: 'Inlet Pressure', content: '600 psi' },
+        { heading: 'Outlet Pressure', content: '60 psi' },
+        { heading: 'Odorization', content: 'THT at 0.5 lb/MMscf' },
+        { heading: 'Measurement', content: 'Turbine meters — dual-run' },
+      ],
+    },
+    {
+      id: 'pressure-reduction', label: 'District Pressure Reduction', icon: 'settings', description: 'Second stage reduction to service pressure.',
+      status: 'online', flowRate: '18.2 MMscfd', parentId: 'grp-distribution',
+      sections: [
+        { heading: 'Outlet Pressure', content: '2 psi' },
+        { heading: 'Relief Valve Set', content: '5 psi' },
+      ],
+    },
+    {
+      id: 'distribution-network', label: 'Local Distribution Network', icon: 'git-branch', description: 'Low-pressure polyethylene mains.',
+      status: 'online', flowRate: '18.2 MMscfd', parentId: 'grp-distribution',
+      sections: [
+        { heading: 'Customers', content: '42,000 residential + 1800 commercial' },
+        { heading: 'Main Length', content: '380 miles PE pipe' },
+        { heading: 'System Pressure', content: '0.25 psi' },
+      ],
+    },
+
+    // ===== STORAGE =====
+    { id: 'grp-storage', type: 'group', label: 'Gas Storage', style: { color: '#8b5cf6' } },
+    {
+      id: 'underground-storage', label: 'Underground Storage', icon: 'database', description: 'Depleted reservoir seasonal storage.',
+      status: 'online', progress: 61, flowRate: '4.2 MMscfd inject', parentId: 'grp-storage',
+      detail: {
+        content: 'The underground storage field uses a **depleted sandstone reservoir** at 4200 ft depth. Current injection season filling for winter peak demand.',
+        sections: [
+          { type: 'keyvalue', title: 'Storage Field Specifications', data: {
+            'Total Capacity': '18.4 Bcf',
+            'Working Gas': '12.1 Bcf',
+            'Cushion Gas': '6.3 Bcf',
+            'Current Inventory': '7.4 Bcf (61%)',
+            'Max Injection Rate': '120 MMscfd',
+            'Max Withdrawal Rate': '180 MMscfd',
+            'Reservoir Depth': '4200 ft',
+            'Reservoir Type': 'Depleted sandstone',
+          }},
+          { type: 'chart', title: 'Storage Inventory (Bcf)', data: { type: 'line', values: [4.1, 4.9, 5.8, 6.3, 6.9, 7.2, 7.4], labels: ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'], color: '#8b5cf6' } },
+          { type: 'timeline', title: 'Operational Events', data: [
+            { time: 'Today', event: 'Injection rate increased to 120 MMscfd', status: 'info' },
+            { time: '3 days ago', event: 'Field inspection completed', status: 'success' },
+            { time: 'Last week', event: 'Injection compressor 3 returned to service', status: 'success' },
+            { time: '2 weeks ago', event: 'Compressor 3 trip — high vibration', status: 'warning' },
+          ]},
+        ],
+      },
+      sections: [
+        { heading: 'Inventory', content: '7.4 Bcf (61% of working capacity)' },
+        { heading: 'Status', content: 'Injection mode — winter fill' },
+        { heading: 'Reservoir Pressure', content: '1820 psi' },
+      ],
+    },
+    {
+      id: 'lng-peak-shaving', label: 'LNG Peak Shaving Plant', icon: 'thermometer', description: 'Liquefaction and vaporization for peak demand.',
+      status: 'idle', progress: 94, flowRate: '0 MMscfd (standby)', parentId: 'grp-storage',
+      sections: [
+        { heading: 'LNG Storage', content: '2x 1,200,000 gallon tanks' },
+        { heading: 'Vaporization Capacity', content: '28 MMscfd' },
+        { heading: 'Liquefaction Capacity', content: '6 MMscfd' },
+        { heading: 'Fill Level', content: '94% — winter ready' },
+      ],
+    },
+
+    // SCADA Control Center
+    {
+      id: 'gas-scada', label: 'Pipeline SCADA', icon: 'layout-dashboard', description: 'Gas Control Center — 24/7 operations.',
+      status: 'online', style: { color: '#8b5cf6', glow: true },
+      sections: [
+        { heading: 'Total Throughput', content: '26.3 MMscfd' },
+        { heading: 'System Pressure', content: 'Normal — all segments' },
+        { heading: 'Leak Detection', content: 'No anomalies' },
+        { heading: 'On-Call Crew', content: '3 controllers active' },
+      ],
+    },
+
+    // Net labels
+    { id: 'nl-wellhead', type: 'netlabel', label: 'Wellhead Gas (Raw)', style: { color: '#22c55e' } },
+    { id: 'nl-sales', type: 'netlabel', label: 'Sales Gas Spec', style: { color: '#f59e0b' } },
+  ],
+  edges: [
+    // Production gathering
+    { id: 'gp1', source: 'well-1', target: 'processing-plant', color: '#22c55e', flowAnimation: true, annotation: '12.4 MMscfd', thickness: 2 },
+    { id: 'gp2', source: 'well-2', target: 'processing-plant', color: '#22c55e', flowAnimation: true, annotation: '9.8 MMscfd', thickness: 2 },
+    { id: 'gp3', source: 'well-3', target: 'processing-plant', color: '#86efac', flowAnimation: true, annotation: '4.1 MMscfd', thickness: 1 },
+    { id: 'gp4', source: 'processing-plant', target: 'dehydration', color: '#22c55e', flowAnimation: true, annotation: '26.3 MMscfd', thickness: 3 },
+    { id: 'gp5', source: 'dehydration', target: 'nl-wellhead', color: '#22c55e', type: 'dashed' },
+    // Transmission
+    { id: 'gt1', source: 'dehydration', target: 'compressor-1', color: '#f59e0b', flowAnimation: true, annotation: '850 psi', thickness: 3 },
+    { id: 'gt2', source: 'compressor-1', target: 'pipeline-seg-1', color: '#f59e0b', flowAnimation: true, annotation: '1200 psi', thickness: 4 },
+    { id: 'gt3', source: 'pipeline-seg-1', target: 'metering-1', color: '#f59e0b', flowAnimation: true, thickness: 4,
+      measurements: [
+        { label: 'P', value: '1100', unit: 'psi', status: 'normal' as const },
+        { label: 'Q', value: '26.3', unit: 'MMscfd' },
+      ],
+    },
+    { id: 'gt4', source: 'metering-1', target: 'compressor-2', color: '#f59e0b', flowAnimation: true, thickness: 3 },
+    { id: 'gt5', source: 'compressor-2', target: 'pipeline-seg-2', color: '#f59e0b', flowAnimation: true, annotation: '1150 psi', thickness: 3 },
+    { id: 'gt6', source: 'pipeline-seg-2', target: 'compressor-3', color: '#f59e0b', flowAnimation: true, thickness: 3 },
+    { id: 'gt7', source: 'compressor-3', target: 'city-gate', color: '#f59e0b', flowAnimation: true, annotation: '600 psi', thickness: 3 },
+    { id: 'gt8', source: 'dehydration', target: 'nl-sales', color: '#f59e0b', type: 'dashed' },
+    // Storage tap
+    { id: 'gs1', source: 'pipeline-seg-2', target: 'underground-storage', color: '#8b5cf6', flowAnimation: true, annotation: '4.2 MMscfd inject', showJunction: true },
+    { id: 'gs2', source: 'underground-storage', target: 'compressor-3', color: '#8b5cf6', type: 'dashed', annotation: 'Winter withdrawal' },
+    { id: 'gs3', source: 'lng-peak-shaving', target: 'city-gate', color: '#8b5cf6', type: 'dashed', annotation: 'Emergency supply' },
+    { id: 'gs4', source: 'metering-1', target: 'lng-peak-shaving', color: '#8b5cf6', type: 'dashed', annotation: 'Liquefaction feed', showJunction: true },
+    // Distribution
+    { id: 'gd1', source: 'city-gate', target: 'pressure-reduction', color: '#3b82f6', flowAnimation: true, annotation: '60 psi', thickness: 3 },
+    { id: 'gd2', source: 'pressure-reduction', target: 'distribution-network', color: '#3b82f6', flowAnimation: true, annotation: '2 psi', thickness: 2 },
+    // SCADA monitoring
+    { id: 'gc1', source: 'gas-scada', target: 'compressor-1', color: '#8b5cf6', type: 'dashed', annotation: 'RTU/SCADA' },
+    { id: 'gc2', source: 'gas-scada', target: 'compressor-2', color: '#8b5cf6', type: 'dashed' },
+    { id: 'gc3', source: 'gas-scada', target: 'compressor-3', color: '#8b5cf6', type: 'dashed' },
+    { id: 'gc4', source: 'gas-scada', target: 'underground-storage', color: '#8b5cf6', type: 'dashed' },
+    { id: 'gc5', source: 'gas-scada', target: 'city-gate', color: '#8b5cf6', type: 'dashed' },
+  ],
+};
+
+const hydroPlantDiagram: FlowDiagram = {
+  title: 'Hydroelectric Power Plant',
+  layout: { direction: 'LR', routing: 'orthogonal', cornerRadius: 16 },
+  nodes: [
+    // ===== RESERVOIR & DAM =====
+    { id: 'grp-reservoir', type: 'group', label: 'Reservoir & Dam', style: { color: '#06b6d4' } },
+    {
+      id: 'reservoir', label: 'Mountain Reservoir', icon: 'droplets', description: 'Upper storage reservoir — seasonal regulation.',
+      status: 'online', progress: 73, flowRate: '285 m3/s inflow', parentId: 'grp-reservoir',
+      style: { color: '#06b6d4' },
+      detail: {
+        content: 'The reservoir provides **6 months of active storage** for seasonal flow regulation. Current level is 73% of full supply level, with controlled releases through the powerhouse intake.',
+        sections: [
+          { type: 'keyvalue', title: 'Reservoir Parameters', data: {
+            'Full Supply Level': 'El. 1842 m',
+            'Current Level': 'El. 1838.4 m (73%)',
+            'Minimum Operating Level': 'El. 1790 m',
+            'Total Capacity': '4,820 Mm3',
+            'Active Storage': '3,240 Mm3',
+            'Surface Area': '48.6 km2',
+            'Catchment Area': '1,240 km2',
+            'Mean Annual Inflow': '9.2 km3',
+          }},
+          { type: 'chart', title: 'Water Level (% Full Supply)', data: { type: 'line', values: [88, 82, 76, 73, 71, 68, 73], labels: ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'], color: '#06b6d4' } },
+          { type: 'timeline', title: 'Reservoir Events', data: [
+            { time: 'Today', event: 'Level at 73% — normal operating range', status: 'success' },
+            { time: '3 days ago', event: 'Inflow surge from upstream rainfall', status: 'info' },
+            { time: 'Last week', event: 'Spillway gates tested — satisfactory', status: 'success' },
+            { time: '2 months ago', event: 'Full supply level reached', status: 'info' },
+          ]},
+        ],
+      },
+      sections: [
+        { heading: 'Current Level', content: 'El. 1838.4 m — 73% full supply' },
+        { heading: 'Active Storage', content: '2,365 Mm3 available' },
+        { heading: 'Net Inflow', content: '285 m3/s' },
+        { heading: 'Evaporation Loss', content: '1.2 m3/s' },
+      ],
+    },
+    {
+      id: 'dam', label: 'Concrete Arch Dam', icon: 'shield', description: 'Double-curvature thin arch dam.',
+      status: 'online', parentId: 'grp-reservoir',
+      sections: [
+        { heading: 'Type', content: 'Double-curvature arch' },
+        { heading: 'Height', content: '185 m' },
+        { heading: 'Crest Length', content: '456 m' },
+        { heading: 'Year Commissioned', content: '1994' },
+        { heading: 'Seepage Rate', content: '12 L/s — within tolerance' },
+      ],
+    },
+    {
+      id: 'spillway', label: 'Gated Spillway', icon: 'git-branch', description: 'Radial gates for flood discharge.',
+      status: 'idle', flowRate: '0 m3/s', parentId: 'grp-reservoir',
+      sections: [
+        { heading: 'Gates', content: '6x radial gates, 12m x 14m each' },
+        { heading: 'Design Flood', content: 'PMF 4,200 m3/s' },
+        { heading: 'Status', content: 'All gates closed — normal operation' },
+        { heading: 'Last Operation', content: '14 days ago — flood event' },
+      ],
+    },
+    {
+      id: 'intake', label: 'Power Intake & Penstock', icon: 'arrow-right', description: 'Bellmouth intake with trash racks and penstock.',
+      status: 'online', flowRate: '270 m3/s', parentId: 'grp-reservoir',
+      sections: [
+        { heading: 'Intake Type', content: 'Bellmouth with trash racks' },
+        { heading: 'Penstock Diameter', content: '5.8 m steel lined' },
+        { heading: 'Gross Head', content: '148 m' },
+        { heading: 'Net Head', content: '142.5 m' },
+        { heading: 'Flow Rate', content: '90 m3/s per unit' },
+      ],
+    },
+
+    // ===== POWERHOUSE =====
+    { id: 'grp-powerhouse', type: 'group', label: 'Powerhouse', style: { color: '#3b82f6' } },
+    {
+      id: 'turbine-1', label: 'Francis Turbine 1', icon: 'zap', description: 'Unit 1 — synchronous generating unit.',
+      status: 'online', progress: 94, flowRate: '90 m3/s', parentId: 'grp-powerhouse',
+      detail: {
+        content: 'Francis Turbine Unit 1 is operating at **94% rated output**. The unit has completed 28,400 operating hours since last major overhaul.',
+        sections: [
+          { type: 'keyvalue', title: 'Turbine Specifications', data: {
+            'Type': 'Francis — radial-axial',
+            'Runner Diameter': '4.2 m',
+            'Rated Output': '120 MW',
+            'Current Output': '112.8 MW',
+            'Design Head': '142 m',
+            'Design Flow': '92 m3/s',
+            'Efficiency': '93.4%',
+            'Speed': '166.7 RPM',
+            'Run Hours': '28,400 hr',
+          }},
+          { type: 'chart', title: 'Unit Output (MW)', data: { type: 'line', values: [95, 105, 112, 110, 113, 112, 113], labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], color: '#3b82f6' } },
+          { type: 'timeline', title: 'Unit Events', data: [
+            { time: '08:00', event: 'Shift handover — unit normal', status: 'success' },
+            { time: 'Yesterday', event: 'Governor fine-tuned for grid regulation', status: 'info' },
+            { time: '3 days ago', event: 'Bearing temperature high alarm cleared', status: 'warning' },
+            { time: 'Last month', event: '100% load test — satisfactory', status: 'success' },
+          ]},
+        ],
+      },
+      sections: [
+        { heading: 'Output', content: '112.8 MW (94% of rated)' },
+        { heading: 'Efficiency', content: '93.4%' },
+        { heading: 'Guide Vane Opening', content: '76%' },
+        { heading: 'Vibration', content: '0.08 mm/s — normal' },
+      ],
+    },
+    {
+      id: 'turbine-2', label: 'Francis Turbine 2', icon: 'zap', description: 'Unit 2 — synchronous generating unit.',
+      status: 'online', progress: 87, flowRate: '83 m3/s', parentId: 'grp-powerhouse',
+      sections: [
+        { heading: 'Output', content: '104.4 MW (87% of rated)' },
+        { heading: 'Efficiency', content: '92.8%' },
+        { heading: 'Guide Vane Opening', content: '71%' },
+        { heading: 'Run Hours', content: '31,200 hr (overhaul due at 32k)' },
+      ],
+    },
+    {
+      id: 'turbine-3', label: 'Francis Turbine 3', icon: 'zap', description: 'Unit 3 — scheduled maintenance.',
+      status: 'warning', progress: 0, flowRate: '0 m3/s', parentId: 'grp-powerhouse',
+      sections: [
+        { heading: 'Status', content: 'Out of service — runner inspection' },
+        { heading: 'Return to Service', content: '5 days estimated' },
+        { heading: 'Work Scope', content: 'Runner crack repair, seal replacement' },
+      ],
+    },
+    {
+      id: 'generator-1', label: 'Generator 1', icon: 'generator', description: '120 MVA salient-pole synchronous generator.',
+      status: 'online', progress: 94, flowRate: '112.8 MW', parentId: 'grp-powerhouse',
+      detail: {
+        content: 'Generator 1 is a **salient-pole synchronous machine** directly coupled to Francis Turbine 1. It supplies active and reactive power to the 11kV busbar.',
+        sections: [
+          { type: 'keyvalue', title: 'Generator Data', data: {
+            'Rated MVA': '133 MVA',
+            'Rated MW': '120 MW',
+            'Power Factor': '0.9 lag',
+            'Terminal Voltage': '11 kV',
+            'Current': '6,980 A',
+            'Speed': '166.7 RPM',
+            'Poles': '36',
+            'Exciter Type': 'Brushless static',
+          }},
+          { type: 'chart', title: 'Active Power (MW)', data: { type: 'bar', values: [108, 110, 113, 111, 113, 112, 113], labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], color: '#22c55e' } },
+          { type: 'timeline', title: 'Events', data: [
+            { time: '06:00', event: 'AVR setpoint adjusted +0.5 kV', status: 'info' },
+            { time: 'Yesterday', event: 'Stator winding temperature normal', status: 'success' },
+            { time: '2 days ago', event: 'Partial discharge test — pass', status: 'success' },
+            { time: '6 months ago', event: 'Major overhaul completed', status: 'info' },
+          ]},
+        ],
+      },
+      sections: [
+        { heading: 'Active Power', content: '112.8 MW' },
+        { heading: 'Reactive Power', content: '28.4 MVAR' },
+        { heading: 'Terminal Voltage', content: '11.2 kV' },
+        { heading: 'Stator Temperature', content: '72 degC — normal' },
+      ],
+    },
+    {
+      id: 'generator-2', label: 'Generator 2', icon: 'generator', description: '120 MVA synchronous generator.',
+      status: 'online', progress: 87, flowRate: '104.4 MW', parentId: 'grp-powerhouse',
+      sections: [
+        { heading: 'Active Power', content: '104.4 MW' },
+        { heading: 'Terminal Voltage', content: '11.1 kV' },
+        { heading: 'Stator Temperature', content: '68 degC — normal' },
+      ],
+    },
+    {
+      id: 'generator-3', label: 'Generator 3', icon: 'generator', description: '120 MVA synchronous generator — offline.',
+      status: 'warning', progress: 0, parentId: 'grp-powerhouse',
+      sections: [
+        { heading: 'Status', content: 'Offline — unit 3 outage' },
+        { heading: 'Isolation', content: 'Generator breaker open, earthed' },
+      ],
+    },
+    {
+      id: 'stepup-xfmr', label: 'Step-Up Transformer', icon: 'transformer', description: '11kV/220kV generator transformer.',
+      status: 'online', flowRate: '217.2 MW', parentId: 'grp-powerhouse',
+      sections: [
+        { heading: 'Rating', content: '280 MVA ONAN' },
+        { heading: 'Ratio', content: '11 / 220 kV' },
+        { heading: 'Tap', content: '+2.5% (OLTC pos 7)' },
+        { heading: 'Oil Temperature', content: '62 degC — normal' },
+      ],
+    },
+    {
+      id: 'busbar', label: 'Switchyard Busbar', icon: 'zap', description: '220kV GIS switchyard — double busbar.',
+      status: 'online', parentId: 'grp-powerhouse',
+    },
+
+    // ===== ENVIRONMENTAL =====
+    { id: 'grp-environmental', type: 'group', label: 'Environmental Systems', style: { color: '#22c55e' } },
+    {
+      id: 'fish-ladder', label: 'Fish Ladder', icon: 'arrow-up', description: 'Pool-and-weir fish passage facility.',
+      status: 'online', flowRate: '2.4 m3/s', parentId: 'grp-environmental',
+      sections: [
+        { heading: 'Type', content: '42-pool vertical slot fish ladder' },
+        { heading: 'Target Species', content: 'Atlantic salmon, sea trout' },
+        { heading: 'Passage Count (YTD)', content: '4,820 fish' },
+        { heading: 'Status', content: 'Operational — upstream migration active' },
+      ],
+    },
+    {
+      id: 'min-flow-valve', label: 'Minimum Flow Release', icon: 'valve', description: 'Bypasses minimum environmental flow.',
+      status: 'online', flowRate: '12.6 m3/s', parentId: 'grp-environmental',
+      sections: [
+        { heading: 'Required Release', content: '12.6 m3/s (regulatory minimum)' },
+        { heading: 'Valve Type', content: 'Hollow jet valve DN1200' },
+        { heading: 'Control', content: 'Automatic — reservoir level based' },
+      ],
+    },
+    {
+      id: 'water-quality', label: 'Water Quality Station', icon: 'gauge', description: 'Downstream monitoring station.',
+      status: 'online', parentId: 'grp-environmental',
+      sections: [
+        { heading: 'DO (Dissolved O2)', content: '8.4 mg/L — good' },
+        { heading: 'Temperature', content: '11.2 degC' },
+        { heading: 'pH', content: '7.6' },
+        { heading: 'Turbidity', content: '3.2 NTU — normal' },
+        { heading: 'Transmission', content: 'Data to Environment Agency' },
+      ],
+    },
+
+    // ===== GRID CONNECTION =====
+    { id: 'grp-grid', type: 'group', label: 'Grid Connection', style: { color: '#f59e0b' } },
+    {
+      id: 'transmission-line', label: '220kV Transmission Line', icon: 'zap', description: '220kV double-circuit overhead line.',
+      status: 'online', flowRate: '217.2 MW', parentId: 'grp-grid',
+      sections: [
+        { heading: 'Voltage', content: '220 kV' },
+        { heading: 'Length', content: '34 km to grid substation' },
+        { heading: 'Conductor', content: 'ACSR Zebra 2x400mm2' },
+        { heading: 'Rating', content: '320 MVA continuous' },
+      ],
+    },
+    {
+      id: 'grid-connection', label: 'National Grid', icon: 'zap', description: '220kV national transmission system.',
+      status: 'online', flowRate: '217.2 MW', parentId: 'grp-grid',
+      style: { color: '#22c55e' },
+    },
+
+    // Control Room
+    {
+      id: 'hydro-control', label: 'Plant Control Room', icon: 'layout-dashboard', description: 'Integrated plant control — 24/7 licensed operators.',
+      status: 'online', style: { color: '#8b5cf6', glow: true },
+      sections: [
+        { heading: 'Total Output', content: '217.2 MW (Units 1 + 2)' },
+        { heading: 'Available Capacity', content: '217.2 / 360 MW (60%)' },
+        { heading: 'System Frequency', content: '50.01 Hz' },
+        { heading: 'Reservoir Level', content: 'El. 1838.4 m — normal' },
+        { heading: 'Unit 3 Status', content: 'Outage — 5 days to return' },
+      ],
+    },
+
+    // Net labels
+    { id: 'nl-tailwater', type: 'netlabel', label: 'Tailwater / Downstream', style: { color: '#06b6d4' } },
+    { id: 'nl-220kv', type: 'netlabel', label: '220kV GRID', style: { color: '#22c55e' } },
+  ],
+  edges: [
+    // Water path — reservoir to turbines
+    { id: 'hw1', source: 'reservoir', target: 'dam', color: '#06b6d4', flowAnimation: true },
+    { id: 'hw2', source: 'dam', target: 'intake', color: '#06b6d4', flowAnimation: true, annotation: '270 m3/s' },
+    { id: 'hw3', source: 'intake', target: 'turbine-1', color: '#06b6d4', flowAnimation: true, annotation: '90 m3/s', thickness: 3 },
+    { id: 'hw4', source: 'intake', target: 'turbine-2', color: '#06b6d4', flowAnimation: true, annotation: '83 m3/s', thickness: 3, showJunction: true },
+    { id: 'hw5', source: 'intake', target: 'turbine-3', color: '#94a3b8', type: 'dashed', annotation: 'Offline' },
+    // Spillway
+    { id: 'hw6', source: 'reservoir', target: 'spillway', color: '#06b6d4', type: 'dashed', annotation: 'Flood bypass', showJunction: true },
+    { id: 'hw7', source: 'spillway', target: 'nl-tailwater', color: '#06b6d4', type: 'dashed' },
+    // Environmental flows
+    { id: 'henv1', source: 'reservoir', target: 'fish-ladder', color: '#22c55e', type: 'dashed', annotation: '2.4 m3/s', showJunction: true },
+    { id: 'henv2', source: 'reservoir', target: 'min-flow-valve', color: '#22c55e', type: 'dashed', annotation: '12.6 m3/s', showJunction: true },
+    { id: 'henv3', source: 'min-flow-valve', target: 'nl-tailwater', color: '#22c55e', type: 'dashed' },
+    { id: 'henv4', source: 'turbine-1', target: 'water-quality', color: '#06b6d4', type: 'dashed', annotation: 'Tailrace discharge', showJunction: true },
+    // Turbine-generator mechanical coupling
+    { id: 'hmech1', source: 'turbine-1', target: 'generator-1', color: '#3b82f6', flowAnimation: true, annotation: '112.8 MW', thickness: 3,
+      measurements: [
+        { label: 'P', value: '112.8', unit: 'MW', status: 'normal' as const },
+        { label: 'n', value: '166.7', unit: 'RPM' },
+      ],
+    },
+    { id: 'hmech2', source: 'turbine-2', target: 'generator-2', color: '#3b82f6', flowAnimation: true, annotation: '104.4 MW', thickness: 3 },
+    { id: 'hmech3', source: 'turbine-3', target: 'generator-3', color: '#94a3b8', type: 'dashed', annotation: 'Offline' },
+    // Electrical — to transformer
+    { id: 'hel1', source: 'generator-1', target: 'stepup-xfmr', color: '#22c55e', flowAnimation: true, annotation: '11 kV', thickness: 3,
+      measurements: [
+        { label: 'P', value: '112.8', unit: 'MW' },
+        { label: 'V', value: '11.2', unit: 'kV' },
+      ],
+    },
+    { id: 'hel2', source: 'generator-2', target: 'stepup-xfmr', color: '#22c55e', flowAnimation: true, annotation: '11 kV', thickness: 3, showJunction: true },
+    { id: 'hel3', source: 'stepup-xfmr', target: 'busbar', color: '#f59e0b', flowAnimation: true, annotation: '220 kV', thickness: 4,
+      measurements: [
+        { label: 'P', value: '217.2', unit: 'MW', status: 'normal' as const },
+        { label: 'V', value: '220', unit: 'kV' },
+      ],
+    },
+    // Grid export
+    { id: 'hgrid1', source: 'busbar', target: 'transmission-line', color: '#f59e0b', flowAnimation: true, thickness: 4, annotation: '217.2 MW' },
+    { id: 'hgrid2', source: 'transmission-line', target: 'grid-connection', color: '#f59e0b', flowAnimation: true, thickness: 4 },
+    { id: 'hgrid3', source: 'grid-connection', target: 'nl-220kv', color: '#22c55e', type: 'dashed' },
+    // Control signals (purple dashed)
+    { id: 'hctrl1', source: 'hydro-control', target: 'turbine-1', color: '#8b5cf6', type: 'dashed', annotation: 'Governor' },
+    { id: 'hctrl2', source: 'hydro-control', target: 'turbine-2', color: '#8b5cf6', type: 'dashed' },
+    { id: 'hctrl3', source: 'hydro-control', target: 'intake', color: '#8b5cf6', type: 'dashed' },
+    { id: 'hctrl4', source: 'hydro-control', target: 'reservoir', color: '#8b5cf6', type: 'dashed', annotation: 'Level monitor' },
+    { id: 'hctrl5', source: 'hydro-control', target: 'generator-1', color: '#8b5cf6', type: 'dashed' },
+    { id: 'hctrl6', source: 'hydro-control', target: 'busbar', color: '#8b5cf6', type: 'dashed', annotation: 'AGC dispatch' },
+    // Environmental monitoring
+    { id: 'henv5', source: 'water-quality', target: 'hydro-control', color: '#22c55e', type: 'dashed', annotation: 'Quality data' },
+  ],
+};
+
 const nodeTemplates: SidebarNodeTemplate[] = [
   { type: 'default', label: 'Process', description: 'A process step' },
   { type: 'decision', label: 'Decision', description: 'A branch point' },
@@ -2080,9 +2673,9 @@ const nodeTemplates: SidebarNodeTemplate[] = [
 ];
 
 export function App() {
-  const [activeDemo, setActiveDemo] = React.useState<'vertical' | 'wind-farm' | 'solar-plant' | 'datacenter' | 'power-supply' | 'hvdc' | 'showcase' | 'dc-facility' | 'nuclear'>('vertical');
+  const [activeDemo, setActiveDemo] = React.useState<'vertical' | 'wind-farm' | 'solar-plant' | 'datacenter' | 'power-supply' | 'hvdc' | 'showcase' | 'dc-facility' | 'nuclear' | 'gas-pipeline' | 'hydro-plant'>('vertical');
   const [currentDiagram, setCurrentDiagram] = useState<FlowDiagram>(sampleDiagram);
-  const demoMap: Record<string, FlowDiagram> = { vertical: sampleDiagram, 'wind-farm': windFarmDiagram, 'solar-plant': solarPlantDiagram, datacenter: datacenterDiagram, 'power-supply': powerSupplyDiagram, hvdc: hvdcDiagram, showcase: showcaseDiagram, 'dc-facility': dcFacilityDiagram, nuclear: nuclearDiagram };
+  const demoMap: Record<string, FlowDiagram> = { vertical: sampleDiagram, 'wind-farm': windFarmDiagram, 'solar-plant': solarPlantDiagram, datacenter: datacenterDiagram, 'power-supply': powerSupplyDiagram, hvdc: hvdcDiagram, showcase: showcaseDiagram, 'dc-facility': dcFacilityDiagram, nuclear: nuclearDiagram, 'gas-pipeline': gasPipelineDiagram, 'hydro-plant': hydroPlantDiagram };
   const baseDiagram = demoMap[activeDemo] || sampleDiagram;
   const diagram = (activeDemo === 'vertical' || activeDemo === 'showcase') ? currentDiagram : baseDiagram;
   const canvasRef = useRef<FlowCanvasRef>(null);
@@ -2094,7 +2687,7 @@ export function App() {
     }));
   };
 
-  const handleDemoChange = (demo: 'vertical' | 'wind-farm' | 'solar-plant' | 'datacenter' | 'power-supply' | 'hvdc' | 'showcase' | 'dc-facility' | 'nuclear') => {
+  const handleDemoChange = (demo: 'vertical' | 'wind-farm' | 'solar-plant' | 'datacenter' | 'power-supply' | 'hvdc' | 'showcase' | 'dc-facility' | 'nuclear' | 'gas-pipeline' | 'hydro-plant') => {
     setActiveDemo(demo);
     if (demo === 'vertical') setCurrentDiagram(sampleDiagram);
     if (demo === 'showcase') setCurrentDiagram(showcaseDiagram);
@@ -2276,6 +2869,38 @@ export function App() {
           }}
         >
           Nuclear
+        </button>
+        <button
+          onClick={() => handleDemoChange('gas-pipeline')}
+          style={{
+            padding: '6px 12px',
+            borderRadius: 6,
+            border: '1px solid rgba(255,255,255,0.15)',
+            background: activeDemo === 'gas-pipeline' ? '#e2e8f0' : 'rgba(22,33,62,0.85)',
+            color: activeDemo === 'gas-pipeline' ? '#1a1a1a' : '#e2e8f0',
+            cursor: 'pointer',
+            fontSize: 12,
+            fontWeight: 600,
+            backdropFilter: 'blur(4px)',
+          }}
+        >
+          Gas Pipeline
+        </button>
+        <button
+          onClick={() => handleDemoChange('hydro-plant')}
+          style={{
+            padding: '6px 12px',
+            borderRadius: 6,
+            border: '1px solid rgba(255,255,255,0.15)',
+            background: activeDemo === 'hydro-plant' ? '#e2e8f0' : 'rgba(22,33,62,0.85)',
+            color: activeDemo === 'hydro-plant' ? '#1a1a1a' : '#e2e8f0',
+            cursor: 'pointer',
+            fontSize: 12,
+            fontWeight: 600,
+            backdropFilter: 'blur(4px)',
+          }}
+        >
+          Hydro Plant
         </button>
       </div>
       <FlowCanvas
