@@ -23,6 +23,7 @@
   letter-spacing: 1.2px;
   margin-bottom: 4px;
   opacity: 0.8;
+  text-shadow: 0 0 6px var(--fc-bg, #fafafa), 0 0 12px var(--fc-bg, #fafafa);
 }
 
 .groupDescription {
