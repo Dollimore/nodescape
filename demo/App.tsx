@@ -2665,6 +2665,432 @@ const hydroPlantDiagram: FlowDiagram = {
   ],
 };
 
+const hydrogenDiagram: FlowDiagram = {
+  title: 'Green Hydrogen Facility — NEOM Scale',
+  layout: { direction: 'TB', routing: 'orthogonal', cornerRadius: 16 },
+  nodes: [
+    // ===== RENEWABLE GENERATION =====
+    { id: 'grp-renewable', type: 'group', label: 'Renewable Generation', style: { color: '#22c55e' } },
+
+    { id: 'solar-farm', label: 'Solar Farm — 2 GWp', icon: 'solar-panel',
+      description: 'Utility-scale bifacial PV array, single-axis tracking.',
+      status: 'online', progress: 91, flowRate: '1820 MW',
+      parentId: 'grp-renewable',
+      sections: [
+        { heading: 'Capacity', content: '2000 MWp DC' },
+        { heading: 'Modules', content: '3.3M bifacial 600 Wp panels' },
+        { heading: 'Current Output', content: '1820 MW AC' },
+        { heading: 'Irradiance', content: '7.1 kWh/m2/day (GHI)' },
+      ],
+      detail: {
+        content: 'The solar farm covers **4,000 hectares** and uses single-axis tracking to maximise irradiance capture in the Saudi Arabian desert. Performance ratio is 84%.',
+        sections: [
+          { type: 'keyvalue', title: 'Solar Farm Specifications', data: {
+            'DC Capacity': '2000 MWp',
+            'AC Export': '1820 MW',
+            'Module Type': 'Bifacial N-type 600 Wp',
+            'Tracker': 'Single-axis N-S',
+            'Coverage': '4000 ha',
+            'Performance Ratio': '84%',
+            'Specific Yield': '2100 kWh/kWp/yr',
+            'Inverters': '200x 9 MW string inverters',
+          }},
+          { type: 'chart', title: 'Today\'s Generation Profile (MW)', data: {
+            type: 'bar',
+            values: [0, 0, 80, 400, 900, 1400, 1700, 1820, 1800, 1750, 1600, 1300, 900, 400, 80, 0],
+            labels: ['4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19'],
+            color: '#22c55e',
+          }},
+          { type: 'timeline', title: 'Solar Farm Events', data: [
+            { time: '11:04', event: 'Peak output 1820 MW achieved', status: 'success' },
+            { time: '08:30', event: 'Trackers released from overnight stow', status: 'info' },
+            { time: '06:15', event: 'Inverter warm-up sequence complete', status: 'info' },
+            { time: '02:00', event: 'Wind stow protocol deactivated', status: 'success' },
+          ]},
+        ],
+      },
+    },
+
+    { id: 'wind-farm', label: 'Wind Farm — 400 MW', icon: 'wind-turbine',
+      description: '80x 5 MW onshore wind turbines.',
+      status: 'online', progress: 78, flowRate: '312 MW',
+      parentId: 'grp-renewable',
+      sections: [
+        { heading: 'Turbines', content: '80 x 5 MW' },
+        { heading: 'Wind Speed', content: '9.4 m/s at hub height' },
+        { heading: 'Availability', content: '97.5%' },
+        { heading: 'Capacity Factor', content: '38%' },
+      ],
+    },
+
+    { id: 'grid-battery', label: 'Grid Battery — 500 MWh', icon: 'battery',
+      description: '500 MWh BESS for renewable smoothing.',
+      status: 'online', progress: 68, flowRate: '±200 MW',
+      parentId: 'grp-renewable',
+      sections: [
+        { heading: 'Energy', content: '500 MWh usable' },
+        { heading: 'Power', content: '250 MW charge / 250 MW discharge' },
+        { heading: 'State of Charge', content: '68%' },
+        { heading: 'Chemistry', content: 'LFP — 4 hour duration' },
+        { heading: 'Cycles', content: '1,240 / 6,000 lifetime' },
+      ],
+    },
+
+    // ===== WATER SUPPLY =====
+    { id: 'grp-water', type: 'group', label: 'Water Supply', style: { color: '#06b6d4' } },
+
+    { id: 'seawater-intake', label: 'Seawater Intake', icon: 'flow-meter',
+      description: 'Red Sea seawater intake structure.',
+      status: 'online', flowRate: '15,000 m3/hr',
+      parentId: 'grp-water',
+      sections: [
+        { heading: 'Flow Rate', content: '15,000 m3/hr' },
+        { heading: 'Salinity', content: '42 ppt (Red Sea)' },
+        { heading: 'Screen Size', content: '1 mm band screens' },
+        { heading: 'Pumps', content: '4x 4000 m3/hr submersible' },
+      ],
+    },
+
+    { id: 'desalination', label: 'Desalination Plant', icon: 'desalination',
+      description: 'Reverse osmosis desalination — 12,000 m3/hr output.',
+      status: 'online', progress: 94, flowRate: '12,000 m3/hr',
+      parentId: 'grp-water',
+      sections: [
+        { heading: 'Technology', content: 'SWRO — 2-pass' },
+        { heading: 'Output', content: '12,000 m3/hr potable' },
+        { heading: 'Recovery', content: '45%' },
+        { heading: 'SEC', content: '3.2 kWh/m3' },
+        { heading: 'Reject', content: 'Brine returned to sea via diffuser' },
+      ],
+      detail: {
+        content: 'The SWRO plant uses **energy recovery devices** (ERDs) to recapture pressure from the brine stream, achieving a specific energy consumption of 3.2 kWh/m3 — well below the industry average.',
+        sections: [
+          { type: 'keyvalue', title: 'Desalination Specifications', data: {
+            'Technology': 'Seawater RO (SWRO)',
+            'Passes': '2-pass for high purity',
+            'Capacity': '12,000 m3/hr',
+            'Feed Pressure': '65 bar',
+            'Membrane Elements': '48,000 x 8-inch spiral wound',
+            'Energy Recovery': 'PX pressure exchangers',
+            'SEC': '3.2 kWh/m3',
+            'Permeate TDS': '<200 mg/L',
+          }},
+        ],
+      },
+    },
+
+    { id: 'water-storage', label: 'Purified Water Storage', icon: 'water-purification',
+      description: 'Demineralised water buffer tanks — 50,000 m3.',
+      status: 'online', progress: 72,
+      parentId: 'grp-water',
+      sections: [
+        { heading: 'Capacity', content: '50,000 m3 total (4 tanks)' },
+        { heading: 'Water Quality', content: 'Conductivity <0.1 uS/cm' },
+        { heading: 'Current Level', content: '72% (36,000 m3)' },
+        { heading: 'Autonomy', content: '~18 hours at full electrolyzer load' },
+      ],
+    },
+
+    // ===== ELECTROLYSIS PLANT =====
+    { id: 'grp-electrolysis', type: 'group', label: 'Electrolysis Plant', style: { color: '#f59e0b' } },
+
+    { id: 'power-conditioning', label: 'Power Conditioning', icon: 'inverter',
+      description: 'AC/DC rectification and power quality conditioning.',
+      status: 'online', progress: 89, flowRate: '2100 MW DC',
+      parentId: 'grp-electrolysis',
+      sections: [
+        { heading: 'Input', content: '2100 MW AC' },
+        { heading: 'Output', content: '2100 MW DC at 1000V' },
+        { heading: 'Efficiency', content: '97.8%' },
+        { heading: 'Rectifiers', content: '210x 10 MW thyristor rectifiers' },
+      ],
+    },
+
+    { id: 'pem-electrolyzer', label: 'PEM Electrolyzer Bank', icon: 'pem-electrolyzer',
+      description: '500 MW PEM electrolyzer — proton exchange membrane technology.',
+      status: 'online', progress: 87, flowRate: '5.8 t H2/hr',
+      parentId: 'grp-electrolysis',
+      sections: [
+        { heading: 'Power Input', content: '500 MW DC' },
+        { heading: 'Efficiency', content: '70% (LHV basis)' },
+        { heading: 'H2 Output', content: '5.8 t/hr (140 t/day)' },
+        { heading: 'Output Pressure', content: '30 bar' },
+        { heading: 'Stack Life', content: '80,000 hr design' },
+      ],
+      detail: {
+        content: 'The PEM electrolyzer bank consists of **500 x 1 MW stacks** operating at 70% efficiency on an LHV basis. Proton exchange membrane technology enables rapid response to renewable variability.',
+        sections: [
+          { type: 'keyvalue', title: 'PEM Electrolyzer Specifications', data: {
+            'Rated Power': '500 MW DC',
+            'Stacks': '500 x 1 MW PEM stacks',
+            'Efficiency (LHV)': '70% (47.6 kWh/kg H2)',
+            'H2 Output': '140 tonnes/day',
+            'Operating Pressure': '30 bar',
+            'Operating Temperature': '60-80C',
+            'Water Consumption': '9 L/kg H2',
+            'Stack Life': '80,000 hours',
+            'Response Time': '<1 second (0-100%)',
+            'Manufacturer': 'ITM Power / Nel ASA',
+          }},
+          { type: 'chart', title: 'H2 Output vs Power Input (t/hr)', data: {
+            type: 'line',
+            values: [0, 0.6, 1.2, 1.8, 2.4, 3.2, 4.1, 4.9, 5.5, 5.8, 5.8],
+            labels: ['0', '50', '100', '150', '200', '250', '300', '350', '400', '450', '500'],
+            color: '#f59e0b',
+          }},
+          { type: 'timeline', title: 'Electrolyzer Events', data: [
+            { time: '10:45', event: 'Stack 047 returned to service after maintenance', status: 'success' },
+            { time: '08:00', event: 'Morning ramp — full load achieved in 12 s', status: 'success' },
+            { time: '06:30', event: 'Renewable power ramping — electrolyzer following', status: 'info' },
+            { time: '01:30', event: 'Stack 047 taken offline for planned stack replacement', status: 'warning' },
+          ]},
+        ],
+      },
+    },
+
+    { id: 'alk-electrolyzer', label: 'Alkaline Electrolyzer Bank', icon: 'alkaline-electrolyzer',
+      description: '1600 MW alkaline electrolyzer — pressurised KOH electrolyte.',
+      status: 'online', progress: 92, flowRate: '17.1 t H2/hr',
+      parentId: 'grp-electrolysis',
+      sections: [
+        { heading: 'Power Input', content: '1600 MW DC' },
+        { heading: 'Efficiency', content: '68% (LHV basis)' },
+        { heading: 'H2 Output', content: '17.1 t/hr (410 t/day)' },
+        { heading: 'Electrolyte', content: '30% KOH solution' },
+        { heading: 'Output Pressure', content: '10 bar' },
+      ],
+    },
+
+    // ===== HYDROGEN PROCESSING =====
+    { id: 'grp-processing', type: 'group', label: 'Hydrogen Processing', style: { color: '#8b5cf6' } },
+
+    { id: 'h2-compression', label: 'H2 Compression', icon: 'compressor',
+      description: 'Multi-stage diaphragm compression to 200 bar.',
+      status: 'online', progress: 88, flowRate: '550 t H2/day',
+      parentId: 'grp-processing',
+      sections: [
+        { heading: 'Suction Pressure', content: '10-30 bar (from electrolyzers)' },
+        { heading: 'Discharge Pressure', content: '200 bar' },
+        { heading: 'Technology', content: 'Diaphragm compressors x12' },
+        { heading: 'Power', content: '45 MW (parasitic load)' },
+      ],
+    },
+
+    { id: 'h2-purification', label: 'H2 Purification (PSA)', icon: 'water-purification',
+      description: 'Pressure swing adsorption — 99.999% purity.',
+      status: 'online', progress: 95, flowRate: '540 t H2/day',
+      parentId: 'grp-processing',
+      sections: [
+        { heading: 'Technology', content: 'Pressure Swing Adsorption' },
+        { heading: 'H2 Purity', content: '99.999% (5N grade)' },
+        { heading: 'Recovery', content: '97% yield' },
+        { heading: 'Impurity Removal', content: 'O2, N2, H2O, trace gases' },
+      ],
+    },
+
+    { id: 'h2-storage-tank', label: 'H2 Bulk Storage', icon: 'h2-storage',
+      description: '10,000 tonne H2 geological salt cavern storage.',
+      status: 'online', progress: 54,
+      sections: [
+        { heading: 'Type', content: 'Salt cavern geological storage' },
+        { heading: 'Capacity', content: '10,000 tonnes H2' },
+        { heading: 'Current Level', content: '54% — 5,400 t' },
+        { heading: 'Pressure', content: '100-200 bar operating range' },
+        { heading: 'Cavern Depth', content: '1,200-1,600 m' },
+        { heading: 'Autonomy', content: '~20 days at full output' },
+      ],
+      detail: {
+        content: 'Underground salt cavern storage provides **large-scale seasonal buffer** capacity. The cavern was solution-mined from a halite formation and sealed with cement and steel casing.',
+        sections: [
+          { type: 'keyvalue', title: 'Storage Specifications', data: {
+            'Storage Type': 'Solution-mined salt cavern',
+            'Total Capacity': '10,000 tonnes H2',
+            'Current Inventory': '5,400 tonnes (54%)',
+            'Min Operating Pressure': '100 bar (cushion gas)',
+            'Max Operating Pressure': '200 bar',
+            'Depth': '1200-1600 m below surface',
+            'Cavern Volume': '~300,000 m3',
+            'Cycling Frequency': 'Seasonal — ~4 cycles/year',
+          }},
+          { type: 'chart', title: 'Storage Level (%) — Last 30 Days', data: {
+            type: 'line',
+            values: [42, 44, 46, 49, 52, 55, 58, 60, 62, 63, 61, 59, 57, 55, 54, 53, 54, 55, 57, 58, 57, 56, 55, 54, 53, 54, 54, 54, 54, 54],
+            labels: Array.from({ length: 30 }, (_, i) => String(i + 1)),
+            color: '#8b5cf6',
+          }},
+        ],
+      },
+    },
+
+    // ===== AMMONIA EXPORT =====
+    { id: 'grp-ammonia', type: 'group', label: 'Ammonia Export', style: { color: '#3b82f6' } },
+
+    { id: 'n2-supply', label: 'Air Separation Unit', icon: 'compressor',
+      description: 'Cryogenic ASU — nitrogen supply for Haber-Bosch.',
+      status: 'online', flowRate: '450 t N2/hr',
+      parentId: 'grp-ammonia',
+      sections: [
+        { heading: 'Technology', content: 'Cryogenic distillation' },
+        { heading: 'N2 Output', content: '450 t/hr at 99.99% purity' },
+        { heading: 'Power', content: '30 MW (parasitic load)' },
+        { heading: 'O2 Byproduct', content: '380 t/hr (exported or vented)' },
+      ],
+    },
+
+    { id: 'ammonia-synthesis', label: 'Ammonia Synthesis (Haber-Bosch)', icon: 'ammonia-synthesis',
+      description: 'Green ammonia synthesis — 1200 t NH3/day.',
+      status: 'online', progress: 91, flowRate: '1200 t NH3/day',
+      parentId: 'grp-ammonia',
+      sections: [
+        { heading: 'Technology', content: 'Haber-Bosch with iron catalyst' },
+        { heading: 'Temperature', content: '400-500C' },
+        { heading: 'Pressure', content: '150-200 bar' },
+        { heading: 'NH3 Output', content: '1200 t/day' },
+        { heading: 'H2 Consumption', content: '~178 kg H2/t NH3' },
+      ],
+      detail: {
+        content: 'The Haber-Bosch synthesis loop converts **green H2 and N2 into ammonia** over a promoted iron catalyst. Single-pass conversion is ~20%; unreacted gases are recycled.',
+        sections: [
+          { type: 'keyvalue', title: 'Synthesis Loop Specifications', data: {
+            'Technology': 'Haber-Bosch (promoted Fe catalyst)',
+            'H2 Feed Rate': '213.6 t/day',
+            'N2 Feed Rate': '1254 t/day',
+            'NH3 Output': '1200 t/day',
+            'Reactor Temp': '400-500C',
+            'Reactor Pressure': '150-200 bar',
+            'Single-Pass Conversion': '~20%',
+            'Loop Efficiency': '>98% with recycle',
+            'Catalyst Life': '5-7 years',
+          }},
+        ],
+      },
+    },
+
+    { id: 'nh3-storage', label: 'Liquid NH3 Storage', icon: 'h2-storage',
+      description: 'Cryogenic liquid ammonia storage tanks — 50,000 t.',
+      status: 'online', progress: 61,
+      parentId: 'grp-ammonia',
+      sections: [
+        { heading: 'Capacity', content: '50,000 tonnes NH3 total' },
+        { heading: 'Current Level', content: '61% — 30,500 t' },
+        { heading: 'Temperature', content: '-33C (atmospheric pressure)' },
+        { heading: 'Tanks', content: '5x 10,000 t double-wall cryogenic' },
+        { heading: 'Boil-Off', content: '0.04%/day' },
+      ],
+    },
+
+    { id: 'export-terminal', label: 'Export Terminal', icon: 'lng-terminal',
+      description: 'Dedicated green ammonia export jetty — 2 berths.',
+      status: 'online',
+      parentId: 'grp-ammonia',
+      sections: [
+        { heading: 'Berths', content: '2x VLAC (Very Large Ammonia Carrier)' },
+        { heading: 'Ship Size', content: 'Up to 87,000 m3 VLAC' },
+        { heading: 'Loading Rate', content: '3,000 m3/hr per arm' },
+        { heading: 'Annual Export', content: '~400,000 t NH3/year' },
+        { heading: 'Destinations', content: 'Japan, South Korea, Netherlands' },
+      ],
+    },
+
+    // ===== HYDROGEN DISTRIBUTION =====
+    { id: 'grp-distribution', type: 'group', label: 'Hydrogen Distribution', style: { color: '#ef4444' } },
+
+    { id: 'h2-pipeline', label: 'H2 Transmission Pipeline', icon: 'pipeline',
+      description: 'High-pressure H2 pipeline to distribution nodes.',
+      status: 'online', flowRate: '120 t H2/day',
+      parentId: 'grp-distribution',
+      sections: [
+        { heading: 'Pressure', content: '100 bar operating' },
+        { heading: 'Diameter', content: '24 inch (DN600)' },
+        { heading: 'Length', content: '85 km to city gate' },
+        { heading: 'Material', content: 'API 5L X70 — H2 compatible' },
+        { heading: 'Flow Rate', content: '120 t H2/day' },
+      ],
+    },
+
+    { id: 'h2-refueling', label: 'H2 Refueling Network', icon: 'h2-refueling',
+      description: '20 hydrogen refueling stations across the region.',
+      status: 'online', flowRate: '40 t H2/day',
+      parentId: 'grp-distribution',
+      sections: [
+        { heading: 'Stations', content: '20 HRS across NEOM' },
+        { heading: 'Dispensing', content: '700 bar for FCEV' },
+        { heading: 'Daily Throughput', content: '40 t H2/day' },
+        { heading: 'Vehicles Served', content: '~400 FCEVs/day' },
+        { heading: 'Dispensing Rate', content: '3-5 min per vehicle' },
+      ],
+    },
+
+    { id: 'fuel-cell-power', label: 'Fuel Cell Power Plants', icon: 'fuel-cell',
+      description: 'Distributed H2 fuel cell plants — 200 MW total.',
+      status: 'online', progress: 76, flowRate: '152 MW',
+      parentId: 'grp-distribution',
+      sections: [
+        { heading: 'Total Capacity', content: '200 MW (40x 5 MW PAFC)' },
+        { heading: 'Current Output', content: '152 MW (76% load)' },
+        { heading: 'Efficiency', content: '48% LHV (electrical)' },
+        { heading: 'H2 Consumption', content: '~80 t/day' },
+        { heading: 'Heat Recovery', content: 'CHP — district heating integration' },
+      ],
+    },
+
+    { id: 'h2-scada', label: 'Hydrogen SCADA', icon: 'layout-dashboard',
+      description: 'Integrated control and monitoring for the green H2 facility.',
+      status: 'online', style: { color: '#8b5cf6', glow: true },
+      sections: [
+        { heading: 'Total H2 Production', content: '**550 t/day** (PEM + ALK)' },
+        { heading: 'NH3 Export', content: '1200 t/day' },
+        { heading: 'Renewable Input', content: '2132 MW' },
+        { heading: 'Storage Level', content: 'H2 cavern 54% / NH3 61%' },
+        { heading: 'CO2 Avoided', content: '~5,500 t CO2/day vs SMR' },
+        { heading: 'Water Consumption', content: '4,950 m3/hr' },
+      ],
+    },
+  ],
+  edges: [
+    // Renewable power flows (green)
+    { id: 'h1', source: 'solar-farm', target: 'grid-battery', color: '#22c55e', flowAnimation: true, annotation: '1820 MW', thickness: 4, label: 'AC power' },
+    { id: 'h2', source: 'wind-farm', target: 'grid-battery', color: '#22c55e', flowAnimation: true, annotation: '312 MW', thickness: 2 },
+    { id: 'h3', source: 'grid-battery', target: 'power-conditioning', color: '#22c55e', flowAnimation: true, annotation: '2132 MW', thickness: 5, label: 'AC to rectifiers' },
+
+    // Water flows (cyan)
+    { id: 'h4', source: 'seawater-intake', target: 'desalination', color: '#06b6d4', flowAnimation: true, annotation: '15,000 m3/hr', thickness: 3 },
+    { id: 'h5', source: 'desalination', target: 'water-storage', color: '#06b6d4', flowAnimation: true, annotation: '12,000 m3/hr', thickness: 3, label: 'DI water' },
+    { id: 'h6', source: 'water-storage', target: 'pem-electrolyzer', color: '#06b6d4', flowAnimation: true, annotation: '3,000 m3/hr', thickness: 2 },
+    { id: 'h7', source: 'water-storage', target: 'alk-electrolyzer', color: '#06b6d4', flowAnimation: true, annotation: '1,950 m3/hr', thickness: 2, showJunction: true },
+
+    // DC power to electrolyzers (amber)
+    { id: 'h8', source: 'power-conditioning', target: 'pem-electrolyzer', color: '#f59e0b', flowAnimation: true, annotation: '500 MW DC', thickness: 3, label: '1000V DC' },
+    { id: 'h9', source: 'power-conditioning', target: 'alk-electrolyzer', color: '#f59e0b', flowAnimation: true, annotation: '1600 MW DC', thickness: 4, showJunction: true },
+
+    // H2 gas flows (purple)
+    { id: 'h10', source: 'pem-electrolyzer', target: 'h2-compression', color: '#8b5cf6', flowAnimation: true, annotation: '30 bar H2', thickness: 2 },
+    { id: 'h11', source: 'alk-electrolyzer', target: 'h2-compression', color: '#8b5cf6', flowAnimation: true, annotation: '10 bar H2', thickness: 3, showJunction: true },
+    { id: 'h12', source: 'h2-compression', target: 'h2-purification', color: '#8b5cf6', flowAnimation: true, annotation: '200 bar', thickness: 3 },
+    { id: 'h13', source: 'h2-purification', target: 'h2-storage-tank', color: '#8b5cf6', flowAnimation: true, annotation: '99.999% H2', thickness: 3, label: 'Pure H2' },
+
+    // H2 to ammonia (blue)
+    { id: 'h14', source: 'h2-storage-tank', target: 'ammonia-synthesis', color: '#3b82f6', flowAnimation: true, annotation: '214 t H2/day', thickness: 3 },
+    { id: 'h15', source: 'n2-supply', target: 'ammonia-synthesis', color: '#94a3b8', flowAnimation: true, annotation: '1254 t N2/day', thickness: 2 },
+
+    // NH3 flow (blue)
+    { id: 'h16', source: 'ammonia-synthesis', target: 'nh3-storage', color: '#3b82f6', flowAnimation: true, annotation: '1200 t NH3/day', thickness: 3, label: '-33C liquid' },
+    { id: 'h17', source: 'nh3-storage', target: 'export-terminal', color: '#3b82f6', flowAnimation: true, annotation: 'Ship loading', thickness: 3 },
+
+    // H2 distribution (red)
+    { id: 'h18', source: 'h2-storage-tank', target: 'h2-pipeline', color: '#ef4444', flowAnimation: true, annotation: '120 t H2/day', thickness: 2, showJunction: true },
+    { id: 'h19', source: 'h2-pipeline', target: 'h2-refueling', color: '#ef4444', flowAnimation: true, annotation: '40 t/day', thickness: 2 },
+    { id: 'h20', source: 'h2-pipeline', target: 'fuel-cell-power', color: '#ef4444', flowAnimation: true, annotation: '80 t/day', thickness: 2, showJunction: true },
+
+    // SCADA monitoring
+    { id: 'h21', source: 'h2-scada', target: 'pem-electrolyzer', color: '#8b5cf6', type: 'dashed', annotation: 'Control' },
+    { id: 'h22', source: 'h2-scada', target: 'alk-electrolyzer', color: '#8b5cf6', type: 'dashed' },
+    { id: 'h23', source: 'h2-scada', target: 'h2-storage-tank', color: '#8b5cf6', type: 'dashed', annotation: 'Level/P/T' },
+    { id: 'h24', source: 'h2-scada', target: 'ammonia-synthesis', color: '#8b5cf6', type: 'dashed' },
+    { id: 'h25', source: 'h2-scada', target: 'grid-battery', color: '#8b5cf6', type: 'dashed', annotation: 'Dispatch' },
+  ],
+};
+
 const nodeTemplates: SidebarNodeTemplate[] = [
   { type: 'default', label: 'Process', description: 'A process step' },
   { type: 'decision', label: 'Decision', description: 'A branch point' },
@@ -2673,9 +3099,9 @@ const nodeTemplates: SidebarNodeTemplate[] = [
 ];
 
 export function App() {
-  const [activeDemo, setActiveDemo] = React.useState<'vertical' | 'wind-farm' | 'solar-plant' | 'datacenter' | 'power-supply' | 'hvdc' | 'showcase' | 'dc-facility' | 'nuclear' | 'gas-pipeline' | 'hydro-plant'>('vertical');
+  const [activeDemo, setActiveDemo] = React.useState<'vertical' | 'wind-farm' | 'solar-plant' | 'datacenter' | 'power-supply' | 'hvdc' | 'showcase' | 'dc-facility' | 'nuclear' | 'gas-pipeline' | 'hydro-plant' | 'hydrogen'>('vertical');
   const [currentDiagram, setCurrentDiagram] = useState<FlowDiagram>(sampleDiagram);
-  const demoMap: Record<string, FlowDiagram> = { vertical: sampleDiagram, 'wind-farm': windFarmDiagram, 'solar-plant': solarPlantDiagram, datacenter: datacenterDiagram, 'power-supply': powerSupplyDiagram, hvdc: hvdcDiagram, showcase: showcaseDiagram, 'dc-facility': dcFacilityDiagram, nuclear: nuclearDiagram, 'gas-pipeline': gasPipelineDiagram, 'hydro-plant': hydroPlantDiagram };
+  const demoMap: Record<string, FlowDiagram> = { vertical: sampleDiagram, 'wind-farm': windFarmDiagram, 'solar-plant': solarPlantDiagram, datacenter: datacenterDiagram, 'power-supply': powerSupplyDiagram, hvdc: hvdcDiagram, showcase: showcaseDiagram, 'dc-facility': dcFacilityDiagram, nuclear: nuclearDiagram, 'gas-pipeline': gasPipelineDiagram, 'hydro-plant': hydroPlantDiagram, hydrogen: hydrogenDiagram };
   const baseDiagram = demoMap[activeDemo] || sampleDiagram;
   const diagram = (activeDemo === 'vertical' || activeDemo === 'showcase') ? currentDiagram : baseDiagram;
   const canvasRef = useRef<FlowCanvasRef>(null);
@@ -2687,7 +3113,7 @@ export function App() {
     }));
   };
 
-  const handleDemoChange = (demo: 'vertical' | 'wind-farm' | 'solar-plant' | 'datacenter' | 'power-supply' | 'hvdc' | 'showcase' | 'dc-facility' | 'nuclear' | 'gas-pipeline' | 'hydro-plant') => {
+  const handleDemoChange = (demo: 'vertical' | 'wind-farm' | 'solar-plant' | 'datacenter' | 'power-supply' | 'hvdc' | 'showcase' | 'dc-facility' | 'nuclear' | 'gas-pipeline' | 'hydro-plant' | 'hydrogen') => {
     setActiveDemo(demo);
     if (demo === 'vertical') setCurrentDiagram(sampleDiagram);
     if (demo === 'showcase') setCurrentDiagram(showcaseDiagram);
@@ -2901,6 +3327,22 @@ export function App() {
           }}
         >
           Hydro Plant
+        </button>
+        <button
+          onClick={() => handleDemoChange('hydrogen')}
+          style={{
+            padding: '6px 12px',
+            borderRadius: 6,
+            border: '1px solid rgba(255,255,255,0.15)',
+            background: activeDemo === 'hydrogen' ? '#e2e8f0' : 'rgba(22,33,62,0.85)',
+            color: activeDemo === 'hydrogen' ? '#1a1a1a' : '#e2e8f0',
+            cursor: 'pointer',
+            fontSize: 12,
+            fontWeight: 600,
+            backdropFilter: 'blur(4px)',
+          }}
+        >
+          Hydrogen
         </button>
       </div>
       <FlowCanvas

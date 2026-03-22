@@ -62,3 +62,5 @@ export { LoadProfile } from './detail/LoadProfile';
 export type { LoadProfileData } from './detail/LoadProfile';
 export { MeritOrder } from './detail/MeritOrder';
 export type { GenerationSource } from './detail/MeritOrder';
+export { calculateH2Production, h2ProductionSections } from './utils/hydrogenUtils';
+export type { ElectrolyzerSpec, H2ProductionResult } from './utils/hydrogenUtils';

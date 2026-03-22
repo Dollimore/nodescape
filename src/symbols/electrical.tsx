@@ -883,6 +883,239 @@ export function Reservoir({ size = 24, color = 'currentColor' }: SymbolProps) {
   );
 }
 
+// --- Nuclear SMR / Advanced Reactor ---
+
+// Small Modular Reactor (SMR)
+export function SMReactor({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <rect x="5" y="4" width="14" height="16" rx="3" />
+      <circle cx="12" cy="10" r="3" />
+      <circle cx="12" cy="10" r="1" fill={color} />
+      <path d="M8 16 L16 16" />
+      <text x="12" y="20" textAnchor="middle" fontSize="4" fill={color} stroke="none" fontWeight="bold" fontFamily="system-ui">SMR</text>
+      <line x1="12" y1="2" x2="12" y2="4" />
+      <line x1="12" y1="20" x2="12" y2="22" />
+    </svg>
+  );
+}
+
+// Molten Salt Reactor
+export function MoltenSaltReactor({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <ellipse cx="12" cy="12" rx="8" ry="10" />
+      <path d="M8 14 C8 12 10 12 10 14 C10 16 12 16 12 14 C12 12 14 12 14 14 C14 16 16 16 16 14" strokeWidth="1" />
+      <circle cx="12" cy="8" r="2" fill={color} />
+      <line x1="12" y1="2" x2="12" y2="0" />
+    </svg>
+  );
+}
+
+// High Temperature Gas Reactor (HTGR)
+export function HTGReactor({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <rect x="4" y="3" width="16" height="18" rx="2" />
+      <circle cx="9" cy="9" r="2" strokeDasharray="2 1" />
+      <circle cx="15" cy="9" r="2" strokeDasharray="2 1" />
+      <circle cx="12" cy="14" r="2" strokeDasharray="2 1" />
+      <text x="12" y="20" textAnchor="middle" fontSize="4" fill={color} stroke="none" fontWeight="bold" fontFamily="system-ui">HTGR</text>
+      <line x1="12" y1="1" x2="12" y2="3" />
+      <line x1="12" y1="21" x2="12" y2="23" />
+    </svg>
+  );
+}
+
+// Sodium Fast Reactor
+export function SodiumReactor({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <path d="M6 20 L6 8 Q6 2 12 2 Q18 2 18 8 L18 20" />
+      <line x1="6" y1="20" x2="18" y2="20" />
+      <text x="12" y="14" textAnchor="middle" fontSize="5" fill={color} stroke="none" fontWeight="bold" fontFamily="system-ui">Na</text>
+      <line x1="4" y1="14" x2="6" y2="14" />
+      <line x1="18" y1="14" x2="20" y2="14" />
+    </svg>
+  );
+}
+
+// Passive Safety System
+export function PassiveSafety({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 2 L20 7 L20 17 L12 22 L4 17 L4 7 Z" />
+      <path d="M9 12 L11 14 L15 10" strokeWidth="2" />
+    </svg>
+  );
+}
+
+// Steam Drum
+export function SteamDrum({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <ellipse cx="12" cy="12" rx="10" ry="6" />
+      <line x1="12" y1="6" x2="12" y2="2" />
+      <line x1="12" y1="18" x2="12" y2="22" />
+      <path d="M8 10 C8 9 10 9 10 10" strokeWidth="1" />
+      <path d="M12 10 C12 9 14 9 14 10" strokeWidth="1" />
+    </svg>
+  );
+}
+
+// Heat Sink (ultimate/passive)
+export function HeatSink({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <rect x="4" y="8" width="16" height="8" rx="1" />
+      <line x1="6" y1="8" x2="6" y2="4" />
+      <line x1="10" y1="8" x2="10" y2="4" />
+      <line x1="14" y1="8" x2="14" y2="4" />
+      <line x1="18" y1="8" x2="18" y2="4" />
+      <line x1="0" y1="12" x2="4" y2="12" />
+      <line x1="20" y1="12" x2="24" y2="12" />
+    </svg>
+  );
+}
+
+// --- Hydrogen / Clean Energy ---
+
+// PEM Electrolyzer
+export function PEMElectrolyzer({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <rect x="4" y="4" width="16" height="16" rx="2" />
+      <line x1="12" y1="4" x2="12" y2="20" strokeDasharray="3 2" />
+      <text x="8" y="14" textAnchor="middle" fontSize="6" fill={color} stroke="none" fontWeight="bold" fontFamily="system-ui">H2</text>
+      <text x="16" y="14" textAnchor="middle" fontSize="6" fill={color} stroke="none" fontWeight="bold" fontFamily="system-ui">O2</text>
+      <line x1="8" y1="2" x2="8" y2="4" />
+      <line x1="16" y1="2" x2="16" y2="4" />
+      <line x1="8" y1="20" x2="8" y2="22" />
+      <line x1="16" y1="20" x2="16" y2="22" />
+    </svg>
+  );
+}
+
+// Alkaline Electrolyzer
+export function AlkalineElectrolyzer({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <rect x="3" y="4" width="18" height="16" rx="2" />
+      <line x1="12" y1="4" x2="12" y2="20" />
+      <text x="7" y="14" textAnchor="middle" fontSize="5" fill={color} stroke="none" fontWeight="bold" fontFamily="system-ui">ALK</text>
+      <line x1="7" y1="2" x2="7" y2="4" />
+      <line x1="17" y1="20" x2="17" y2="22" />
+    </svg>
+  );
+}
+
+// SOEC (Solid Oxide Electrolyzer Cell)
+export function SOECElectrolyzer({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <rect x="3" y="4" width="18" height="16" rx="2" />
+      <path d="M8 8 L8 16 M12 8 L12 16 M16 8 L16 16" strokeDasharray="2 2" />
+      <text x="12" y="14" textAnchor="middle" fontSize="5" fill={color} stroke="none" fontWeight="bold" fontFamily="system-ui">SOEC</text>
+      <line x1="12" y1="2" x2="12" y2="4" />
+      <line x1="12" y1="20" x2="12" y2="22" />
+    </svg>
+  );
+}
+
+// Hydrogen Storage Tank
+export function H2Storage({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <path d="M6 6 Q6 2 12 2 Q18 2 18 6 L18 18 Q18 22 12 22 Q6 22 6 18 Z" />
+      <text x="12" y="14" textAnchor="middle" fontSize="7" fill={color} stroke="none" fontWeight="bold" fontFamily="system-ui">H2</text>
+      <line x1="12" y1="2" x2="12" y2="0" />
+    </svg>
+  );
+}
+
+// Fuel Cell
+export function FuelCell({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <rect x="4" y="3" width="16" height="18" rx="2" />
+      <line x1="4" y1="9" x2="20" y2="9" />
+      <line x1="4" y1="15" x2="20" y2="15" />
+      <text x="12" y="8" textAnchor="middle" fontSize="5" fill={color} stroke="none" fontWeight="bold" fontFamily="system-ui">H2</text>
+      <text x="12" y="14" textAnchor="middle" fontSize="5" fill={color} stroke="none" fontWeight="bold" fontFamily="system-ui">FC</text>
+      <text x="12" y="20" textAnchor="middle" fontSize="5" fill={color} stroke="none" fontWeight="bold" fontFamily="system-ui">H2O</text>
+      <line x1="0" y1="6" x2="4" y2="6" />
+      <line x1="20" y1="6" x2="24" y2="6" />
+      <line x1="0" y1="18" x2="4" y2="18" />
+    </svg>
+  );
+}
+
+// Ammonia Synthesis (Haber-Bosch)
+export function AmmoniaSynthesis({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <circle cx="12" cy="12" r="8" />
+      <text x="12" y="15" textAnchor="middle" fontSize="6" fill={color} stroke="none" fontWeight="bold" fontFamily="system-ui">NH3</text>
+      <line x1="4" y1="8" x2="0" y2="8" />
+      <line x1="4" y1="16" x2="0" y2="16" />
+      <line x1="20" y1="12" x2="24" y2="12" />
+    </svg>
+  );
+}
+
+// Desalination Unit
+export function Desalination({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <rect x="3" y="4" width="18" height="16" rx="2" />
+      <path d="M7 10 C7 8 9 8 9 10 C9 12 11 12 11 10 C11 8 13 8 13 10 C13 12 15 12 15 10 C15 8 17 8 17 10" strokeWidth="1" />
+      <line x1="10" y1="14" x2="14" y2="14" strokeWidth="1" strokeDasharray="2 1" />
+      <text x="12" y="19" textAnchor="middle" fontSize="5" fill={color} stroke="none" fontWeight="bold" fontFamily="system-ui">RO</text>
+      <line x1="0" y1="10" x2="3" y2="10" />
+      <line x1="21" y1="10" x2="24" y2="10" />
+    </svg>
+  );
+}
+
+// Hydrogen Refueling Station
+export function H2Refueling({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <rect x="4" y="6" width="12" height="14" rx="2" />
+      <line x1="10" y1="2" x2="10" y2="6" />
+      <path d="M16 10 L20 10 L20 16 L18 18" />
+      <circle cx="18" cy="19" r="1.5" />
+      <text x="10" y="15" textAnchor="middle" fontSize="5" fill={color} stroke="none" fontWeight="bold" fontFamily="system-ui">H2</text>
+    </svg>
+  );
+}
+
+// Ammonia Cracker
+export function AmmoniaCracker({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <rect x="4" y="4" width="16" height="16" rx="2" />
+      <path d="M8 10 L12 14 L16 10" />
+      <path d="M8 14 L12 10 L16 14" strokeDasharray="2 2" />
+      <line x1="0" y1="12" x2="4" y2="12" />
+      <line x1="20" y1="8" x2="24" y2="8" />
+      <line x1="20" y1="16" x2="24" y2="16" />
+    </svg>
+  );
+}
+
+// Water Purification
+export function WaterPurification({ size = 24, color = 'currentColor' }: SymbolProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round">
+      <path d="M12 2 L18 12 Q18 22 12 22 Q6 22 6 12 Z" />
+      <line x1="8" y1="14" x2="16" y2="14" strokeDasharray="2 1" />
+      <line x1="0" y1="12" x2="6" y2="12" />
+      <line x1="18" y1="12" x2="24" y2="12" />
+    </svg>
+  );
+}
+
 // Export a map of all symbols for easy lookup by name
 export const electricalSymbols: Record<string, React.ComponentType<SymbolProps>> = {
   resistor: Resistor,
@@ -955,4 +1188,23 @@ export const electricalSymbols: Record<string, React.ComponentType<SymbolProps>>
   'water-turbine': WaterTurbine,
   penstock: Penstock,
   reservoir: Reservoir,
+  // Hydrogen
+  'pem-electrolyzer': PEMElectrolyzer,
+  'alkaline-electrolyzer': AlkalineElectrolyzer,
+  'soec-electrolyzer': SOECElectrolyzer,
+  'h2-storage': H2Storage,
+  'fuel-cell': FuelCell,
+  'ammonia-synthesis': AmmoniaSynthesis,
+  desalination: Desalination,
+  'h2-refueling': H2Refueling,
+  'ammonia-cracker': AmmoniaCracker,
+  'water-purification': WaterPurification,
+  // Nuclear SMR / Advanced
+  'smr-reactor': SMReactor,
+  'molten-salt-reactor': MoltenSaltReactor,
+  'htgr-reactor': HTGReactor,
+  'sodium-reactor': SodiumReactor,
+  'passive-safety': PassiveSafety,
+  'steam-drum': SteamDrum,
+  'heat-sink': HeatSink,
 };
