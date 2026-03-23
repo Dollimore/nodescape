@@ -1,0 +1,13 @@
+name: nodescape-demo
+region: lon
+static_sites:
+  - name: nodescape
+    github:
+      repo: Dollimore/nodescape
+      branch: master
+      deploy_on_push: true
+    build_command: npx vite build --config vite.demo.config.ts
+    output_dir: demo-dist
+    environment_slug: node-js
+    routes:
+      - path: /
