@@ -82,9 +82,9 @@ interface ReorderState {
 /*  Constants                                                          */
 /* ------------------------------------------------------------------ */
 
-const ROW_HEIGHT = 40;
-const BAR_HEIGHT = 22;
-const BAR_OFFSET = (ROW_HEIGHT - BAR_HEIGHT) / 2; // 9px
+const ROW_HEIGHT = 44;
+const BAR_HEIGHT = 24;
+const BAR_OFFSET = (ROW_HEIGHT - BAR_HEIGHT) / 2; // 10px
 const GROUP_BAR_HEIGHT = 6;
 const MILESTONE_SIZE = 12;
 const INDENT_PX = 16;
@@ -529,17 +529,19 @@ export function GanttChart({
       className={`${styles.container}${className ? ` ${className}` : ''}`}
       style={{ height, cursor: containerCursor }}
     >
-      {/* -- Scale toggle toolbar -- */}
+      {/* -- Scale toggle toolbar (segmented control in header) -- */}
       <div className={styles.toolbar}>
-        {(['day', 'week', 'month', 'quarter'] as TimeScale[]).map(s => (
-          <button
-            key={s}
-            className={`${styles.scaleToggle}${s === scale ? ` ${styles.scaleToggleActive}` : ''}`}
-            onClick={() => handleScaleChange(s)}
-          >
-            {s.charAt(0).toUpperCase() + s.slice(1)}
-          </button>
-        ))}
+        <div className={styles.segmentedControl}>
+          {(['day', 'week', 'month', 'quarter'] as TimeScale[]).map(s => (
+            <button
+              key={s}
+              className={`${styles.scaleToggle}${s === scale ? ` ${styles.scaleToggleActive}` : ''}`}
+              onClick={() => handleScaleChange(s)}
+            >
+              {s.charAt(0).toUpperCase() + s.slice(1)}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* -- Main body: task list + timeline -- */}
@@ -562,17 +564,27 @@ export function GanttChart({
               const isEditingStart = inlineEdit?.taskId === task.id && inlineEdit.field === 'startDate';
               const isEditingEnd = inlineEdit?.taskId === task.id && inlineEdit.field === 'endDate';
 
+              const taskColor = getTaskColor(task);
+
               return (
                 <div
                   key={task.id}
-                  className={`${styles.taskRow}${isSelected ? ` ${styles.taskRowSelected}` : ''}`}
+                  className={[
+                    styles.taskRow,
+                    isSelected ? styles.taskRowSelected : '',
+                    isGroup ? styles.taskRowGroup : '',
+                  ].filter(Boolean).join(' ')}
                   onClick={() => handleTaskClick(task.id)}
                   onContextMenu={e => handleContextMenu(task.id, e)}
-                  style={reorder && reorder.currentIndex === i && reorder.taskId !== task.id
-                    ? { borderTop: '2px solid #3b82f6' }
-                    : undefined
-                  }
+                  style={{
+                    ...(reorder && reorder.currentIndex === i && reorder.taskId !== task.id
+                      ? { borderTop: '2px solid #3b82f6' }
+                      : {}),
+                    ...(isGroup ? { '--group-color': taskColor } as React.CSSProperties : {}),
+                  }}
                 >
+                  {/* Left color indicator */}
+                  <div className={styles.colorIndicator} style={{ background: taskColor }} />
                   {/* Drag handle */}
                   <div
                     className={`${styles.dragHandle}${reorder?.taskId === task.id ? ` ${styles.dragHandleActive}` : ''}`}
@@ -599,7 +611,7 @@ export function GanttChart({
                         className={`${styles.chevron}${isCollapsed ? '' : ` ${styles.chevronExpanded}`}`}
                         onClick={e => handleToggleCollapse(task.id, e)}
                       >
-                        <svg viewBox="0 0 16 16" fill="currentColor">
+                        <svg viewBox="0 0 16 16" fill="currentColor" width="12" height="12">
                           <path d="M6 3l5 5-5 5V3z" />
                         </svg>
                       </div>
@@ -761,10 +773,10 @@ export function GanttChart({
             {/* Today marker */}
             {showToday && todayX !== null && (
               <>
+                <div className={styles.todayLine} style={{ left: todayX }} />
                 <div className={styles.todayChip} style={{ left: todayX }}>
                   Today
                 </div>
-                <div className={styles.todayLine} style={{ left: todayX }} />
               </>
             )}
 
@@ -876,8 +888,8 @@ export function GanttChart({
                     />
                   )}
 
-                  {/* Bar label */}
-                  {rect.width > 80 && (
+                  {/* Bar label — only show if bar is wide enough for clean look */}
+                  {rect.width > 60 && (
                     <span className={styles.barLabel}>{task.title}</span>
                   )}
 
@@ -945,7 +957,10 @@ export function GanttChart({
           style={{ left: tooltip.x + 12, top: tooltip.y - 80 }}
         >
           <div className={styles.tooltip}>
-            <div className={styles.tooltipTitle}>{tooltip.task.title}</div>
+            <div className={styles.tooltipHeader}>
+              <div className={styles.tooltipColorDot} style={{ background: getTaskColor(tooltip.task) }} />
+              <div className={styles.tooltipTitle}>{tooltip.task.title}</div>
+            </div>
             <div className={styles.tooltipRow}>
               <span className={styles.tooltipLabel}>Start</span>
               <span className={styles.tooltipValue}>{formatDate(new Date(tooltip.task.startDate))}</span>
