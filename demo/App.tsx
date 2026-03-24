@@ -3636,7 +3636,7 @@ export function App() {
             { nodeId: 'out-rectifier', title: '9. Synchronous Rectifier', content: 'MOSFETs replace traditional diodes for **lower loss** rectification of the high-frequency AC from the transformer secondary. This is critical for efficiency at high output currents.' },
             { nodeId: 'out-filter-12v', title: '10. Output Filtering — 12V Rail', content: 'An **LC filter** (inductor + capacitor) smooths the rectified output into clean **+12V DC**. Low-ESR capacitors minimize ripple to under **50mV peak-to-peak**.' },
             { nodeId: 'out-12v', title: '11. +12V Output', content: 'The main **+12V rail** delivers up to **40A (480W)**. This powers the CPU, GPU, and motherboard in a PC. The voltage is regulated to **+/-5%** tolerance per ATX specification.' },
-            { nodeId: 'pwm-ctrl', title: '12. PWM Controller', duration: 12000 & Feedback', content: 'The controller monitors the output voltage via an **optocoupler** (for isolation) and a **TL431 shunt reference**. It adjusts the switching frequency to maintain regulation under varying loads — completing the control loop.' },
+            { nodeId: 'pwm-ctrl', title: '12. PWM Controller & Feedback', duration: 12000, content: 'The controller monitors the output voltage via an **optocoupler** (for isolation) and a **TL431 shunt reference**. It adjusts the switching frequency to maintain regulation under varying loads — completing the control loop.' },
           ],
         } : undefined}
       />
