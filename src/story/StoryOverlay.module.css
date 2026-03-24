@@ -5,7 +5,7 @@
   transform: translateX(-50%);
   z-index: 25;
   width: 90%;
-  max-width: 560px;
+  max-width: 640px;
 }
 
 .content {
@@ -61,7 +61,7 @@
 }
 
 .text {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--fc-node-desc, #888);
   line-height: 1.6;
   margin-bottom: 12px;

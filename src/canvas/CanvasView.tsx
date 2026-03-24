@@ -126,16 +126,29 @@ export function CanvasView({
 
   // Pan to center a specific node when story step changes
   useEffect(() => {
-    if (!zoomToNodeId || !nodePositions?.[zoomToNodeId] || !containerRef.current) return;
-    const pos = nodePositions[zoomToNodeId];
-    const rect = containerRef.current.getBoundingClientRect();
-    const scale = Math.max(transform.scale, 0.8);
-    // Node positions are in diagram space; account for the canvas offset (9984px)
-    const canvasOffset = 9984;
+    if (!zoomToNodeId || !containerRef.current) return;
+
+    // Find the node DOM element and pan to center it
+    const nodeEl = containerRef.current.querySelector(`[data-node-id="${zoomToNodeId}"]`) as HTMLElement | null;
+    if (!nodeEl) return;
+
+    const containerRect = containerRef.current.getBoundingClientRect();
+    const nodeRect = nodeEl.getBoundingClientRect();
+
+    // How far is the node center from the container center (in screen pixels)?
+    const nodeCenterX = nodeRect.left + nodeRect.width / 2;
+    const nodeCenterY = nodeRect.top + nodeRect.height / 2;
+    const containerCenterX = containerRect.left + containerRect.width / 2;
+    const containerCenterY = containerRect.top + containerRect.height / 2;
+
+    const offsetX = containerCenterX - nodeCenterX;
+    const offsetY = containerCenterY - nodeCenterY;
+
+    // Simply shift the current transform by this offset
     setFitView({
-      x: rect.width / 2 - (canvasOffset + pos.x) * scale,
-      y: rect.height / 2 - (canvasOffset + pos.y) * scale,
-      scale,
+      x: transform.x + offsetX,
+      y: transform.y + offsetY,
+      scale: transform.scale,
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [zoomToNodeId]);
