@@ -438,7 +438,7 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
       onConnectionMouseUp={editable ? handleConnectionMouseUp : undefined}
       onLassoSelect={editable ? handleLassoSelect : undefined}
       onZoomChange={contextualZoom ? setCurrentScale : undefined}
-      zoomToNodeId={story.activeNodeId}
+      zoomToNodeId={story.zoomNodeId}
       nodePositions={positions}
     >
       {layout && (

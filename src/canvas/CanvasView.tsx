@@ -126,25 +126,25 @@ export function CanvasView({
 
   // Pan and zoom to center a specific node when story step changes
   useEffect(() => {
-    if (!zoomToNodeId || !containerRef.current || !nodePositions?.[zoomToNodeId]) return;
+    if (!zoomToNodeId || !containerRef.current) return;
 
-    const pos = nodePositions[zoomToNodeId];
+    // zoomToNodeId may be "nodeId__trigger" composite — extract the real nodeId
+    const realNodeId = zoomToNodeId.split('__')[0];
+    if (!nodePositions?.[realNodeId]) return;
+
+    const pos = nodePositions[realNodeId];
     const containerRect = containerRef.current.getBoundingClientRect();
 
     // Zoom to a comfortable reading level
     const targetScale = 1.2;
 
-    // The content offset inside canvasInner is 9984px
-    // canvasInner transform-origin is also 9984px
-    // A node at diagram pos (x,y) is at (9984 + x, 9984 + y) in canvasInner space
-    // After transform: screenX = tx + (9984 + x - 9984) * scale = tx + x * scale
-    // (because transform-origin cancels out the 9984 offset)
-    // To center: tx + x * targetScale = containerWidth / 2
-    // So: tx = containerWidth / 2 - x * targetScale
+    // Offset the node ABOVE center to account for the story panel at the bottom (~160px)
+    // The story panel covers roughly the bottom 20% of the screen
+    const storyPanelOffset = 100;
 
     setFitView({
-      x: containerRect.width / 2 - pos.x * targetScale - 80, // offset slightly left for the node width
-      y: containerRect.height / 2 - pos.y * targetScale - 40, // offset slightly up
+      x: containerRect.width / 2 - pos.x * targetScale - 80,
+      y: (containerRect.height - storyPanelOffset) / 2 - pos.y * targetScale - 40,
       scale: targetScale,
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
