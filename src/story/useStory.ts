@@ -6,12 +6,10 @@ export function useStory(config: StoryConfig | undefined, onStepChange?: (index:
   const [isPlaying, setIsPlaying] = useState(config?.autoPlay ?? false);
   const [isActive, setIsActive] = useState(!!config);
   const [progress, setProgress] = useState(0);
-  // Track how much time was already elapsed when paused
-  const elapsedWhenPausedRef = useRef(0);
-  const stepStartRef = useRef(Date.now());
+  const [stepStartTime, setStepStartTime] = useState(Date.now());
+  const [pausedElapsed, setPausedElapsed] = useState(0);
   const intervalRef = useRef<number | null>(null);
   const progressRef = useRef<number | null>(null);
-  // Bump this to trigger a re-zoom to the current node
   const [zoomTrigger, setZoomTrigger] = useState(0);
 
   const steps = config?.steps || [];
@@ -22,8 +20,8 @@ export function useStory(config: StoryConfig | undefined, onStepChange?: (index:
     const clamped = Math.max(0, Math.min(index, steps.length - 1));
     setCurrentStep(clamped);
     setProgress(0);
-    elapsedWhenPausedRef.current = 0;
-    stepStartRef.current = Date.now();
+    setPausedElapsed(0);
+    setStepStartTime(Date.now());
     setZoomTrigger(t => t + 1);
     if (onStepChange && steps[clamped]) {
       onStepChange(clamped, steps[clamped]);
@@ -43,45 +41,42 @@ export function useStory(config: StoryConfig | undefined, onStepChange?: (index:
   }, [currentStep, goToStep]);
 
   const togglePlay = useCallback(() => {
-    setIsPlaying(p => {
-      if (!p) {
-        // Resuming — record start time accounting for already elapsed
-        stepStartRef.current = Date.now() - elapsedWhenPausedRef.current;
-        // Also zoom to current node
+    setIsPlaying(prev => {
+      if (!prev) {
+        // Resuming — adjust start time to account for paused elapsed
+        setStepStartTime(Date.now() - pausedElapsed);
         setZoomTrigger(t => t + 1);
+        return true;
       } else {
-        // Pausing — save how much time has elapsed
-        elapsedWhenPausedRef.current = Date.now() - stepStartRef.current;
+        // Pausing — save elapsed time
+        setPausedElapsed(Date.now() - stepStartTime);
+        return false;
       }
-      return !p;
     });
-  }, []);
+  }, [pausedElapsed, stepStartTime]);
 
   const close = useCallback(() => {
     setIsActive(false);
     setIsPlaying(false);
   }, []);
 
-  // Auto-play timer — accounts for time already elapsed (pause/resume)
+  // Auto-play timer
   useEffect(() => {
     if (isPlaying && isActive) {
-      const remaining = currentStepDuration - (Date.now() - stepStartRef.current);
-      if (remaining <= 0) {
-        next();
-        return;
-      }
+      const elapsed = Date.now() - stepStartTime;
+      const remaining = Math.max(0, currentStepDuration - elapsed);
       intervalRef.current = window.setTimeout(() => {
         next();
       }, remaining);
       return () => { if (intervalRef.current) clearTimeout(intervalRef.current); };
     }
-  }, [isPlaying, isActive, currentStep, currentStepDuration, next]);
+  }, [isPlaying, isActive, currentStep, currentStepDuration, next, stepStartTime]);
 
   // Progress bar animation
   useEffect(() => {
     if (isPlaying && isActive) {
       const tick = () => {
-        const elapsed = Date.now() - stepStartRef.current;
+        const elapsed = Date.now() - stepStartTime;
         const pct = Math.min(100, (elapsed / currentStepDuration) * 100);
         setProgress(pct);
         if (pct < 100) {
@@ -93,10 +88,8 @@ export function useStory(config: StoryConfig | undefined, onStepChange?: (index:
         if (progressRef.current) cancelAnimationFrame(progressRef.current);
       };
     }
-    // When paused, keep showing the current progress (don't reset)
-  }, [isPlaying, isActive, currentStep, currentStepDuration]);
+  }, [isPlaying, isActive, currentStep, currentStepDuration, stepStartTime]);
 
-  // Build a composite ID that changes when we want to re-trigger zoom
   const activeNodeId = isActive ? steps[currentStep]?.nodeId : null;
   const zoomNodeId = activeNodeId ? `${activeNodeId}__${zoomTrigger}` : null;
 

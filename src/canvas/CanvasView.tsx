@@ -130,21 +130,33 @@ export function CanvasView({
 
     // zoomToNodeId may be "nodeId__trigger" composite — extract the real nodeId
     const realNodeId = zoomToNodeId.split('__')[0];
+
+    // Try to find the actual DOM node to get its real size
+    const nodeEl = containerRef.current.querySelector(`[data-node-id="${realNodeId}"]`) as HTMLElement | null;
     if (!nodePositions?.[realNodeId]) return;
 
     const pos = nodePositions[realNodeId];
     const containerRect = containerRef.current.getBoundingClientRect();
 
+    // Get node dimensions from DOM or estimate
+    const nodeW = nodeEl ? nodeEl.offsetWidth : 160;
+    const nodeH = nodeEl ? nodeEl.offsetHeight : 80;
+
     // Zoom to a comfortable reading level
     const targetScale = 1.2;
 
-    // Offset the node ABOVE center to account for the story panel at the bottom (~160px)
-    // The story panel covers roughly the bottom 20% of the screen
-    const storyPanelOffset = 100;
+    // Center the node in the VISIBLE area (above the story panel)
+    // Story panel is ~180px tall at the bottom
+    const storyPanelHeight = 180;
+    const visibleHeight = containerRect.height - storyPanelHeight;
+
+    // Center of the node should be at center of the visible area
+    const nodeCenterX = pos.x + nodeW / 2;
+    const nodeCenterY = pos.y + nodeH / 2;
 
     setFitView({
-      x: containerRect.width / 2 - pos.x * targetScale - 80,
-      y: (containerRect.height - storyPanelOffset) / 2 - pos.y * targetScale - 40,
+      x: containerRect.width / 2 - nodeCenterX * targetScale,
+      y: visibleHeight / 2 - nodeCenterY * targetScale,
       scale: targetScale,
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
