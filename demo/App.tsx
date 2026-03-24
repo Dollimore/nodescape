@@ -3623,6 +3623,21 @@ export function App() {
             { nodeId: 'load-datacenter', title: 'Data Center Load', content: 'The data center campus draws **380 MW** at PUE 1.12 with Tier IV redundancy.' },
             { nodeId: 'scada', title: 'System Control', content: 'The SCADA/EMS monitors all generation, load, and frequency in real-time.' },
           ],
+        } : activeDemo === 'power-supply' ? {
+          steps: [
+            { nodeId: 'mains', title: '1. AC Mains Input', content: 'Power enters through an **IEC C14** connector. The supply accepts **85-264V AC** universal input, making it compatible worldwide.' },
+            { nodeId: 'f1-mov', title: '2. Fuse & Surge Protection', content: 'A **fuse** protects against overcurrent, while the **MOV** (Metal Oxide Varistor) clamps voltage spikes from the mains to protect downstream components.' },
+            { nodeId: 'emi-filter', title: '3. EMI Filter', content: 'A **common-mode choke** with X and Y capacitors filters high-frequency noise from the mains. This prevents the switching converter from polluting the AC line and meets **EN 55032** EMC requirements.' },
+            { nodeId: 'bridge-rect', title: '4. Bridge Rectifier', content: 'Four diodes in a **full-bridge** configuration convert AC to pulsating DC. The output is roughly **320V DC** (peak of 230V AC) with significant ripple.' },
+            { nodeId: 'pfc-boost', title: '5. PFC Boost Converter', content: 'The Power Factor Correction stage shapes the input current to be **sinusoidal and in phase** with the voltage. This boosts the rectified voltage to a regulated **400V DC** bus while achieving a power factor > **0.99**.' },
+            { nodeId: 'pfc-ctrl', title: '6. PFC Controller', content: 'The **L6599** IC drives the PFC MOSFET with variable-frequency PWM. It monitors input current shape and output voltage to maintain regulation and power factor correction.' },
+            { nodeId: 'half-bridge', title: '7. Half-Bridge LLC Converter', content: 'Two MOSFETs (Q2/Q3) form a **half-bridge** that drives the LLC resonant tank. This topology achieves **zero-voltage switching (ZVS)** across the full load range, maximizing efficiency.' },
+            { nodeId: 'hf-xfmr', title: '8. High-Frequency Transformer', content: 'The transformer operates at **100-300 kHz**, enabling a compact design. It provides **galvanic isolation** between the dangerous mains voltage and the safe output side. Multiple secondary windings produce the +12V and +5V rails.' },
+            { nodeId: 'out-rectifier', title: '9. Synchronous Rectifier', content: 'MOSFETs replace traditional diodes for **lower loss** rectification of the high-frequency AC from the transformer secondary. This is critical for efficiency at high output currents.' },
+            { nodeId: 'out-filter-12v', title: '10. Output Filtering — 12V Rail', content: 'An **LC filter** (inductor + capacitor) smooths the rectified output into clean **+12V DC**. Low-ESR capacitors minimize ripple to under **50mV peak-to-peak**.' },
+            { nodeId: 'out-12v', title: '11. +12V Output', content: 'The main **+12V rail** delivers up to **40A (480W)**. This powers the CPU, GPU, and motherboard in a PC. The voltage is regulated to **+/-5%** tolerance per ATX specification.' },
+            { nodeId: 'pwm-ctrl', title: '12. PWM Controller & Feedback', content: 'The controller monitors the output voltage via an **optocoupler** (for isolation) and a **TL431 shunt reference**. It adjusts the switching frequency to maintain regulation under varying loads — completing the control loop.' },
+          ],
         } : undefined}
       />
       </>
