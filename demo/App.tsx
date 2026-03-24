@@ -3554,8 +3554,14 @@ const nodeTemplates: SidebarNodeTemplate[] = [
   { type: 'end', label: 'End', description: 'Exit point' },
 ];
 
+function getInitialDemo(): string {
+  // Read from URL hash: #/power-supply, #/nuclear, etc.
+  const hash = window.location.hash.replace('#/', '').replace('#', '');
+  return hash || 'showcase';
+}
+
 export function App() {
-  const [activeDemo, setActiveDemo] = React.useState<string>('showcase');
+  const [activeDemo, setActiveDemo] = React.useState<string>(getInitialDemo);
   const [currentDiagram, setCurrentDiagram] = useState<FlowDiagram>(sampleDiagram);
   const demoMap: Record<string, FlowDiagram> = { vertical: sampleDiagram, 'wind-farm': windFarmDiagram, 'solar-plant': solarPlantDiagram, datacenter: datacenterDiagram, 'power-supply': powerSupplyDiagram, hvdc: hvdcDiagram, showcase: showcaseDiagram, 'dc-facility': dcFacilityDiagram, nuclear: nuclearDiagram, 'gas-pipeline': gasPipelineDiagram, 'hydro-plant': hydroPlantDiagram, hydrogen: hydrogenDiagram, smr: smrDiagram };
   const baseDiagram = demoMap[activeDemo] || sampleDiagram;
@@ -3571,9 +3577,24 @@ export function App() {
 
   const handleDemoChange = (demo: string) => {
     setActiveDemo(demo);
+    window.location.hash = `#/${demo}`;
     if (demo === 'vertical') setCurrentDiagram(sampleDiagram);
     if (demo === 'showcase') setCurrentDiagram(showcaseDiagram);
   };
+
+  // Listen for browser back/forward
+  React.useEffect(() => {
+    const onHashChange = () => {
+      const hash = window.location.hash.replace('#/', '').replace('#', '');
+      if (hash && hash !== activeDemo) {
+        setActiveDemo(hash);
+        if (hash === 'vertical') setCurrentDiagram(sampleDiagram);
+        if (hash === 'showcase') setCurrentDiagram(showcaseDiagram);
+      }
+    };
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, [activeDemo]);
 
   return (
     <div style={{ width: '100%', height: '100vh', display: 'flex' }}>
