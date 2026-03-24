@@ -7,6 +7,7 @@ interface StoryOverlayProps {
   steps: StoryStep[];
   currentStep: number;
   isPlaying: boolean;
+  progress: number;
   onPrev: () => void;
   onNext: () => void;
   onTogglePlay: () => void;
@@ -14,12 +15,17 @@ interface StoryOverlayProps {
   onGoToStep: (index: number) => void;
 }
 
-export function StoryOverlay({ steps, currentStep, isPlaying, onPrev, onNext, onTogglePlay, onClose, onGoToStep }: StoryOverlayProps) {
+export function StoryOverlay({ steps, currentStep, isPlaying, progress, onPrev, onNext, onTogglePlay, onClose, onGoToStep }: StoryOverlayProps) {
   const step = steps[currentStep];
   if (!step) return null;
 
   return (
     <div className={styles.overlay}>
+      {/* Progress bar at top of overlay */}
+      <div className={styles.progressTrack}>
+        <div className={styles.progressFill} style={{ width: `${isPlaying ? progress : 0}%` }} />
+      </div>
+
       <div className={styles.content}>
         <div className={styles.header}>
           <div className={styles.stepInfo}>
@@ -44,7 +50,7 @@ export function StoryOverlay({ steps, currentStep, isPlaying, onPrev, onNext, on
             {steps.map((_, i) => (
               <button
                 key={i}
-                className={`${styles.dot} ${i === currentStep ? styles.dotActive : ''}`}
+                className={`${styles.dot} ${i === currentStep ? styles.dotActive : i < currentStep ? styles.dotCompleted : ''}`}
                 onClick={() => onGoToStep(i)}
               />
             ))}

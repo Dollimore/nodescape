@@ -599,6 +599,7 @@ export const FlowCanvas = React.forwardRef<FlowCanvasRef, FlowCanvasProps>(
         steps={storyConfig.steps}
         currentStep={story.currentStep}
         isPlaying={story.isPlaying}
+        progress={story.progress}
         onPrev={story.prev}
         onNext={story.next}
         onTogglePlay={story.togglePlay}

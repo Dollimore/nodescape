@@ -8,10 +8,25 @@
   max-width: 640px;
 }
 
+.progressTrack {
+  height: 3px;
+  background: var(--fc-node-border, #e0e0e0);
+  border-radius: 12px 12px 0 0;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: #3b82f6;
+  border-radius: 3px;
+  transition: width 0.1s linear;
+}
+
 .content {
   background: var(--fc-node-bg, #fff);
   border: 1px solid var(--fc-node-border, #e0e0e0);
-  border-radius: 12px;
+  border-top: none;
+  border-radius: 0 0 12px 12px;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
   padding: 16px 20px;
 }
@@ -20,13 +35,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .stepInfo {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .stepNumber {
@@ -38,7 +53,7 @@
 }
 
 .stepTitle {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 700;
   color: var(--fc-node-label, #1a1a1a);
 }
@@ -63,8 +78,8 @@
 .text {
   font-size: 14px;
   color: var(--fc-node-desc, #888);
-  line-height: 1.6;
-  margin-bottom: 12px;
+  line-height: 1.7;
+  margin-bottom: 14px;
 }
 
 .controls {
@@ -75,7 +90,7 @@
 
 .dots {
   display: flex;
-  gap: 4px;
+  gap: 5px;
 }
 
 .dot {
@@ -91,6 +106,12 @@
 
 .dotActive {
   background: #3b82f6;
+  width: 10px;
+  height: 10px;
+}
+
+.dotCompleted {
+  background: #93c5fd;
 }
 
 .buttons {
@@ -100,16 +121,17 @@
 }
 
 .navBtn, .playBtn {
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   border: none;
   background: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--fc-node-label, #1a1a1a);
+  transition: background 0.15s ease;
 }
 
 .navBtn:hover, .playBtn:hover {
@@ -125,6 +147,8 @@
   background: #3b82f6;
   color: #fff;
   border-radius: 50%;
+  width: 36px;
+  height: 36px;
 }
 
 .playBtn:hover {

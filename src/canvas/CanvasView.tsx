@@ -265,6 +265,7 @@ export function CanvasView({
         className={`${styles.canvasInner} ${bgClassMap[background]}`}
         style={{
           transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})`,
+          transition: zoomToNodeId ? 'transform 0.6s ease' : undefined,
         }}
       >
         {/* Offset must be a multiple of grid visual size (32px) so grid lines align with content */}

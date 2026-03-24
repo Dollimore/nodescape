@@ -5,14 +5,17 @@ export function useStory(config: StoryConfig | undefined, onStepChange?: (index:
   const [currentStep, setCurrentStep] = useState(0);
   const [isPlaying, setIsPlaying] = useState(config?.autoPlay ?? false);
   const [isActive, setIsActive] = useState(!!config);
+  const [progress, setProgress] = useState(0);
   const intervalRef = useRef<number | null>(null);
+  const progressRef = useRef<number | null>(null);
 
   const steps = config?.steps || [];
-  const interval = config?.autoPlayInterval ?? 5000;
+  const interval = config?.autoPlayInterval ?? 8000;
 
   const goToStep = useCallback((index: number) => {
     const clamped = Math.max(0, Math.min(index, steps.length - 1));
     setCurrentStep(clamped);
+    setProgress(0);
     if (onStepChange && steps[clamped]) {
       onStepChange(clamped, steps[clamped]);
     }
@@ -32,6 +35,7 @@ export function useStory(config: StoryConfig | undefined, onStepChange?: (index:
 
   const togglePlay = useCallback(() => {
     setIsPlaying(p => !p);
+    setProgress(0);
   }, []);
 
   const close = useCallback(() => {
@@ -39,21 +43,45 @@ export function useStory(config: StoryConfig | undefined, onStepChange?: (index:
     setIsPlaying(false);
   }, []);
 
-  // Auto-play
+  const currentStepDuration = steps[currentStep]?.duration ?? interval;
+
+  // Auto-play timer
   useEffect(() => {
     if (isPlaying && isActive) {
-      const stepDuration = steps[currentStep]?.duration ?? interval;
       intervalRef.current = window.setTimeout(() => {
         next();
-      }, stepDuration);
+      }, currentStepDuration);
       return () => { if (intervalRef.current) clearTimeout(intervalRef.current); };
     }
-  }, [isPlaying, isActive, currentStep, interval, next, steps]);
+  }, [isPlaying, isActive, currentStep, currentStepDuration, next]);
+
+  // Progress bar animation (updates every 50ms)
+  useEffect(() => {
+    if (isPlaying && isActive) {
+      const startTime = Date.now();
+      const tick = () => {
+        const elapsed = Date.now() - startTime;
+        const pct = Math.min(100, (elapsed / currentStepDuration) * 100);
+        setProgress(pct);
+        if (pct < 100) {
+          progressRef.current = window.requestAnimationFrame(tick);
+        }
+      };
+      progressRef.current = window.requestAnimationFrame(tick);
+      return () => {
+        if (progressRef.current) cancelAnimationFrame(progressRef.current);
+      };
+    } else {
+      setProgress(0);
+    }
+  }, [isPlaying, isActive, currentStep, currentStepDuration]);
 
   return {
     currentStep,
     isPlaying,
     isActive,
+    progress,
+    currentStepDuration,
     activeNodeId: isActive ? steps[currentStep]?.nodeId : null,
     goToStep,
     next,
