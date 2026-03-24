@@ -124,31 +124,28 @@ export function CanvasView({
     if (onZoomChange) onZoomChange(transform.scale);
   }, [transform.scale, onZoomChange]);
 
-  // Pan to center a specific node when story step changes
+  // Pan and zoom to center a specific node when story step changes
   useEffect(() => {
-    if (!zoomToNodeId || !containerRef.current) return;
+    if (!zoomToNodeId || !containerRef.current || !nodePositions?.[zoomToNodeId]) return;
 
-    // Find the node DOM element and pan to center it
-    const nodeEl = containerRef.current.querySelector(`[data-node-id="${zoomToNodeId}"]`) as HTMLElement | null;
-    if (!nodeEl) return;
-
+    const pos = nodePositions[zoomToNodeId];
     const containerRect = containerRef.current.getBoundingClientRect();
-    const nodeRect = nodeEl.getBoundingClientRect();
 
-    // How far is the node center from the container center (in screen pixels)?
-    const nodeCenterX = nodeRect.left + nodeRect.width / 2;
-    const nodeCenterY = nodeRect.top + nodeRect.height / 2;
-    const containerCenterX = containerRect.left + containerRect.width / 2;
-    const containerCenterY = containerRect.top + containerRect.height / 2;
+    // Zoom to a comfortable reading level
+    const targetScale = 1.2;
 
-    const offsetX = containerCenterX - nodeCenterX;
-    const offsetY = containerCenterY - nodeCenterY;
+    // The content offset inside canvasInner is 9984px
+    // canvasInner transform-origin is also 9984px
+    // A node at diagram pos (x,y) is at (9984 + x, 9984 + y) in canvasInner space
+    // After transform: screenX = tx + (9984 + x - 9984) * scale = tx + x * scale
+    // (because transform-origin cancels out the 9984 offset)
+    // To center: tx + x * targetScale = containerWidth / 2
+    // So: tx = containerWidth / 2 - x * targetScale
 
-    // Simply shift the current transform by this offset
     setFitView({
-      x: transform.x + offsetX,
-      y: transform.y + offsetY,
-      scale: transform.scale,
+      x: containerRect.width / 2 - pos.x * targetScale - 80, // offset slightly left for the node width
+      y: containerRect.height / 2 - pos.y * targetScale - 40, // offset slightly up
+      scale: targetScale,
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [zoomToNodeId]);
